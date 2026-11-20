@@ -1,0 +1,19 @@
+# List of foreign states providing equivalent (adequate) protection of personal data.
+# CMR No. 415 of 29.07.2026, annex (49 entries), official text in Uzbek, published 03.08.2026 (No. 09/26/415/0807).
+# Basis: ZRU-547 art. 27-1 part 3 and part 4 (edition of ZRU-1125 of 26.03.2026).
+# Copied entry by entry from lex.uz on 21.11.2026 by research (Alii) — see research/legal-27-1-2026.md, section 6.
+# Role 2: compare with the annex and set verified: true.
+source: "CMR No. 415 of 29.07.2026, annex"
+url: "https://lex.uz/ru/docs/8369688"
+effective_from: "2026-08-03"
+checked_on: "2026-11-21"
+verified: false
+complete: true          # the annex is a closed list: any country not below is NOT on the list
+total_in_resolution: 49
+adequate: [AT, AD, AR, BE, BG, BR, GB, HU, DE, GG, HK, GR, DK, JE, IE, ES, IS, IL, IT, CA, CY, KR, LV, LT, LI,
+           LU, MT, IM, NL, NO, PL, PT, RU, RO, SG, SK, SI, UY, FO, FI, FR, HR, CZ, CH, SE, EE, NZ, JP]   # 48
+conditional:
+  US: "only companies operating within the EU-US Data Privacy Framework (annex, note *)"
+# Not on the list (selection; the list is complete, so this is for readability and the current code):
+not_listed_confirmed: [KZ, KG, TJ, TM, AZ, AM, GE, BY, UA, MD, CN, AE, TR, IN, AU, SA, QA, VN, ID, MY, TH, MX,
+                       PK, AF, IR, EG, ZA, NG, PH]

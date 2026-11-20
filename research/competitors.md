@@ -72,9 +72,10 @@
 
 Not found in Uzbekistan: any automated site scanner, any CMP or cookie-banner product, any published price list
 for personal-data compliance packages (Settle Law Firm page returned 404). Registration in the State Register
-itself is free (15-day review per older sources; 5 working days per Pactum). Note: "Enterprise Uzbekistan", a new
-special regime for tech companies (08.2026), reportedly sets its own personal-data rules — page blocked (HTTP 403),
-NOT VERIFIED; worth a Role 2 look.
+itself is free (15-day review per older sources; 5 working days per Pactum). Note (corrected 21.11): the special
+regime with its own personal-data rules is the **Tashkent International Financial Centre** — ZRU-1158 of 13.07.2026
+added art. 3 part 3 to ZRU-547 (see `research/legal-27-1-2026.md`). Whether the separate "Enterprise Uzbekistan"
+regime for tech companies (reported 08.2026) has personal-data rules is NOT VERIFIED (page blocked).
 
 ### B. Russia — 152-FZ website checkers (the regional precedent)
 
@@ -171,9 +172,9 @@ Re-test on a Russian site (habr.com), so the tools are judged on their own groun
 - **Q14 (Role 2, R-02).** Juris says Administrative Code art. 46-2 and Criminal Code art. 141-2 still use the old,
   broader localization wording after ZRU-1125. If true, liability and the new art. 27-1 disagree — important for
   PD-LOC levels.
-- **Q15 (Role 2, V-03).** Bond Stone names the CMR No. 415 authorized body as the "Department of Migration and
-  Personalisation under the Ministry of Internal Affairs"; ZRU-547 art. 8 names the State Personalization Center.
-  Which is current?
+- **Q15 (answered 21.11).** Bond Stone is right: the authorized body in practice is the MoI Migration and
+  Personalization Department (CMR 821, PP-14, CMR 415); art. 8 of ZRU-547 still carries the old name. Details in
+  `research/legal-27-1-2026.md`.
 - **Q16 (business).** SECURITM (Russian GRC) already sells a ZRU-547 requirements catalog to security teams.
   Partner (they assess processes, we scan sites) or competitor for enterprise clients?
 - **Q17 (pitch).** Passport §8 row "CIS / Central Asia — UNKNOWN — the main question of R-04" can now be answered:
