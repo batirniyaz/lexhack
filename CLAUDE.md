@@ -26,6 +26,14 @@ Project **Qalqon**: a scanner that checks websites against Uzbekistan's personal
 - Findings are called "signs of violation"; levels: violation 🔴 / risk 🟡 / recommendation ⚪.
 - In the demo and in public statistics we don't name specific real websites. For the demo we use `demo-site/`.
 
+## Environment
+- Python runs only inside the project virtualenv `backend/.venv`:
+  - create: `python -m venv backend/.venv`
+  - install: `backend/.venv/Scripts/python -m pip install -r backend/requirements.txt`
+  - browser: `backend/.venv/Scripts/python -m playwright install chromium`
+- Secrets live in `.env` at the repo root (template: `.env.example`). Never commit `.env`.
+- Run the API from `backend/`: `.venv/Scripts/python -m uvicorn qalqon.api:app --port 8000`.
+
 ## Git (repository github.com/batirniyaz/lexhack, branch main)
 - Before starting work and before every push: `git pull --rebase`.
 - Everyone writes **only to their own folders**: Role 1 — code and `PASSPORT.md`; Role 2 — `research/legal-*`, `rules/`; Role 3 — the rest of `research/`, `pitch/`. That way there are no conflicts.

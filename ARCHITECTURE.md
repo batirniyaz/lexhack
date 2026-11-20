@@ -37,6 +37,9 @@
 
 ### 2.1 scanner/ — what the browser sees
 - Playwright async, headless Chromium, a new context for every scan, locale `uz-UZ`, a normal user agent.
+- **Navigation strategy (verified 20.11):** never wait for `load`/`networkidle` — one hanging third-party script blocks them forever (lex.uz hangs on a synchronous Microsoft Speech SDK script from Azure blob storage). Instead: `goto(wait_until="commit")`, then observe the network for a fixed window (`OBSERVE_MS`, ~8 s on the first page, less on the rest), then read the DOM. A hanging request is itself a recorded fact. Headless Chromium works on servers too (Linux: `playwright install --with-deps chromium`, or the official Playwright Docker image).
+- **Scan runs in a separate process** (adopted from `research/architecture-proposal.md` §1): Playwright fails under `uvicorn --reload` on Windows. The API starts `python -m qalqon.scan <url> --events` as a subprocess; the subprocess prints one JSON event per line, the API relays them over SSE and saves the final `facts.json`.
+- **SSRF guard:** the scan API refuses private/loopback/link-local addresses and non-http(s) schemes; only the local demo site is whitelisted.
 - **Site crawl:** home page → internal links of the same domain + `sitemap.xml`. We first visit pages whose URL or text contains `contact|aloqa|kontakt|register|ro'yxat|checkout|buyurtma|login|kirish|anketa`. Limit: `MAX_PAGES=20`, depth 2.
 - **Interception:**
   - `page.on("request")`: URL, method, resource type, `post_data`, initiating page, timestamp;
@@ -131,6 +134,13 @@ A static online shop, "Demo Market", built with violations on purpose. Each viol
 | Webvisor / Clarity | PD-REC-01 |
 
 The tracker IDs are fake, so no real data goes anywhere, but the requests are visible. We show canaries (mode 2) on the same site.
+
+**Two versions** (adopted from `research/architecture-proposal.md` §12): `demo-site/bad/` with every violation above and `demo-site/fixed/` with all of them repaired. A golden test asserts the expected findings on both — this also gives the "before / after" moment in the demo.
+
+### 2.10 Collect once, evaluate many times
+Adopted from `research/architecture-proposal.md` §2, §8:
+- A scan writes `scans/<id>/facts.json` (+ HAR). Detectors, rules, score and report are recomputed from that file in about a second: `python -m qalqon.rescore <id>`. When Role 2 edits a YAML rule, reports update without re-crawling.
+- **Score counts triggered rules, not individual requests** (10 tracker requests = one PD-TRK-01 finding). Findings with an undetermined country are shown but do not lower the score.
 
 ## 3. Repository structure
 

@@ -3,7 +3,7 @@
 > **Working name:** Qalqon ("shield")
 > **Hackathon:** LexHackathon 2026, TSUL, Tashkent, 20–22 November
 > **Track:** 1 — "Huquqiy xizmatlarni ko'rsatish" (legal services)
-> **Passport version:** 0.5 · 20.11.2026, 19:20
+> **Passport version:** 0.6 · 20.11.2026, 20:00
 > **Document owner:** Role 1 (Tech/AI lead). Others send changes in the formats from §11.
 
 ---
@@ -460,6 +460,9 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 | D-011 | 20.11 | We take laws from lex.uz: the "New in legislation" RSS feed + a daily article-by-article check of tracked documents (hash → changes) | lex.uz serves plain HTML and RSS — checked on 20.11 |
 | D-012 | 20.11 | Frontend: React + Vite + TypeScript + Tailwind, one screen, live feed via SSE | Quick to build; the live feed is the wow effect of the demo |
 | D-013 | 20.11 | lex-rag (55 thousand lex.uz acts, hybrid search, quotes checked by code) is called as an **external service** through its API; we don't copy its code into the repository | A clear "built before / during the hackathon" boundary (clause 6.5) |
+| D-014 | 20.11 | "Qalqon" ("shield" in Uzbek) is a **working name** only; the final name is chosen by the team later | Placeholder so files and code have a stable name |
+| D-015 | 20.11 | Adopted from `research/architecture-proposal.md`: scan in a separate process (Playwright vs `uvicorn --reload` on Windows), "collect once, evaluate many" (`rescore`), score per triggered rule, SSRF guard, demo site in bad + fixed versions with a golden test. Kept SSE instead of polling (D-012) | Robust demo, instant re-evaluation when rules change |
+| D-016 | 20.11 | Scanner navigation: `goto(wait_until="commit")` + fixed observation window, never `load`/`networkidle` | Verified on lex.uz: a hanging third-party script blocks `load` forever |
 
 ---
 
@@ -513,3 +516,4 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 - **0.5** — 20.11 19:20:
   - the passport translated into English; team documents are now written in English (§0.6, `CLAUDE.md`). Interface and pitch texts stay in Uzbek (Latin) and Russian. No other content changes;
   - abbreviations ZRU, CMR, PP and TSUL added to the glossary (§17).
+- **0.6** — 20.11 20:00 — decisions D-014 (working name), D-015 (adopted parts of the research architecture proposal), D-016 (navigation strategy). Backend skeleton + virtualenv ready (ARCHITECTURE.md step 0). Open question for the team: the scope extension in `research/scope-extension-proposal.md` (product check for builders) — not decided yet.

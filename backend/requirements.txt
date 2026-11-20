@@ -1,0 +1,13 @@
+# Qalqon backend — pinned to versions verified on 20.11.2026 (Python 3.11)
+playwright==1.65.2
+fastapi==0.165.0
+uvicorn[standard]==0.54.0
+sse-starlette==3.7.0
+python-dotenv==1.2.4
+PyYAML==6.0.3
+dnspython==2.9.2
+maxminddb==3.3.0
+httpx==0.28.1
+anthropic==2.11.0
+tldextract==5.4.0
+pytest==9.2.0
