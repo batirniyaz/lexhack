@@ -150,13 +150,13 @@ docker compose logs -f probo
 ## What is checked
 
 Rules live in YAML: drafts by Role 1 in `backend/rules_draft/`, authoritative versions by the lawyer in `rules/`
-(same `id` overrides the draft). **All drafts are `verified: false` until the lawyer confirms them.**
+(same `id` overrides the draft field by field). **All drafts are `verified: false` until the lawyer confirms them.**
 
 | Rule | Sign of violation | Detector | Level (draft) |
 |---|---|---|---|
-| PD-CNS-01 | A form collects personal data without a consent checkbox or consent text | `form_consent` | 🔴 |
+| PD-CNS-01 | A form collects personal data without visible consent or notice (art. 18: other grounds may exist) | `form_consent` | 🟡 |
 | PD-MIS-01 | The policy contradicts what the site actually does (promise quoted verbatim) | `policy_vs_behavior` | 🔴 (🟡 if the promise has exceptions) |
-| PD-LEAK-01 | Email / phone leaks to third parties in request URLs | `url_pii` | 🔴 |
+| PD-LEAK-01 | E-mail, phone, PINFL, passport or Uzcard/Humo card number leaks to third parties in request URLs (validated formats) | `url_pii` | 🔴 |
 | PD-LOC-01 | Personal-data form goes to a country outside the adequate-protection list (CMR No. 415) | `form_submit_destination` | 🟡 |
 | PD-LOC-02 | Trackers send visitor identifiers to a country outside the list | `foreign_requests` | 🟡 |
 | PD-TRK-01 | Trackers load on the first visit, before any consent | `trackers_before_consent` | 🟡 |
@@ -167,8 +167,19 @@ Rules live in YAML: drafts by Role 1 in `backend/rules_draft/`, authoritative ve
 | PD-POL-01 | No privacy / personal-data policy found | `privacy_policy_present` | 🟡 |
 | PD-POL-02 | The policy lacks required elements or never names services the site uses | `policy_content` | 🟡 |
 | SEC-01 / SEC-02 | No HTTPS / missing basic security headers | `https`, `security_headers` | 🟡 / ⚪ |
+| EC-01 | Online store: seller's legal name, phone / e-mail or address not shown (pilot, D-027) | `seller_identity` | 🟡 |
+| EC-02 | Online store: no public offer / terms of sale, or nothing about returns (pilot) | `offer_and_returns` | 🟡 |
+| EC-03 | Online store: no Uzbek-language version (pilot) | `state_language_version` | 🟡 |
 
 Score = 100 − 15 per 🔴 − 5 per 🟡 − 1 per ⚪, counted per triggered rule (not per request).
+
+Every report also has:
+- **verbatim law text** for each finding, from lex.uz via lex-rag (`backend/data/law_quotes.json`; quotes checked by code, not yet by a lawyer);
+- **possible consequences** (Administrative Code art. 46², BCA 440,000 UZS) where the team's legal research supports it;
+- **how the policy names each service** (product / company / only the kind / not named);
+- **"the law changed → the status changed"**: the same saved facts under the pre-2026 art. 27¹ and under the current law;
+- **scope and evidence seal**: where and when the scan ran (Uzbek IP), rules and model versions, SHA-256 of facts, HAR and report,
+  an Ed25519 signature; anyone can check a report at `/verify`.
 Countries are judged against the adequate-protection list: `rules/countries.yaml` (lawyer) or the draft
 `backend/data/countries_draft.yaml` (secondary source, NOT VERIFIED).
 
