@@ -82,6 +82,8 @@ export interface Policy {
   elements?: Record<string, PolicyElement>
   claims?: Claim[]
 }
+export interface Cookie { name: string; domain: string; third_party: boolean; set_on_landing: boolean }
+export interface Backend { kind: string; region?: string | null; source?: string; page?: string }
 export interface Facts {
   site: string
   site_domains: string[]
@@ -89,18 +91,37 @@ export interface Facts {
   hosts: Host[]
   forms: Form[]
   documents: { kind: string | null; url: string; title: string; visited: boolean }[]
+  cookies?: Cookie[]
+  backends?: Backend[]
   policy?: Policy
   stats: Stats
 }
-export interface ScanResult { report?: Report; facts?: Facts; status?: string; error?: string | null; label?: string }
+export interface ScanResult {
+  report?: Report
+  facts?: Facts
+  status?: string
+  error?: string | null
+  label?: string
+  domain?: string
+  scan_id?: string
+}
 export interface ScanListItem {
   scan_id: string
   site: string
+  domain: string
   label: string
   status: string
   score: number | null
+  delta: number | null
   levels?: Record<Level, number>
   scanned_at: string
+}
+export interface DiffItem { rule_id: string; level: Level; title: Localized }
+export interface SiteHistory {
+  domain: string
+  label: string
+  scans: { scan_id: string; site: string; label: string; status: string; score: number | null; levels?: Record<Level, number>; scanned_at: string }[]
+  diff: { from: string; to: string; new: DiffItem[]; fixed: DiffItem[]; unchanged: DiffItem[] } | null
 }
 export interface MarketStats {
   sites: number
@@ -141,6 +162,14 @@ export const api = {
     getJson<ScanResult>(`/api/scans/${scanId}?facts=1${anon ? '&anon=1' : ''}`),
   list: () => getJson<ScanListItem[]>('/api/scans?limit=100'),
   stats: () => getJson<MarketStats>('/api/stats'),
+  site: (domain: string, anon: boolean) => getJson<SiteHistory>(`/api/sites/${encodeURIComponent(domain)}${anon ? '?anon=1' : ''}`),
+  share: async (scanId: string): Promise<{ token: string; path: string }> => {
+    const response = await fetch(`/api/scans/${scanId}/share`, { method: 'POST' })
+    if (!response.ok) throw new ApiError(response.status, 'share failed')
+    return response.json()
+  },
+  shared: (token: string, anon: boolean) =>
+    getJson<ScanResult>(`/api/shared/${encodeURIComponent(token)}${anon ? '?anon=1' : ''}`),
 }
 
 /** Every event type the backend streams (ARCHITECTURE.md). */

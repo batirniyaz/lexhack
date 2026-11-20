@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import secrets
 from collections import Counter
 from pathlib import Path
 from typing import Optional
@@ -22,9 +23,10 @@ from .config import SCANS_DIR, settings
 from .jobs import ScanJob, jobs
 from .presentation import aliases_for, anonymize, label_for, replay_events
 from .scan import new_scan_id
-from .urls import TargetNotAllowed, check_target, normalize_url
+from .urls import TargetNotAllowed, check_target, host_of, normalize_url, registrable_domain
 
-app = FastAPI(title="Qalqon", version=__version__)
+app = FastAPI(title="Probo", version=__version__)
+SHARES_FILE = SCANS_DIR / ".shares.json"
 app.add_middleware(
     CORSMiddleware,
     allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
@@ -72,17 +74,93 @@ async def create_scan(body: ScanRequest) -> dict:
     return {"scan_id": job.scan_id, "status": job.status, "events": f"/api/scans/{job.scan_id}/events"}
 
 
+def _all_reports() -> list[dict]:
+    """Every finished scan (single and batch) as a small index row, oldest first."""
+    rows = []
+    for report_path in SCANS_DIR.rglob("report.json"):
+        report = _read_json(report_path) or {}
+        site = report.get("site") or ""
+        rows.append({
+            "scan_id": report_path.parent.relative_to(SCANS_DIR).as_posix(),
+            "site": site,
+            "domain": registrable_domain(host_of(site)),
+            "label": label_for(site),
+            "status": report.get("status"),
+            "score": report.get("score"),
+            "levels": report.get("levels"),
+            "scanned_at": report.get("scanned_at") or "",
+            "_findings": [{"rule_id": f["rule_id"], "level": f["level"], "title": f.get("title", {})}
+                          for f in report.get("findings", [])],
+        })
+    rows.sort(key=lambda r: r["scanned_at"])
+    return rows
+
+
 @app.get("/api/scans")
 def list_scans(limit: int = 50) -> list[dict]:
-    """Finished scans (single and batch), newest first — the demo picks cached reports from here."""
-    rows = []
-    for report_path in sorted(SCANS_DIR.rglob("report.json"), key=lambda p: p.stat().st_mtime, reverse=True)[:limit]:
-        report = _read_json(report_path) or {}
-        scan_id = report_path.parent.relative_to(SCANS_DIR).as_posix()
-        rows.append({"scan_id": scan_id, "site": report.get("site"), "label": label_for(report.get("site") or ""),
-                     "status": report.get("status"), "score": report.get("score"), "levels": report.get("levels"),
-                     "scanned_at": report.get("scanned_at")})
-    return rows
+    """Finished scans, newest first, with the score change against the previous scan of the same site."""
+    rows = _all_reports()
+    last_score: dict[str, Optional[int]] = {}
+    for row in rows:
+        previous = last_score.get(row["domain"])
+        row["delta"] = row["score"] - previous if (row["score"] is not None and previous is not None) else None
+        if row["status"] == "ok":
+            last_score[row["domain"]] = row["score"]
+    return [{k: v for k, v in r.items() if not k.startswith("_")} for r in reversed(rows)][:limit]
+
+
+@app.get("/api/sites/{domain}")
+def site_history(domain: str, anon: bool = False) -> dict:
+    """All scans of one site: score trend + what changed between the last two successful scans."""
+    scans = [r for r in _all_reports() if r["domain"] == domain.lower()]
+    if not scans:
+        raise HTTPException(404, "no scans for this site")
+    ok = [r for r in scans if r["status"] == "ok"]
+    diff = None
+    if len(ok) >= 2:
+        before = {f["rule_id"]: f for f in ok[-2]["_findings"]}
+        after = {f["rule_id"]: f for f in ok[-1]["_findings"]}
+        diff = {
+            "from": ok[-2]["scan_id"], "to": ok[-1]["scan_id"],
+            "new": [after[k] for k in after if k not in before],
+            "fixed": [before[k] for k in before if k not in after],
+            "unchanged": [after[k] for k in after if k in before],
+        }
+    result = {
+        "domain": domain.lower(),
+        "label": scans[-1]["label"],
+        "scans": [{k: v for k, v in r.items() if not k.startswith("_") and k != "domain"} for r in scans],
+        "diff": diff,
+    }
+    if anon:
+        site = scans[-1]["site"]
+        result = anonymize(result, [domain.lower()], label_for(site), aliases_for(site))
+    return result
+
+
+def _shares() -> dict[str, str]:
+    return _read_json(SHARES_FILE) or {}
+
+
+@app.post("/api/scans/{scan_id:path}/share")
+def share_scan(scan_id: str) -> dict:
+    """Read-only link for a finished report. The token is random; the same scan keeps its token."""
+    if not (_scan_dir(scan_id) / "report.json").exists():
+        raise HTTPException(404, "scan not found")
+    shares = _shares()
+    token = next((t for t, sid in shares.items() if sid == scan_id), None) or secrets.token_urlsafe(12)
+    shares[token] = scan_id
+    SHARES_FILE.parent.mkdir(parents=True, exist_ok=True)
+    SHARES_FILE.write_text(json.dumps(shares, indent=1), encoding="utf-8")
+    return {"token": token, "path": f"/r/{token}"}
+
+
+@app.get("/api/shared/{token}")
+def shared_scan(token: str, anon: bool = False) -> dict:
+    scan_id = _shares().get(token)
+    if not scan_id:
+        raise HTTPException(404, "link not found")
+    return {**scan_result(scan_id, anon=anon, facts=True), "scan_id": scan_id}
 
 
 @app.get("/api/scans/{scan_id:path}/events")
@@ -145,10 +223,13 @@ def scan_result(scan_id: str, anon: bool = False, facts: bool = False) -> dict:
                                                     "policy", "uploads", "permissions", "session_replay", "blocked")}
         for doc in result["facts"].get("documents") or []:
             doc.pop("text", None)  # large; served separately later if needed
+    site = report.get("site") or ""
     if anon:
         domains = (_read_json(scan_dir / "facts.json") or {}).get("site_domains") or []
-        site = report.get("site") or ""
         result = anonymize(result, domains, label_for(site), aliases_for(site))
+    # Set after anonymizing: the frontend needs it for the site-history link (in presentation mode use full screen,
+    # so the address bar with the domain is not visible).
+    result["domain"] = registrable_domain(host_of(site))
     return result
 
 

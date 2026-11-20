@@ -1,5 +1,6 @@
 // The report screen: header with score, tabs (overview, findings, data flows, policy). PRODUCT.md §4.3.
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useNavigate } from 'react-router'
 import { Badge } from '@astryxdesign/core/Badge'
 import { Banner } from '@astryxdesign/core/Banner'
 import { Button } from '@astryxdesign/core/Button'
@@ -7,8 +8,8 @@ import { Collapsible } from '@astryxdesign/core/Collapsible'
 import { Link } from '@astryxdesign/core/Link'
 import { Table, proportional } from '@astryxdesign/core/Table'
 import { TabList, Tab } from '@astryxdesign/core/TabList'
-import type { Facts, Finding, Host, Level, Report } from '../api'
-import { CATEGORY, CLAIM, ELEMENT, countryName, formatDate, useSettings } from '../i18n'
+import { api, type Facts, type Finding, type Host, type Level, type Report } from '../api'
+import { CATEGORY, CLAIM, ELEMENT, PD_TYPE, countryName, formatDate, useSettings } from '../i18n'
 import { FlowMap, statusKey, type MapCountry } from './FlowMap'
 
 const LEVEL_BADGE: Record<Level, 'error' | 'warning' | 'neutral'> = {
@@ -166,11 +167,11 @@ function FindingItem({ finding, open }: { finding: Finding; open: boolean }) {
   )
 }
 
-export function FindingList({ findings, openFirst = false }: { findings: Finding[]; openFirst?: boolean }) {
+export function FindingList({ findings, openFirst = false, openAll = false }: { findings: Finding[]; openFirst?: boolean; openAll?: boolean }) {
   const { t } = useSettings()
   if (findings.length === 0) return <p className="q-muted">{t.no_findings}</p>
   const sorted = [...findings].sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level))
-  return <div>{sorted.map((f, i) => <FindingItem key={f.rule_id} finding={f} open={openFirst && i === 0} />)}</div>
+  return <div>{sorted.map((f, i) => <FindingItem key={`${f.rule_id}-${openAll}`} finding={f} open={openAll || (openFirst && i === 0)} />)}</div>
 }
 
 interface HostRow extends Record<string, unknown> {
@@ -278,16 +279,161 @@ export function PolicyView({ report, facts }: { report: Report; facts?: Facts })
   )
 }
 
-type TabKey = 'overview' | 'findings' | 'flows' | 'policy'
+function FormsView({ facts }: { facts?: Facts }) {
+  const { t, lang } = useSettings()
+  const forms = (facts?.forms ?? []).filter((f) => f.collects_pd)
+  if (forms.length === 0) return <p className="q-muted">{t.forms_none}</p>
+  return (
+    <div>
+      {forms.map((form, i) => (
+        <div key={i} className="q-promise">
+          <div style={{ display: 'flex', gap: 10, alignItems: 'baseline', flexWrap: 'wrap' }}>
+            <span className="q-mono">{form.pages[0]}</span>
+            <Badge variant={form.has_consent ? 'success' : 'error'} label={form.has_consent ? t.with_consent : t.no_consent} />
+          </div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {form.fields.filter((f) => f.pd).map((f, j) => (
+              <Badge key={j} variant="neutral" label={`${PD_TYPE[lang][f.pd ?? ''] ?? f.pd}: ${f.label || f.name || '—'}`} />
+            ))}
+          </div>
+          {form.pages.length > 1 && <div className="q-muted" style={{ fontSize: 13 }}>{t.form_also_on(form.pages.length - 1)}</div>}
+        </div>
+      ))}
+    </div>
+  )
+}
 
-export function ReportView({ report, facts, displaySite }: { report: Report; facts?: Facts; displaySite: string }) {
+interface PageRow extends Record<string, unknown> { url: string; status: string; title: string }
+interface CookieRow extends Record<string, unknown> { key: string; name: string; domain: string; third: string; landing: string }
+
+function EvidenceView({ facts, scanId }: { facts?: Facts; scanId?: string }) {
   const { t } = useSettings()
+  if (!facts) return null
+  const pages: PageRow[] = facts.pages.map((p) => ({ url: p.final_url, status: String(p.status ?? '—'), title: p.title ?? '' }))
+  const cookies: CookieRow[] = (facts.cookies ?? []).map((c, i) => ({
+    key: `${c.name}-${c.domain}-${i}`, name: c.name, domain: c.domain,
+    third: c.third_party ? t.yes : t.no, landing: c.set_on_landing ? t.yes : t.no,
+  }))
+  return (
+    <div style={{ display: 'grid', gap: 36 }}>
+      {scanId && <div><Link href={`/api/scans/${scanId}/har`}>{t.ev_har}</Link></div>}
+      <section>
+        <h3 style={{ fontSize: 16, margin: '0 0 10px' }}>{t.ev_pages}</h3>
+        <Table<PageRow> data={pages} idKey="url" density="compact" columns={[
+          { key: 'url', header: 'URL', width: proportional(3, { minWidth: 260 }), renderCell: (r) => <span className="q-mono">{r.url}</span> },
+          { key: 'status', header: t.ev_status, align: 'end' },
+          { key: 'title', header: t.ev_title, width: proportional(2) },
+        ]} />
+      </section>
+      <section>
+        <h3 style={{ fontSize: 16, margin: '0 0 10px' }}>{t.ev_cookies} ({cookies.length})</h3>
+        <Table<CookieRow> data={cookies} idKey="key" density="compact" columns={[
+          { key: 'name', header: t.ev_cookie_name, renderCell: (r) => <span className="q-mono">{r.name}</span> },
+          { key: 'domain', header: t.ev_cookie_domain, renderCell: (r) => <span className="q-mono">{r.domain}</span> },
+          { key: 'third', header: t.ev_third },
+          { key: 'landing', header: t.first },
+        ]} />
+      </section>
+      {(facts.backends ?? []).length > 0 && (
+        <section>
+          <h3 style={{ fontSize: 16, margin: '0 0 10px' }}>{t.ev_backends}</h3>
+          {(facts.backends ?? []).map((b, i) => (
+            <div key={i} className="q-mono" style={{ marginBottom: 6 }}>
+              {b.kind}{b.region ? ` (${b.region})` : ''} <span className="q-muted">{b.source}</span>
+            </div>
+          ))}
+        </section>
+      )}
+    </div>
+  )
+}
+
+type TabKey = 'overview' | 'findings' | 'flows' | 'policy' | 'forms' | 'evidence'
+const TAB_ORDER: TabKey[] = ['overview', 'findings', 'flows', 'policy', 'forms', 'evidence']
+
+interface ReportViewProps {
+  report: Report
+  facts?: Facts
+  displaySite: string
+  scanId?: string
+  domain?: string
+  readonly?: boolean
+}
+
+export function ReportView({ report, facts, displaySite, scanId, domain, readonly = false }: ReportViewProps) {
+  const { t } = useSettings()
+  const navigate = useNavigate()
   const [tab, setTab] = useState<TabKey>('overview')
+  const [printing, setPrinting] = useState(false)
+  const [share, setShare] = useState<'idle' | 'busy' | 'copied' | 'error'>('idle')
   const map = useMemo(() => mapData(report), [report])
   const mismatch = report.findings.find((f) => f.rule_id === 'PD-MIS-01')
   const anyUnverified = report.findings.some((f) => !f.verified)
   const top = [...report.findings].sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level)).slice(0, 3)
   const date = formatDate(report.scanned_at)
+
+  // PDF = the browser's "Save as PDF": render every section expanded, print, then go back.
+  useEffect(() => {
+    if (!printing) return
+    const done = () => setPrinting(false)
+    window.addEventListener('afterprint', done)
+    const timer = window.setTimeout(() => window.print(), 500)
+    return () => { window.clearTimeout(timer); window.removeEventListener('afterprint', done) }
+  }, [printing])
+
+  const onShare = async () => {
+    if (!scanId) return
+    setShare('busy')
+    try {
+      const { token } = await api.share(scanId)
+      await navigator.clipboard?.writeText(`${window.location.origin}/r/${token}`)
+      setShare('copied')
+      window.setTimeout(() => setShare('idle'), 2500)
+    } catch {
+      setShare('error')
+    }
+  }
+
+  const labels: Record<TabKey, string> = {
+    overview: t.tab_overview, findings: `${t.tab_findings} ${report.findings.length}`, flows: t.tab_flows,
+    policy: t.tab_policy, forms: t.tab_forms, evidence: t.tab_evidence,
+  }
+  const section = (key: TabKey): ReactNode => {
+    switch (key) {
+      case 'overview':
+        return (
+          <div style={{ display: 'grid', gap: 40 }}>
+            {mismatch && <SaysDoes finding={mismatch} facts={facts} />}
+            {!printing && (
+              <section>
+                <h2 style={{ fontSize: 18, margin: '0 0 6px' }}>{t.top_findings}</h2>
+                <FindingList findings={top} />
+              </section>
+            )}
+            <section>
+              <p style={{ margin: '0 0 12px' }}>{t.flows_sentence(map.length)}</p>
+              <FlowMap data={map} />
+            </section>
+            <p className="q-muted" style={{ fontSize: 14, margin: 0 }}>{t.limits}</p>
+          </div>
+        )
+      case 'findings':
+        return <FindingList findings={report.findings} openFirst openAll={printing} />
+      case 'flows':
+        return (
+          <div style={{ display: 'grid', gap: 28 }}>
+            {!printing && <FlowMap data={map} />}
+            {facts && <HostTable hosts={facts.hosts} />}
+          </div>
+        )
+      case 'policy':
+        return <PolicyView report={report} facts={facts} />
+      case 'forms':
+        return <FormsView facts={facts} />
+      case 'evidence':
+        return <EvidenceView facts={facts} scanId={printing ? undefined : scanId} />
+    }
+  }
 
   return (
     <div>
@@ -295,40 +441,39 @@ export function ReportView({ report, facts, displaySite }: { report: Report; fac
         <div>
           <h1>{displaySite}</h1>
           <div className="q-muted">{date}. {t.scanned(report.stats.pages, report.stats.requests)}</div>
+          <div className="q-actions q-noprint">
+            {!readonly && domain && (
+              <Button size="sm" variant="secondary" label={t.act_history} onClick={() => navigate(`/sites/${domain}`)} />
+            )}
+            {!readonly && scanId && (
+              <Button size="sm" variant="secondary" isLoading={share === 'busy'} onClick={onShare}
+                label={share === 'copied' ? t.act_shared : share === 'error' ? t.act_share_error : t.act_share} />
+            )}
+            <Button size="sm" variant="secondary" label={t.act_pdf} onClick={() => setPrinting(true)} />
+          </div>
         </div>
         <ScoreScale report={report} />
       </div>
       {anyUnverified && <div style={{ marginBottom: 20 }}><Banner status="info" title={t.not_verified} /></div>}
-      <TabList value={tab} onChange={(v) => setTab(v as TabKey)} hasDivider role="tablist">
-        <Tab value="overview" label={t.tab_overview} panelId="q-panel" />
-        <Tab value="findings" label={`${t.tab_findings} ${report.findings.length}`} panelId="q-panel" />
-        <Tab value="flows" label={t.tab_flows} panelId="q-panel" />
-        <Tab value="policy" label={t.tab_policy} panelId="q-panel" />
-      </TabList>
-      <div id="q-panel" role="tabpanel" style={{ paddingTop: 28 }}>
-        {tab === 'overview' && (
-          <div style={{ display: 'grid', gap: 40 }}>
-            {mismatch && <SaysDoes finding={mismatch} facts={facts} />}
-            <section>
-              <h2 style={{ fontSize: 18, margin: '0 0 6px' }}>{t.top_findings}</h2>
-              <FindingList findings={top} />
+      {printing ? (
+        <div className="q-print-all">
+          {TAB_ORDER.map((key) => (
+            <section key={key} className="q-print-section">
+              <h2 className="q-print-h">{labels[key]}</h2>
+              {section(key)}
             </section>
-            <section>
-              <p style={{ margin: '0 0 12px' }}>{t.flows_sentence(map.length)}</p>
-              <FlowMap data={map} />
-            </section>
-            <p className="q-muted" style={{ fontSize: 14, margin: 0 }}>{t.limits}</p>
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="q-noprint">
+            <TabList value={tab} onChange={(v) => setTab(v as TabKey)} hasDivider role="tablist">
+              {TAB_ORDER.map((key) => <Tab key={key} value={key} label={labels[key]} panelId="q-panel" />)}
+            </TabList>
           </div>
-        )}
-        {tab === 'findings' && <FindingList findings={report.findings} openFirst />}
-        {tab === 'flows' && (
-          <div style={{ display: 'grid', gap: 28 }}>
-            <FlowMap data={map} />
-            {facts && <HostTable hosts={facts.hosts} />}
-          </div>
-        )}
-        {tab === 'policy' && <PolicyView report={report} facts={facts} />}
-      </div>
+          <div id="q-panel" role="tabpanel" style={{ paddingTop: 28 }}>{section(tab)}</div>
+        </>
+      )}
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 import { Badge } from '@astryxdesign/core/Badge'
 import { Button } from '@astryxdesign/core/Button'
 import { EmptyState } from '@astryxdesign/core/EmptyState'
+import { Link } from '@astryxdesign/core/Link'
 import { Spinner } from '@astryxdesign/core/Spinner'
 import { Table } from '@astryxdesign/core/Table'
 import { api, siteDomain, type Level, type ScanListItem } from '../api'
@@ -17,6 +18,8 @@ interface Row extends Record<string, unknown> {
   findings: string
   levels?: Record<Level, number>
   status: string
+  domain: string
+  delta: number | null
 }
 
 export function History() {
@@ -36,6 +39,8 @@ export function History() {
     findings: '',
     levels: s.levels,
     status: s.status,
+    domain: s.domain,
+    delta: s.delta,
   }))
 
   return (
@@ -53,9 +58,18 @@ export function History() {
           idKey="id"
           hasHover
           columns={[
-            { key: 'site', header: t.col_site, renderCell: (r) => <span className="q-mono">{r.site}</span> },
+            { key: 'site', header: t.col_site, renderCell: (r) => (
+              <Link href={`/sites/${r.domain}`} onClick={(e) => { e.preventDefault(); navigate(`/sites/${r.domain}`) }}>
+                <span className="q-mono">{r.site}</span>
+              </Link>
+            ) },
             { key: 'date', header: t.col_date },
-            { key: 'score', header: t.col_score, align: 'end' },
+            { key: 'score', header: t.col_score, align: 'end', renderCell: (r) => (
+              <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+                {r.score}
+                {r.delta ? <span className="q-muted" style={{ marginInlineStart: 6 }}>{r.delta > 0 ? `▲${r.delta}` : `▼${-r.delta}`}</span> : null}
+              </span>
+            ) },
             { key: 'findings', header: t.col_findings, renderCell: (r) => r.levels ? (
               <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
                 <Badge variant="error" label={`${r.levels.violation} ${t.lvl_violation}`} />

@@ -6,6 +6,8 @@ import { Header } from './components/Header'
 import { Home } from './pages/Home'
 import { ScanPage } from './pages/ScanPage'
 import { History } from './pages/History'
+import { SitePage } from './pages/SitePage'
+import { SharedPage } from './pages/SharedPage'
 
 export default function App() {
   return (
@@ -18,6 +20,8 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/scan/*" element={<ScanPage />} />
               <Route path="/history" element={<History />} />
+              <Route path="/sites/:domain" element={<SitePage />} />
+              <Route path="/r/:token" element={<SharedPage />} />
               <Route path="*" element={<Home />} />
             </Routes>
           </main>

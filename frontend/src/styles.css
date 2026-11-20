@@ -148,3 +148,18 @@ body { font-family: var(--font-family-body); }
 .q-history-head { padding: 36px 0 18px; display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
 
 :focus-visible { outline: 2px solid var(--q-origin); outline-offset: 2px; }
+
+/* Report actions */
+.q-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.q-print-section { break-inside: auto; padding-top: 28px; }
+.q-print-h { font-size: 20px; font-weight: 600; margin: 0 0 14px; padding-top: 12px; border-top: 1px solid var(--q-rule); }
+
+/* Print / "Save as PDF": always light, no navigation, every section expanded (ReportView printing mode) */
+@media print {
+  html, body, [data-astryx-theme] { color-scheme: light !important; background: #fff !important; }
+  .q-header, .q-header-rule, .q-noprint { display: none !important; }
+  .q-page { max-width: none; padding: 0; }
+  .q-sd { break-inside: avoid; }
+  .q-finding { break-inside: avoid; }
+  a { color: inherit; }
+}
