@@ -167,6 +167,8 @@ lexhack/
 
 ## 4. Build plan
 
+**Progress:** step 0 ✅ (venv, deps, health API) · step 1 ✅ 20.11 19:30 — `python -m qalqon.scan <url>` crawls with priority to contact/terms/login pages, records every request with server IP, cookies (landing vs later), storage keys, HAR; `--events` streams JSON lines; SSRF guard refuses private targets. Tested on lex.uz: 4 pages, 138 requests, 12 third-party hosts.
+
 Each step ends with a result we can check. After every step: commit → `git pull --rebase` → read the team's new research → push.
 
 | # | When | Step | Done when |
