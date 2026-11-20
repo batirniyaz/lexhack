@@ -18,6 +18,7 @@ from .legal_lists import country_status, list_info
 
 DRAFT_RULES_DIR = BACKEND_DIR / "rules_draft"
 PENALTY = {"violation": 15, "risk": 5, "recommendation": 1}
+DOWNGRADE = {"violation": "risk", "risk": "recommendation"}
 LEVEL_ORDER = {"violation": 0, "risk": 1, "recommendation": 2}
 NON_RULE_FILES = {"countries.yaml"}
 
@@ -90,9 +91,15 @@ def evaluate(facts: dict) -> dict:
             continue
         if not evidence:
             continue
+        level = rule["level"]
+        downgraded = all((e.get("data") or {}).get("downgrade") for e in evidence)
+        if downgraded:
+            level = DOWNGRADE.get(level, level)  # detector is unsure for every piece of evidence (D-019)
         findings.append({
             "rule_id": rule["id"],
-            "level": rule["level"],
+            "level": level,
+            "rule_level": rule["level"],
+            "downgraded": downgraded,
             "title": rule.get("title", {}),
             "evidence": evidence,
             "legal_basis": rule.get("legal_basis", []),

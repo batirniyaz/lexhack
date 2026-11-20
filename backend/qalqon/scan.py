@@ -17,6 +17,7 @@ from datetime import datetime
 
 from .config import SCANS_DIR
 from .enrich import enrich_event, enrich_facts
+from .llm.policy import analyze_policy
 from .rules_engine import evaluate, format_report
 from .scanner.crawler import crawl
 from .urls import TargetNotAllowed, check_target, host_of, normalize_url
@@ -63,6 +64,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-private", action="store_true", help="allow local/private targets (demo site)")
     parser.add_argument("--scan-id", default=None)
     parser.add_argument("--no-har", action="store_true")
+    parser.add_argument("--no-llm", action="store_true", help="skip the LLM policy analysis")
     args = parser.parse_args(argv)
 
     sys.stdout.reconfigure(encoding="utf-8")
@@ -88,6 +90,12 @@ def main(argv: list[str] | None = None) -> int:
     facts = asyncio.run(crawl(url, max_pages=args.max_pages, har_path=None if args.no_har else out_dir / "scan.har", emit=emit))
     facts["scan_id"] = scan_id
     enrich_facts(facts)
+    if not args.no_llm:
+        emit({"type": "policy_start"})
+        policy = analyze_policy(facts)
+        emit({"type": "policy", "status": policy["status"], "reason": policy.get("reason"),
+              "documents": policy.get("documents"), "claims": len(policy.get("claims", [])),
+              "cached": policy.get("cached")})
     (out_dir / "facts.json").write_text(json.dumps(facts, ensure_ascii=False, indent=2), encoding="utf-8")
     report = evaluate(facts)
     (out_dir / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")

@@ -18,12 +18,13 @@ import yaml
 
 from .config import SCANS_DIR
 from .enrich import enrich_facts
+from .llm.policy import analyze_policy
 from .rules_engine import evaluate
 from .scanner.crawler import crawl
 from .urls import TargetNotAllowed, check_target, host_of, normalize_url
 
 
-async def _scan_one(entry: dict, out_root: Path, max_pages: int, sem: asyncio.Semaphore) -> dict:
+async def _scan_one(entry: dict, out_root: Path, max_pages: int, sem: asyncio.Semaphore, use_llm: bool = True) -> dict:
     url = normalize_url(entry["url"])
     row = {"sector": entry.get("sector"), "label": entry.get("label"), "url": url, "ok": False}
     try:
@@ -38,6 +39,9 @@ async def _scan_one(entry: dict, out_root: Path, max_pages: int, sem: asyncio.Se
             row["error"] = f"{type(exc).__name__}: {str(exc).splitlines()[0][:150]}"
             return row
     enrich_facts(facts)
+    if use_llm:
+        await asyncio.to_thread(analyze_policy, facts)
+        row["policy"] = facts["policy"]["status"]
     report = evaluate(facts)
     out_dir = out_root / host_of(url).replace(".", "-")
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -65,11 +69,11 @@ async def _scan_one(entry: dict, out_root: Path, max_pages: int, sem: asyncio.Se
     return row
 
 
-async def run(entries: list[dict], max_pages: int, parallel: int) -> tuple[Path, list[dict]]:
+async def run(entries: list[dict], max_pages: int, parallel: int, use_llm: bool = True) -> tuple[Path, list[dict]]:
     out_root = SCANS_DIR / f"batch-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
     out_root.mkdir(parents=True, exist_ok=True)
     sem = asyncio.Semaphore(parallel)
-    rows = await asyncio.gather(*(_scan_one(e, out_root, max_pages, sem) for e in entries))
+    rows = await asyncio.gather(*(_scan_one(e, out_root, max_pages, sem, use_llm) for e in entries))
     (out_root / "summary.json").write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
     return out_root, rows
 
@@ -79,11 +83,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("sites", help="YAML file with a 'sites' list of {sector, label, url}")
     parser.add_argument("--max-pages", type=int, default=3)
     parser.add_argument("--parallel", type=int, default=4)
+    parser.add_argument("--no-llm", action="store_true", help="skip the LLM policy analysis")
     args = parser.parse_args(argv)
     sys.stdout.reconfigure(encoding="utf-8")
 
     entries = yaml.safe_load(Path(args.sites).read_text(encoding="utf-8"))["sites"]
-    out_root, rows = asyncio.run(run(entries, args.max_pages, args.parallel))
+    out_root, rows = asyncio.run(run(entries, args.max_pages, args.parallel, not args.no_llm))
     for row in rows:
         if not row.get("ok"):
             reason = row.get("error") or (f"blocked: {row['blocked']}" if row.get("blocked") else row.get("page_status"))
@@ -94,7 +99,7 @@ def main(argv: list[str] | None = None) -> int:
             f"cookies={row['cookies']:3d} (3p {row['third_party_cookies']})"
         )
         print(f"       flows: {row['flows']}  owners: {', '.join(row['entities'])}")
-        print(f"       score: {row['score']}  findings: {' '.join(row['findings'])}")
+        print(f"       score: {row['score']}  findings: {' '.join(row['findings'])}  policy: {row.get('policy', '-')}")
     print(f"\nsaved: {out_root}")
     return 0
 
