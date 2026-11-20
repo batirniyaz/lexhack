@@ -1,0 +1,46 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/PD-LOC-02.yaml.
+# Verified 21.11.2026 against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes from lex.uz's Latin version).
+# Level: risk — two open points: whether tracker identifiers are personal data (V-08, art. 4) and whether a basis
+# under art. 27¹ part 3 / art. 15 exists (not visible). Sanction uncertain (Q14, R-02).
+id: PD-LOC-02
+title:
+  en: "Trackers send visitor identifiers to a country outside the adequate-protection list"
+  ru: "Трекеры передают идентификаторы посетителей в страну вне перечня"
+  uz: "Trekerlar tashrif buyuruvchi identifikatorlarini roʻyxatga kirmagan davlatga yubormoqda"
+level: risk
+detector: foreign_requests
+params:
+  categories: [analytics, advertising, session_replay, social, marketing, ab_testing]
+  flag_statuses: [not_listed, not_in_known_list, conditional_unknown]
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "15, parts 2–3 (cross-border transfer)"
+    articles: ["15"]
+    quote_uz: "Shaxsga doir maʼlumotlarni transchegaraviy uzatish shaxsga doir maʼlumotlar subyektlarining huquqlari bir xilda himoya qilinishini taʼminlovchi chet davlatlar hududiga amalga oshiriladi."
+    quote_ru: "Трансграничная передача персональных данных осуществляется на территорию иностранных государств, обеспечивающих адекватную защиту прав субъектов персональных данных."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "27¹, part 3 (ed. ZRU-1125 of 26.03.2026)"
+    articles: ["27¹"]
+    quote_uz: "Ushbu moddaning ikkinchi qismida nazarda tutilmagan shaxsga doir maʼlumotlar kuyidagi shartlardan biri bajarilgan taqdirda, Oʻzbekiston Respublikasi hududidan tashqarida saqlanishi va ularga ishlov berilishi mumkin:"
+    quote_ru: "Персональные данные, не предусмотренные частью второй настоящей статьи, могут храниться и обрабатываться за пределами территории Республики Узбекистан при выполнении одного из следующих условий:"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "4 (definition of personal data) — applying it to tracker identifiers is an interpretation (V-08)"
+    articles: ["4"]
+    quote_uz: "shaxsga doir maʼlumotlar — muayyan jismoniy shaxsga taalluqli boʻlgan yoki uni identifikatsiya qilish imkonini beradigan, elektron tarzda, qogʻozda va (yoki) boshqa moddiy jismda qayd etilgan axborot;"
+    quote_ru: "персональные данные — зафиксированная на электронном, бумажном и (или) ином материальном носителе информация, относящаяся к определенному физическому лицу или дающая возможность его идентификации;"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+sanction: "Uncertain: depends on V-08 and on the art. 27¹ part 3 bases; Administrative Code art. 46² part 1 still uses the pre-2026 localization wording (see research/legal-liability.md)."
+fix:
+  en: "Remove the tracker, switch to a provider in Uzbekistan or a listed country, or load it only after the visitor consents to the transfer abroad, and name it with its country in the policy."
+  ru: "Уберите трекер, перейдите на провайдера в Узбекистане или в стране из перечня либо загружайте его только после согласия посетителя на передачу за рубеж и укажите его со страной в политике."
+  uz: "Trekerni olib tashlang, Oʻzbekistondagi yoki roʻyxatdagi davlatdagi provayderga oʻting yoki uni faqat tashrif buyuruvchi xorijga uzatishga rozilik bergandan keyin yuklang va siyosatda davlati bilan koʻrsating."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"

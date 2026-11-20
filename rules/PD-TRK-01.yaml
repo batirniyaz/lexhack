@@ -1,0 +1,38 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/PD-TRK-01.yaml.
+# Verified 21.11.2026 against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes from lex.uz's Latin version).
+# Level: risk — no Uzbek norm names cookies or trackers. Tracker identifiers are personal data when they enable
+# identification (art. 4) — V-08 is an interpretation, not verified. If they are, processing needs a ground (art. 18);
+# for advertising and analytics that is usually consent. Wording in reports: "visitor identifiers that may be personal data".
+id: PD-TRK-01
+title:
+  en: "Trackers load on the first visit, before any consent"
+  ru: "Трекеры загружаются при первом визите, до какого-либо согласия"
+  uz: "Trekerlar birinchi tashrifda, hech qanday roziliksiz yuklanmoqda"
+level: risk
+detector: trackers_before_consent
+params:
+  categories: [analytics, advertising, session_replay, social, marketing, ab_testing]
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "4 (definition: information enabling identification) — applying it to cookie / IP identifiers is an interpretation (V-08)"
+    articles: ["4"]
+    quote_uz: "shaxsga doir maʼlumotlar — muayyan jismoniy shaxsga taalluqli boʻlgan yoki uni identifikatsiya qilish imkonini beradigan, elektron tarzda, qogʻozda va (yoki) boshqa moddiy jismda qayd etilgan axborot;"
+    quote_ru: "персональные данные — зафиксированная на электронном, бумажном и (или) ином материальном носителе информация, относящаяся к определенному физическому лицу или дающая возможность его идентификации;"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "18, part 2 (grounds for processing)"
+    articles: ["18"]
+    quote_uz: "Shaxsga doir maʼlumotlarga ishlov berish quyidagi hollarda amalga oshiriladi: subyekt bu maʼlumotlarga ishlov berishga rozilik berganda;"
+    quote_ru: "Обработка персональных данных осуществляется в следующих случаях: согласия субъекта на обработку этих данных;"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+sanction: null   # depends on V-08; if identifiers are personal data — Administrative Code art. 46² part 1 (see research/legal-liability.md)
+fix:
+  en: "Load analytics and advertising scripts only after the visitor agrees (a consent banner with a real 'reject' choice), and name every tracker and its country in the policy."
+  ru: "Загружайте аналитику и рекламные скрипты только после согласия посетителя (баннер с реальной кнопкой «отказаться») и перечислите в политике каждый трекер и его страну."
+  uz: "Analitika va reklama skriptlarini faqat tashrif buyuruvchi rozilik bergandan keyin yuklang (haqiqiy «rad etish» tugmasi bor banner) va siyosatda har bir treker hamda uning davlatini koʻrsating."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"

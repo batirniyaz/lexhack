@@ -1,0 +1,43 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/PD-BIO-01.yaml.
+# Verified 21.11.2026 against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes from lex.uz's Latin version).
+# Level: risk — a face image is biometric data (MoJ model procedure No. 20-mh, item 1: "yuz koʻrinishi"); biometric data
+# used to identify a person need the subject's consent (art. 26 part 3) and must be stored in Uzbekistan (art. 27¹
+# part 2). The detector sees the camera / photo upload, not where the file goes or whether it is used to identify →
+# risk. Raise to violation only with evidence of upload to a server abroad (lawyer's call).
+id: PD-BIO-01
+title:
+  en: "Possible biometric data (selfie / camera) — must be stored in Uzbekistan"
+  ru: "Возможные биометрические данные (селфи / камера) — обязаны храниться в Узбекистане"
+  uz: "Ehtimoliy biometrik maʼlumotlar (selfi / kamera) — Oʻzbekistonda saqlanishi shart"
+level: risk
+detector: biometric_capture
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "27¹, part 2 (mandatory storage in Uzbekistan; ed. ZRU-1125 of 26.03.2026)"
+    articles: ["27¹"]
+    quote_uz: "Quyidagi shaxsga doir maʼlumotlar Oʻzbekiston Respublikasi hududida saqlanishi shart: jismoniy shaxslarning biometrik maʼlumotlari;"
+    quote_ru: "Обязательному хранению на территории Республики Узбекистан подлежат следующие персональные данные: биометрические данные физических лиц;"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "26, parts 1 and 3 (biometric data; consent)"
+    articles: ["26"]
+    quote_uz: "Subyektning shaxsini aniqlash uchun foydalaniladigan biometrik va genetik maʼlumotlarga faqat mazkur subyektning roziligi mavjud boʻlgan taqdirda, bundan Oʻzbekiston Respublikasining xalqaro shartnomalarini roʻyobga chiqarish, odil sudlovni amalga oshirish, ijro ishini yuritish bilan bogʻliq hollar mustasno, shuningdek qonunchilikda nazarda tutilgan boshqa hollarda ishlov berilishi mumkin."
+    quote_ru: "Биометрические и генетические данные, которые используются для установления личности субъекта, могут обрабатываться только при наличии согласия данного субъекта, за исключением случаев, связанных с реализацией международных договоров Республики Узбекистан, осуществлением правосудия, исполнительным производством, а также в иных случаях, предусмотренных законодательством."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "Minister of Justice order No. 20-mh of 15.11.2023 — Model procedure of processing personal data (reg. No. 3478)"
+    article: "1 (definition of biometric data); text in Uzbek only"
+    quote_uz: "subyektning anatomik va fiziologik oʻziga xos xususiyatlarini tavsiflovchi shaxsga doir maʼlumotlar (barmoq izlari, yuz koʻrinishi, koʻz gavhari, ovoz xususiyatlari va boshqalar);"
+    quote_ru: null
+    url: "https://lex.uz/docs/-6663967"
+    edition_date: "15.11.2023"
+sanction: "If biometric data are stored abroad or processed without consent: Administrative Code art. 46² part 1 — 7 BCA citizens / 50 BCA officials; risk of listing in the register of violators and access restriction (CMR No. 707, annex 3)."
+fix:
+  en: "Confirm where uploaded photos and camera images are stored and processed: biometric data must stay on servers in Uzbekistan. Ask for explicit consent before taking the photo and say what it is used for."
+  ru: "Подтвердите, где хранятся и обрабатываются загружаемые фото и снимки с камеры: биометрия должна оставаться на серверах в Узбекистане. Получайте явное согласие до съёмки и укажите, для чего используется фото."
+  uz: "Yuklanadigan rasmlar va kamera tasvirlari qayerda saqlanishi va ishlov berilishini tasdiqlang: biometrik maʼlumotlar Oʻzbekistondagi serverlarda qolishi shart. Suratga olishdan oldin aniq rozilik oling va rasm nima uchun ishlatilishini koʻrsating."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"

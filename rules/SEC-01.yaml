@@ -1,0 +1,34 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/SEC-01.yaml.
+# Verified 21.11.2026 against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes from lex.uz's Latin version).
+# Level: risk — the law requires technical measures for integrity and confidentiality (art. 27 part 2) without naming
+# HTTPS; the model procedure requires secure channels and/or encryption when non-public PD is passed to other persons
+# (item 30, point 8). Plain HTTP for a form with personal data is a clear gap in those measures, but no norm names it.
+id: SEC-01
+title:
+  en: "Pages or personal-data forms without HTTPS"
+  ru: "Страницы или формы с персональными данными без HTTPS"
+  uz: "HTTPS siz sahifalar yoki shaxsga doir maʼlumotlar shakllari"
+level: risk
+detector: https
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "27, part 2 (legal, organisational and technical protection measures)"
+    articles: ["27"]
+    quote_uz: "Mulkdor va (yoki) operator, shuningdek uchinchi shaxs shaxsga doir maʼlumotlarni himoya qilish boʻyicha quyidagilarni taʼminlaydigan huquqiy, tashkiliy va texnik choralarni koʻradi: subyektning oʻz shaxsiy hayotiga aralashuvdan himoya qilinish huquqi amalga oshirilishini; shaxsga doir maʼlumotlarning yaxlitligini va but saqlanishini; shaxsga doir maʼlumotlarning maxfiyligiga rioya etilishini;"
+    quote_ru: "Собственник и (или) оператор, а также третье лицо принимают правовые, организационные и технические меры по защите персональных данных, обеспечивающие: реализацию права субъекта на защиту от вмешательства в его частную жизнь; целостность и сохранность персональных данных; соблюдение конфиденциальности персональных данных;"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "Minister of Justice order No. 20-mh of 15.11.2023 — Model procedure of processing personal data (reg. No. 3478)"
+    article: "30, point 8 (secure channels and/or encryption); text in Uzbek only"
+    quote_uz: "subyektning roziligi mavjud boʻlganda hamma foydalanishi mumkin boʻlmagan shaxsga doir maʼlumotlarni xavfsiz aloqa kanallari va (yoki) shifrlash vositalari orqali boshqa shaxslarga berishi, bundan qonunchilik hujjatlari bilan nazarda tutilgan hollar mustasno;"
+    quote_ru: null
+    url: "https://lex.uz/docs/-6663967"
+    edition_date: "15.11.2023"
+sanction: null   # no separate offence; a resulting leak falls under Administrative Code art. 46² part 1
+fix:
+  en: "Serve every page over HTTPS, redirect HTTP to HTTPS and make every form submit to an https:// address."
+  ru: "Отдавайте все страницы по HTTPS, перенаправляйте HTTP на HTTPS и отправляйте каждую форму только на адрес https://."
+  uz: "Barcha sahifalarni HTTPS orqali bering, HTTP ni HTTPS ga yoʻnaltiring va har bir shaklni faqat https:// manzilga yuboring."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"

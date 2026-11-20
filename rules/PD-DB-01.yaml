@@ -1,0 +1,36 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/PD-DB-01.yaml.
+# Verified 21.11.2026 against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes from lex.uz's Latin version).
+# Level: risk — a foreign cloud database is lawful for ordinary data under one of the art. 27¹ part 3 conditions, and
+# unlawful only for the three mandatory-localization categories (art. 27¹ part 2). The scanner does not see which data
+# the database holds → risk with the question "which data are there?".
+id: PD-DB-01
+title:
+  en: "The site's database / file storage is a foreign cloud service (seen in page code)"
+  ru: "База данных / хранилище файлов сайта — зарубежный облачный сервис (видно в коде страницы)"
+  uz: "Saytning maʼlumotlar bazasi / fayl ombori — xorijiy bulut xizmati (sahifa kodida koʻrinadi)"
+level: risk
+detector: baas_detect
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "27¹, part 2 (mandatory storage in Uzbekistan; ed. ZRU-1125 of 26.03.2026)"
+    articles: ["27¹"]
+    quote_uz: "Quyidagi shaxsga doir maʼlumotlar Oʻzbekiston Respublikasi hududida saqlanishi shart: jismoniy shaxslarning biometrik maʼlumotlari; jismoniy shaxslarning genetik maʼlumotlari; Oʻzbekiston Respublikasi hududida oʻz faoliyatini amalga oshirayotgan telekommunikatsiyalar operatorlaridagi ularning xizmatlaridan foydalanuvchi jismoniy shaxslarning maʼlumotlari."
+    quote_ru: "Обязательному хранению на территории Республики Узбекистан подлежат следующие персональные данные: биометрические данные физических лиц; генетические данные физических лиц; данные физических лиц — пользователей услуг операторов телекоммуникаций, осуществляющих свою деятельность на территории Республики Узбекистан."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "27¹, part 3 (conditions for storage abroad)"
+    articles: ["27¹"]
+    quote_uz: "Ushbu moddaning ikkinchi qismida nazarda tutilmagan shaxsga doir maʼlumotlar kuyidagi shartlardan biri bajarilgan taqdirda, Oʻzbekiston Respublikasi hududidan tashqarida saqlanishi va ularga ishlov berilishi mumkin:"
+    quote_ru: "Персональные данные, не предусмотренные частью второй настоящей статьи, могут храниться и обрабатываться за пределами территории Республики Узбекистан при выполнении одного из следующих условий:"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+sanction: "For biometric, genetic or telecom-user data: Administrative Code art. 46² part 1 — 7 BCA citizens / 50 BCA officials; risk of listing in the register of violators and access restriction (CMR No. 707, annex 3). For other data: uncertain (pre-2026 wording of the Code, see research/legal-liability.md)."
+fix:
+  en: "Check which personal data the cloud database holds and in which region: biometric, genetic and telecom-user data must be stored in Uzbekistan; other data need a listed country or a documented basis (art. 27¹ part 3)."
+  ru: "Проверьте, какие персональные данные хранятся в облачной базе и в каком регионе: биометрия, генетика и данные абонентов телеком-операторов — только в Узбекистане; остальные — в стране из перечня или при оформленном основании (ч. 3 ст. 27¹)."
+  uz: "Bulutli bazada qaysi shaxsga doir maʼlumotlar va qaysi mintaqada saqlanishini tekshiring: biometrik, genetik va telekom abonentlari maʼlumotlari faqat Oʻzbekistonda; boshqalari — roʻyxatdagi davlatda yoki rasmiylashtirilgan asos bilan (27¹-modda 3-qismi)."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"

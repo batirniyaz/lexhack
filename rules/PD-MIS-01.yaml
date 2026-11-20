@@ -1,0 +1,37 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/PD-MIS-01.yaml.
+# Verified 21.11.2026 against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes from lex.uz's Latin version).
+# Level: violation — kept, because D-021 raises this only for explicit promises (exceptions downgrade it). The subject
+# is entitled to true information on grounds, purposes, recipients and cross-border transfer (art. 22), and data may be
+# used only for the purposes declared at collection (art. 12 part 2). If the underlying behaviour is itself lawful
+# (e.g. storage in a listed country), the lawyer may lower it — the false statement remains a defect of the notice.
+id: PD-MIS-01
+title:
+  en: "The policy contradicts what the site actually does"
+  ru: "Политика противоречит реальному поведению сайта"
+  uz: "Siyosat saytning haqiqiy xatti-harakatiga zid"
+level: violation
+detector: policy_vs_behavior
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "22, part 1 (information the subject is entitled to)"
+    articles: ["22"]
+    quote_uz: "Subyekt oʻzining shaxsga doir maʼlumotlariga ishlov berishga taalluqli boʻlgan, quyidagilar koʻrsatilgan axborotni olish huquqiga ega:"
+    quote_ru: "Субъект имеет право на получение информации, касающейся обработки его персональных данных, содержащей:"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "12, part 2 (use only for declared purposes)"
+    articles: ["12"]
+    quote_uz: "Mulkdor, operator va uchinchi shaxs tomonidan shaxsga doir maʼlumotlardan foydalanish bu maʼlumotlarning zarur darajada himoya qilinishini taʼminlash sharti bilan faqat ushbu shaxsga doir maʼlumotlarni yigʻish boʻyicha ilgari bildirilgan maqsadlar uchun amalga oshiriladi."
+    quote_ru: "Использование персональных данных собственником, оператором и третьим лицом осуществляется только для ранее заявленных целей их сбора, при условии обеспечения необходимого уровня защищенности персональных данных."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+sanction: "Depends on the behaviour behind the contradiction: unlawful transfer to third parties → Administrative Code art. 46² part 1 (7 BCA citizens / 50 BCA officials); storage abroad of ordinary data → uncertain (the Code keeps the pre-2026 localization wording)."
+fix:
+  en: "Either change the site so that it does what the policy promises, or correct the policy so that it names every recipient, country and purpose that the scan shows."
+  ru: "Либо измените сайт, чтобы он делал то, что обещает политика, либо исправьте политику: укажите всех получателей, страны и цели, которые показала проверка."
+  uz: "Yoki saytni siyosatda vaʼda qilinganiga moslang, yoki siyosatni tuzating: tekshiruv koʻrsatgan barcha qabul qiluvchilar, davlatlar va maqsadlarni koʻrsating."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"

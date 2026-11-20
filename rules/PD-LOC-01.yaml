@@ -1,0 +1,45 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/PD-LOC-01.yaml.
+# Verified 21.11.2026 against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes from lex.uz's Latin version).
+# Level: risk (R-10, passport §5) — data outside the three mandatory categories may go abroad under one of the art. 27¹
+# part 3 conditions or, to non-adequate states, with the subject's consent (art. 15). These bases are not visible from
+# outside. A 🔴 would be justified only for biometric, genetic or telecom-user data (art. 27¹ part 2) — the detector
+# cannot tell the category. Sanction is uncertain: the Codes keep the pre-2026 localization wording (Q14, R-02).
+id: PD-LOC-01
+title:
+  en: "Personal data from forms goes to a country outside the adequate-protection list"
+  ru: "Данные из форм уходят в страну вне перечня стран с адекватной защитой"
+  uz: "Shakl maʼlumotlari himoya darajasi yetarli davlatlar roʻyxatiga kirmagan davlatga yuborilmoqda"
+level: risk
+detector: form_submit_destination
+params:
+  flag_statuses: [not_listed, not_in_known_list, conditional_unknown]
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "27¹, part 3 (ed. ZRU-1125 of 26.03.2026)"
+    articles: ["27¹"]
+    quote_uz: "Ushbu moddaning ikkinchi qismida nazarda tutilmagan shaxsga doir maʼlumotlar kuyidagi shartlardan biri bajarilgan taqdirda, Oʻzbekiston Respublikasi hududidan tashqarida saqlanishi va ularga ishlov berilishi mumkin: chet davlatni shaxsga doir maʼlumotlarning bir xil himoya qilinishini taʼminlovchi davlat sifatida tan olish; operator tomonidan vakolatli davlat organi tasdiqlaydigan talablarga javob beruvchi standart shartnomaviy shartlar yoki majburiy korporativ qoidalar qabul qilinishi va ularga rioya etilishi; roʻyxati vakolatli davlat organi tomonidan tasdiqlanadigan shaxsga doir maʼlumotlarni boshqarish va saqlash sohasidagi xalqaro standartlarga operator tomonidan rioya etilishi."
+    quote_ru: "Персональные данные, не предусмотренные частью второй настоящей статьи, могут храниться и обрабатываться за пределами территории Республики Узбекистан при выполнении одного из следующих условий: признание иностранного государства государством, обеспечивающим адекватную защиту персональных данных; принятие и соблюдение оператором стандартных договорных условий или обязательных корпоративных правил, отвечающих требованиям, утверждаемым уполномоченным государственным органом; соблюдение оператором международных стандартов в области управления и хранения персональных данных, перечень которых утверждается уполномоченным государственным органом."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "15, part 3 (transfer to non-adequate states)"
+    articles: ["15"]
+    quote_uz: "Shaxsga doir maʼlumotlarning bir xilda himoya qilinishini taʼminlamaydigan chet davlatlar hududiga shaxsga doir maʼlumotlarni transchegaraviy uzatish quyidagi hollarda amalga oshirilishi mumkin: subyektning oʻz shaxsga doir maʼlumotlarini transchegaraviy uzatish boʻyicha roziligi mavjud boʻlganda;"
+    quote_ru: "Трансграничная передача персональных данных на территорию иностранных государств, не обеспечивающих адекватную защиту персональных данных, может осуществляться в случаях: наличия согласия субъекта на трансграничную передачу его персональных данных;"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "CMR No. 415 of 29.07.2026 — list of states with adequate protection (verbatim list in rules/countries.yaml, R-10)"
+    article: "annex"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/ru/docs/8369688"
+    edition_date: "29.07.2026"
+sanction: "Uncertain for ordinary data: Administrative Code art. 46² part 1 still uses the pre-2026 localization wording (not aligned with art. 27¹ as amended by ZRU-1125); no sanction if one of the art. 27¹ part 3 bases exists. For biometric, genetic or telecom-user data: art. 46² part 1 — 7 BCA citizens / 50 BCA officials, and a risk of listing in the register of violators (CMR No. 707, annex 3)."
+fix:
+  en: "Send form data to a server in Uzbekistan or in a listed country, or document the basis for this recipient: the visitor's consent to the transfer abroad (art. 15), standard contractual clauses / binding corporate rules or an international standard (art. 27¹ part 3; the authorized body has not approved their requirements yet)."
+  ru: "Отправляйте данные форм на сервер в Узбекистане или в стране из перечня либо оформите основание для этого получателя: согласие посетителя на передачу за рубеж (ст. 15), стандартные договорные условия / обязательные корпоративные правила или международный стандарт (ч. 3 ст. 27¹; требования к ним уполномоченный орган ещё не утвердил)."
+  uz: "Shakl maʼlumotlarini Oʻzbekistondagi yoki roʻyxatdagi davlatdagi serverga yuboring yoki ushbu qabul qiluvchi uchun asosni rasmiylashtiring: tashrif buyuruvchining xorijga uzatishga roziligi (15-modda), standart shartnomaviy shartlar / majburiy korporativ qoidalar yoki xalqaro standart (27¹-modda 3-qismi; ularga talablar hali vakolatli organ tomonidan tasdiqlanmagan)."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"

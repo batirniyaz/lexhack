@@ -1,0 +1,36 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/PD-REC-01.yaml.
+# Verified 21.11.2026 against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes from lex.uz's Latin version).
+# Level: risk — session recording copies what the visitor types to the replay provider (a third party). Entrusting
+# processing to a third party needs written consent, a contract with the subject, or law (art. 31 part 3), and the data
+# collected must be necessary for the purpose (art. 10 part 1). Whether fields are masked is not always visible → risk.
+id: PD-REC-01
+title:
+  en: "Session recording captures what visitors type and click"
+  ru: "Запись сессий фиксирует ввод и клики посетителей"
+  uz: "Seans yozuvi tashrif buyuruvchilar kiritgan maʼlumot va bosishlarni yozib olmoqda"
+level: risk
+detector: session_replay
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "31, part 3 (entrusting processing to a third party)"
+    articles: ["31"]
+    quote_uz: "Mulkdor va (yoki) operator shaxsga doir maʼlumotlarga ishlov berishni quyidagi hollarda uchinchi shaxsga topshirishga haqli: subyektning yozma shakldagi, shu jumladan elektron hujjat tarzidagi roziligi mavjud boʻlgan taqdirda;"
+    quote_ru: "Собственник и (или) оператор вправе поручить обработку персональных данных третьему лицу в случаях: наличия согласия субъекта в письменной форме, в том числе в виде электронного документа;"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "10, part 1 (necessary and sufficient data)"
+    articles: ["10"]
+    quote_uz: "Shaxsga doir maʼlumotlar bazasi mulkdor va (yoki) operator, shuningdek uchinchi shaxs tomonidan amalga oshiriladigan vazifalarni bajarish uchun zarur hamda yetarli boʻlgan shaxsga doir maʼlumotlarni yigʻish yoʻli bilan shakllantiriladi."
+    quote_ru: "База персональных данных формируется путем сбора персональных данных, необходимых и достаточных для выполнения задач, осуществляемых собственником и (или) оператором, а также третьим лицом."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+sanction: "If typed personal data reach the replay provider without consent — Administrative Code art. 46² part 1 (7 BCA citizens / 50 BCA officials); see research/legal-liability.md."
+fix:
+  en: "Turn session recording off on pages with forms, or mask every input field; name the recording service in the policy and record sessions only after consent."
+  ru: "Отключите запись сессий на страницах с формами или маскируйте все поля ввода; укажите сервис записи в политике и записывайте сессии только после согласия."
+  uz: "Shakllar bor sahifalarda seans yozuvini oʻchiring yoki barcha kiritish maydonlarini yashiring; yozuv xizmatini siyosatda koʻrsating va seanslarni faqat rozilikdan keyin yozing."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"

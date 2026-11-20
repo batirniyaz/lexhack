@@ -1,0 +1,52 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/PD-CNS-01.yaml.
+# Verified 21.11.2026: articles and quotes checked against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes
+# from lex.uz's Latin version of the official text). Reasoning: research/legal-norms.md, sanction: research/legal-liability.md.
+# Level: risk, not violation — consent is one of seven grounds (art. 18): a request form can rely on "steps at the
+# subject's request before a contract", and accepting a public offer or the service terms counts as consent
+# (MoJ model procedure No. 20-mh, item 9). What the scanner can show is that no consent text and no notice of
+# purposes and rights (art. 23 part 1) are visible at the point of collection.
+id: PD-CNS-01
+title:
+  en: "A form collects personal data with no visible consent or notice"
+  ru: "Форма собирает персональные данные без видимого согласия или уведомления"
+  uz: "Shakl shaxsga doir maʼlumotlarni koʻrinadigan rozilik yoki xabarnomasiz yigʻmoqda"
+level: risk
+detector: form_consent
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "18, part 2 (grounds for processing)"
+    articles: ["18"]
+    quote_uz: "Shaxsga doir maʼlumotlarga ishlov berish quyidagi hollarda amalga oshiriladi: subyekt bu maʼlumotlarga ishlov berishga rozilik berganda; subyekt taraf boʻlgan shartnomani bajarish uchun bu maʼlumotlarga ishlov berish yoki shunday shartnoma tuzilguniga qadar subyektning soʻroviga binoan choralar koʻrish zarur boʻlganda;"
+    quote_ru: "Обработка персональных данных осуществляется в следующих случаях: согласия субъекта на обработку этих данных; необходимости обработки этих данных для выполнения договора, стороной которого является субъект, или принятия мер по запросу субъекта до заключения такого договора;"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "21, part 1 (form of consent)"
+    articles: ["21"]
+    quote_uz: "Subyekt shaxsga doir maʼlumotlarga ishlov berish uchun rozilikni uning olinganligi faktini tasdiqlash imkonini beruvchi har qanday shaklda beradi."
+    quote_ru: "Субъект дает согласие на обработку персональных данных в любой форме, позволяющей подтвердить факт его получения."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "23, part 1 (written notice of purposes and rights)"
+    articles: ["23"]
+    quote_uz: "Subyekt oʻzining shaxsga doir maʼlumotlari shaxsga doir maʼlumotlar bazasiga kiritilayotganda shaxsga doir maʼlumotlarga ishlov berish maqsadlari, ushbu Qonunning 30-moddasida belgilangan oʻz huquqlari haqida yozma shaklda xabardor qilinishi kerak."
+    quote_ru: "Субъект при включении его персональных данных в базу персональных данных должен быть уведомлен в письменной форме о целях обработки персональных данных, его правах, определенных статьей 30 настоящего Закона."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "Minister of Justice order No. 20-mh of 15.11.2023 — Model procedure of processing personal data (reg. No. 3478)"
+    article: "9, parts 2–3 (offer / terms acceptance counts as consent); text in Uzbek only"
+    quote_uz: "Ofertada (ommaviy shartnomada) shaxsga doir maʼlumotlarga ishlov berishning maqsadlari aniq koʻrsatilgan taqdirda, ofertani (ommaviy shartnomani) qabul qilish (tasdiqlash) subyektning shaxsga doir maʼlumotlarga ishlov berishga roziligi deb hisoblanadi."
+    quote_ru: null
+    url: "https://lex.uz/docs/-6663967"
+    edition_date: "15.11.2023"
+sanction: "Administrative Code art. 46² part 1 — fine 7 BCA (3,080,000 UZS) for citizens, 50 BCA (22,000,000 UZS) for officials, if processing has no legal ground; after a penalty, within 1 year — Criminal Code art. 141² (100–150 BCA). BCA 440,000 UZS from 01.09.2026 (PF-115)."
+fix:
+  en: "Next to the submit button add a consent checkbox (not pre-ticked) or a consent sentence with a link to the policy. State who the operator is, the purposes, the data collected, the retention period, recipients and countries, and how to withdraw consent."
+  ru: "Рядом с кнопкой отправки добавьте чекбокс согласия (без предустановленной галочки) или фразу о согласии со ссылкой на политику. Укажите оператора, цели, состав данных, срок хранения, получателей и страны, порядок отзыва согласия."
+  uz: "Yuborish tugmasi yoniga rozilik belgisi (oldindan belgilanmagan) yoki siyosatga havola bilan rozilik matnini qoʻshing. Operator, maqsadlar, yigʻiladigan maʼlumotlar, saqlash muddati, qabul qiluvchilar va davlatlar hamda rozilikni qaytarib olish tartibini koʻrsating."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"

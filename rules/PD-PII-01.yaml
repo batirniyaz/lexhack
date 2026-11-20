@@ -1,0 +1,38 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/PD-PII-01.yaml.
+# Verified 21.11.2026 against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes from lex.uz's Latin version).
+# Level: risk — data must be "necessary and sufficient" (art. 10 part 1) and its volume must match the purposes
+# (art. 19 part 5), but whether a passport / PINFL / card / photo is necessary depends on the service (a bank or a
+# clinic may need it) — a lawyer's call. Health or other special data in a form need written consent (art. 21 part 2).
+id: PD-PII-01
+title:
+  en: "A form asks for sensitive identifiers (passport, PINFL, card, photo)"
+  ru: "Форма запрашивает чувствительные данные (паспорт, ПИНФЛ, карта, фото)"
+  uz: "Shakl nozik maʼlumotlarni soʻramoqda (pasport, JShShIR, karta, rasm)"
+level: risk
+detector: form_pd_fields
+params:
+  categories: [passport, pinfl, card, photo]
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "10, part 1 (only data necessary and sufficient for the tasks)"
+    articles: ["10"]
+    quote_uz: "Shaxsga doir maʼlumotlar bazasi mulkdor va (yoki) operator, shuningdek uchinchi shaxs tomonidan amalga oshiriladigan vazifalarni bajarish uchun zarur hamda yetarli boʻlgan shaxsga doir maʼlumotlarni yigʻish yoʻli bilan shakllantiriladi."
+    quote_ru: "База персональных данных формируется путем сбора персональных данных, необходимых и достаточных для выполнения задач, осуществляемых собственником и (или) оператором, а также третьим лицом."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "19, part 5 (volume matches purposes)"
+    articles: ["19"]
+    quote_uz: "Ishlov beriladigan shaxsga doir maʼlumotlarning hajmi va xususiyati ularga ishlov berish maqsadlari va usullariga muvofiq boʻlishi kerak."
+    quote_ru: "Объем и характер обрабатываемых персональных данных должны соответствовать целям и способам их обработки."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+sanction: "Administrative Code art. 46² part 1 only if the collection is unlawful (beyond the purpose) — 7 BCA citizens / 50 BCA officials; a lawyer's call."
+fix:
+  en: "Ask for passport, PINFL, card or photo only if the stated purpose requires it, and say why next to the field; take card numbers only on the payment provider's page."
+  ru: "Запрашивайте паспорт, ПИНФЛ, карту или фото, только если этого требует заявленная цель, и поясните зачем рядом с полем; номер карты принимайте только на странице платёжного провайдера."
+  uz: "Pasport, JShShIR, karta yoki rasmni faqat koʻrsatilgan maqsad talab qilsa soʻrang va maydon yonida nima uchunligini tushuntiring; karta raqamini faqat toʻlov provayderi sahifasida qabul qiling."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"

@@ -1,0 +1,44 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/PD-LEAK-01.yaml.
+# Verified 21.11.2026 against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes from lex.uz's Latin version).
+# Level: violation — the detector sees the visitor's e-mail / phone inside requests to a third party (clear evidence,
+# D-019). Disclosure to a third party needs consent or another legal ground (art. 28); entrusting processing to a
+# third party needs written consent, a contract with the subject, or law (art. 31 part 3) — analytics and ads fit none.
+id: PD-LEAK-01
+title:
+  en: "Personal data (e-mail / phone) leaks to third parties in request URLs"
+  ru: "Персональные данные (e-mail / телефон) утекают третьим лицам в адресах запросов"
+  uz: "Shaxsga doir maʼlumotlar (e-mail / telefon) soʻrov manzillarida uchinchi shaxslarga oqib ketmoqda"
+level: violation
+detector: url_pii
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "28, part 2 (confidentiality)"
+    articles: ["28"]
+    quote_uz: "Mulkdor va (yoki) operator hamda shaxsga doir maʼlumotlardan foydalanishga ruxsat olgan boshqa shaxslar subyektning roziligisiz shaxsga doir maʼlumotlarni uchinchi shaxslarga oshkor etmasligi va tarqatmasligi shart."
+    quote_ru: "Собственник и (или) оператор и иные лица, получившие доступ к персональным данным, обязаны не раскрывать и не распространять персональные данные без согласия субъекта."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "31, part 3 (entrusting processing to a third party)"
+    articles: ["31"]
+    quote_uz: "Mulkdor va (yoki) operator shaxsga doir maʼlumotlarga ishlov berishni quyidagi hollarda uchinchi shaxsga topshirishga haqli: subyektning yozma shakldagi, shu jumladan elektron hujjat tarzidagi roziligi mavjud boʻlgan taqdirda; agar qaror mulkdor va subyekt oʻrtasidagi shartnomani ijro etish yoki ilgari tuzilgan shartnoma shartlarini bajarish uchun qabul qilinayotgan boʻlsa;"
+    quote_ru: "Собственник и (или) оператор вправе поручить обработку персональных данных третьему лицу в случаях: наличия согласия субъекта в письменной форме, в том числе в виде электронного документа; если решение принимается во исполнение договора между собственником и субъектом или выполнения условий ранее заключенного договора;"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+  - act: "ZRU-547"
+    article: "23, part 2 (notice within 3 days of a transfer to a third party)"
+    articles: ["23"]
+    quote_uz: "Shaxsga doir maʼlumotlar uchinchi shaxsga berilgan taqdirda, mulkdor va (yoki) operator bu haqda subyektni uch kun ichida yozma shaklda xabardor qiladi."
+    quote_ru: "В случае передачи персональных данных третьему лицу собственник и (или) оператор в течение трех дней уведомляет в письменной форме об этом субъекта."
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+sanction: "Administrative Code art. 46² part 1 (unlawful provision / transfer) — fine 7 BCA (3,080,000 UZS) for citizens, 50 BCA (22,000,000 UZS) for officials; after a penalty, within 1 year — Criminal Code art. 141² (100–150 BCA). BCA 440,000 UZS from 01.09.2026 (PF-115)."
+fix:
+  en: "Never put e-mail, phone or other personal data into URLs or tracking parameters; strip them before analytics and ad pixels fire, and do not send hashed contacts to ad networks without the visitor's written consent."
+  ru: "Не помещайте e-mail, телефон и другие персональные данные в URL и параметры трекинга; очищайте их до срабатывания аналитики и пикселей и не передавайте хешированные контакты рекламным сетям без письменного согласия посетителя."
+  uz: "E-mail, telefon va boshqa shaxsga doir maʼlumotlarni URL va kuzatuv parametrlariga qoʻymang; analitika va piksellar ishga tushishidan oldin ularni olib tashlang, xeshlangan kontaktlarni tashrif buyuruvchining yozma roziligisiz reklama tarmoqlariga yubormang."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"

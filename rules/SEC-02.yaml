@@ -1,0 +1,27 @@
+# Role 2 rule (R-03). Overrides backend/rules_draft/SEC-02.yaml.
+# Verified 21.11.2026 against live lex.uz (ZRU-547 edition of 12.09.2026; uz quotes from lex.uz's Latin version).
+# Level: recommendation — security headers are good practice that supports the technical measures of art. 27 part 2;
+# no norm requires them. We do not look for vulnerabilities (D-008).
+id: SEC-02
+title:
+  en: "Basic security headers are missing"
+  ru: "Нет базовых заголовков безопасности"
+  uz: "Asosiy xavfsizlik sarlavhalari yoʻq"
+level: recommendation
+detector: security_headers
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "27, part 2 (technical protection measures) — general duty, headers are good practice only"
+    articles: ["27"]
+    quote_uz: "Mulkdor va (yoki) operator, shuningdek uchinchi shaxs shaxsga doir maʼlumotlarni himoya qilish boʻyicha quyidagilarni taʼminlaydigan huquqiy, tashkiliy va texnik choralarni koʻradi:"
+    quote_ru: "Собственник и (или) оператор, а также третье лицо принимают правовые, организационные и технические меры по защите персональных данных, обеспечивающие:"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "12.09.2026"
+sanction: null
+fix:
+  en: "Add HSTS, Content-Security-Policy and X-Content-Type-Options headers."
+  ru: "Добавьте заголовки HSTS, Content-Security-Policy и X-Content-Type-Options."
+  uz: "HSTS, Content-Security-Policy va X-Content-Type-Options sarlavhalarini qoʻshing."
+verified: true
+author: "Role 2 (R-03, 21.11.2026)"
