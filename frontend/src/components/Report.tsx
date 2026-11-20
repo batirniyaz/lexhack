@@ -8,7 +8,7 @@ import { Collapsible } from '@astryxdesign/core/Collapsible'
 import { Link } from '@astryxdesign/core/Link'
 import { Table, proportional } from '@astryxdesign/core/Table'
 import { TabList, Tab } from '@astryxdesign/core/TabList'
-import { api, authQuery, type Seal, type Facts, type Finding, type Host, type Level, type Report } from '../api'
+import { api, authQuery, type Localized, type LawChange, type Seal, type Facts, type Finding, type Host, type Level, type Report } from '../api'
 import { CATEGORY, CLAIM, ELEMENT, PD_TYPE, countryName, formatDate, useSettings } from '../i18n'
 import { FlowMap, statusKey, type MapCountry } from './FlowMap'
 
@@ -168,6 +168,13 @@ function FindingItem({ finding, open }: { finding: Finding; open: boolean }) {
               ))}
             </div>
           )}
+          {finding.sanction_local?.[lang] && (
+            <div>
+              <h4>{t.consequences}</h4>
+              <p style={{ margin: '0 0 6px' }}>{finding.sanction_local[lang]}</p>
+              <p className="q-muted" style={{ margin: 0, fontSize: 13 }}>{t.who_pays} {t.sanction_meta}</p>
+            </div>
+          )}
           {fix && (
             <div>
               <h4>{t.fix}</h4>
@@ -287,7 +294,7 @@ export function PolicyView({ report, facts }: { report: Report; facts?: Facts })
         <section>
           <h3 style={{ fontSize: 16, margin: '0 0 6px' }}>{t.cov_title}</h3>
           <p className="q-muted" style={{ margin: '0 0 12px', fontSize: 14 }}>{t.cov_text}</p>
-          <ul className="q-checklist">
+          <ul className="q-checklist q-cov">
             {report.policy_coverage.map((c) => (
               <li key={c.entity}>
                 <Badge variant={COVERAGE_BADGE[c.level]} label={t[`cov_${c.level}`]} />
@@ -335,6 +342,49 @@ function FormsView({ facts }: { facts?: Facts }) {
 
 interface PageRow extends Record<string, unknown> { url: string; status: string; title: string }
 interface CookieRow extends Record<string, unknown> { key: string; name: string; domain: string; third: string; landing: string }
+
+/** "The law changed → the status changed": the same saved facts under the old and the new wording (F-16). */
+function LawChangeCard({ change }: { change: LawChange }) {
+  const { t, lang } = useSettings()
+  const levelLabel = useLevelLabel()
+  const label = (l: Localized) => l[lang] || l.en || ''
+  const date = (d: string | null) => (d ? d.split('-').reverse().join('.') : '…')
+  const quote = lang === 'ru' ? change.previous.basis?.quote_ru : change.previous.basis?.quote_uz
+  const link = (lang === 'ru' && change.previous.basis?.url_ru) || change.previous.basis?.url
+  return (
+    <section className="q-lawchange" aria-label={t.lc_title}>
+      <h2 style={{ fontSize: 18, margin: '0 0 6px' }}>{t.lc_title}</h2>
+      <p className="q-muted" style={{ margin: '0 0 16px', fontSize: 14 }}>{t.lc_text}</p>
+      <div className="q-lc-grid">
+        {[change.previous, change.current].map((v, i) => (
+          <div key={v.id} className="q-lc-col">
+            <div className="q-muted" style={{ fontSize: 13 }}>{i === 0 ? t.lc_before : t.lc_now} · {date(v.in_force.from)} – {v.in_force.to ? date(v.in_force.to) : t.lc_today}</div>
+            <div className="q-lc-score">{v.score ?? '—'}<span>/100</span></div>
+            <div style={{ fontSize: 14 }}>{label(v.label)}</div>
+          </div>
+        ))}
+      </div>
+      {change.changes.length > 0 && (
+        <ul className="q-lc-changes">
+          {change.changes.map((c) => (
+            <li key={c.rule_id}>
+              <span className="q-mono q-muted">{c.rule_id}</span>{' '}
+              <span>{c.title ? label(c.title) : ''}</span>{': '}
+              <b>{c.before ? levelLabel(c.before) : t.lc_none}</b> → <b>{c.after ? levelLabel(c.after) : t.lc_none}</b>
+            </li>
+          ))}
+        </ul>
+      )}
+      {quote && (
+        <details className="q-lc-quote">
+          <summary>{t.lc_old_text}</summary>
+          <blockquote className="q-quote">{quote}</blockquote>
+          {link && <div className="q-quote-meta"><Link href={link}>{t.open_lex}</Link> · {t.lc_unverified}</div>}
+        </details>
+      )}
+    </section>
+  )
+}
 
 /** Scope + integrity: what was checked, from where, with which rules; hashes and the Ed25519 signature (F-19). */
 function SealView({ report, seal, scanId }: { report: Report; seal?: Seal | null; scanId?: string }) {
@@ -472,6 +522,7 @@ export function ReportView({ report, facts, displaySite, scanId, domain, readonl
         return (
           <div style={{ display: 'grid', gap: 40 }}>
             {mismatch && <SaysDoes finding={mismatch} facts={facts} />}
+            {report.law_change && report.law_change.changes.length > 0 && <LawChangeCard change={report.law_change} />}
             {!printing && (
               <section>
                 <h2 style={{ fontSize: 18, margin: '0 0 6px' }}>{t.top_findings}</h2>

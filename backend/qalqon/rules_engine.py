@@ -9,10 +9,12 @@ from __future__ import annotations
 
 from collections import defaultdict
 from pathlib import Path
+from typing import Optional
 
 import yaml
 
 from .evidence import scope
+from .law_versions import law_change
 from .legal.citations import attach_quotes
 from .config import BACKEND_DIR, RULES_DIR
 from .detectors import DETECTORS
@@ -70,7 +72,8 @@ def _flows_status(facts: dict) -> list[dict]:
     return sorted(result, key=lambda r: -r["hosts"])
 
 
-def evaluate(facts: dict) -> dict:
+def evaluate(facts: dict, overrides: Optional[dict] = None, with_law_change: bool = True) -> dict:
+    """Findings for saved facts. `overrides` (rule id -> partial rule) evaluates under another version of the law."""
     base = {
         "scan_id": facts.get("scan_id"),
         "site": facts.get("site"),
@@ -85,6 +88,7 @@ def evaluate(facts: dict) -> dict:
 
     findings, not_evaluated = [], []
     for rule in load_rules():
+        rule = _apply_override(rule, (overrides or {}).get(rule["id"]))
         detect = DETECTORS.get(rule["detector"])
         if detect is None:
             not_evaluated.append({"rule_id": rule["id"], "reason": f"unknown detector {rule['detector']}"})
@@ -108,6 +112,8 @@ def evaluate(facts: dict) -> dict:
             "evidence": evidence,
             "legal_basis": attach_quotes(rule.get("legal_basis", [])),  # + verbatim lex.uz text (F-34)
             "sanction": rule.get("sanction"),
+            "sanction_local": ({"uz": rule.get("sanction_uz"), "ru": rule.get("sanction_ru"),
+                                "source": rule.get("sanction_source")} if rule.get("sanction_uz") else None),
             "fix": rule.get("fix", {}),
             "verified": bool(rule.get("verified")),
             "counts_for_score": _counts_for_score(evidence),
@@ -116,9 +122,20 @@ def evaluate(facts: dict) -> dict:
 
     penalty = sum(PENALTY.get(f["level"], 0) for f in findings if f["counts_for_score"])
     levels = {level: sum(1 for f in findings if f["level"] == level) for level in PENALTY}
-    return {**base, "status": "ok", "score": max(0, 100 - penalty), "levels": levels,
-            "findings": findings, "not_evaluated": not_evaluated, "flows": _flows_status(facts),
-            "policy_coverage": policy_coverage(facts)}
+    report = {**base, "status": "ok", "score": max(0, 100 - penalty), "levels": levels,
+              "findings": findings, "not_evaluated": not_evaluated, "flows": _flows_status(facts),
+              "policy_coverage": policy_coverage(facts)}
+    if with_law_change:
+        report["law_change"] = law_change(facts, report, evaluate)  # same facts under the previous law (F-16)
+    return report
+
+
+def _apply_override(rule: dict, override: Optional[dict]) -> dict:
+    if not override:
+        return rule
+    merged = {**rule, **{k: v for k, v in override.items() if k != "params"}}
+    merged["params"] = {**(rule.get("params") or {}), **(override.get("params") or {})}
+    return merged
 
 
 LEVEL_ICON = {"violation": "🔴", "risk": "🟡", "recommendation": "⚪"}

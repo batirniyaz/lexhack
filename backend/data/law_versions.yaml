@@ -1,0 +1,35 @@
+# Earlier versions of the law, to show "the law changed → your status changed" on saved scans (F-16, W4).
+# Each version lists rule overrides (level, params, legal basis) applied on top of the current rules.
+# Texts are verbatim from lex.uz, copied by research on 21.11.2026 (research/legal-liability.md §8). Not verified by a lawyer.
+versions:
+  - id: "2021"
+    label:
+      en: "Before 27.03.2026: all citizens' personal data on servers in Uzbekistan (art. 27¹, ZRU-666)"
+      ru: "До 27.03.2026: все персональные данные граждан — на серверах в Узбекистане (ст. 27¹, ЗРУ-666)"
+      uz: "27.03.2026 gacha: fuqarolarning barcha shaxsga doir maʼlumotlari Oʻzbekistondagi serverlarda (27¹-modda, OʻRQ-666)"
+    in_force: {from: "2021-04-16", to: "2026-03-26"}
+    basis:
+      act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» (ed. ZRU-666 of 14.01.2021)"
+      article: "27¹ (edition in force 16.04.2021 – 26.03.2026)"
+      quote_uz: "Мулкдор ва (ёки) оператор Ўзбекистон Республикаси фуқароларининг шахсга доир маълумотларига ахборот технологияларидан фойдаланган ҳолда ишлов беришда, шу жумладан Интернет жаҳон ахборот тармоғида ишлов беришда уларнинг жисман Ўзбекистон Республикаси ҳудудида жойлашган техник воситаларда ҳамда белгиланган тартибда Шахсга доир маълумотлар базаларининг давлат реестрида рўйхатдан ўтказилган шахсга доир маълумотлар базаларида йиғилишини, тизимлаштирилишини ва сақланишини таъминлаши шарт."
+      quote_ru: "Собственник и (или) оператор при обработке персональных данных граждан Республики Узбекистан с использованием информационных технологий, в том числе во всемирной информационной сети Интернет, обязан обеспечить их сбор, систематизацию и хранение в базах персональных данных на технических средствах, физически размещенных на территории Республики Узбекистан и зарегистрированных в установленном порядке в Государственном реестре баз персональных данных."
+      url: "https://lex.uz/docs/4396419?ONDATE=29.11.2023%2001"
+      url_ru: "https://lex.uz/ru/docs/4396428?ONDATE=29.11.2023%2001"
+      edition_date: "2023-11-29"
+    # Under the old wording any personal data processed abroad breaks the rule: every foreign country is flagged.
+    overrides:
+      PD-LOC-02:
+        level: violation
+        params: {flag_statuses: [adequate, conditional_met, conditional_unknown, not_listed, not_in_known_list]}
+      PD-LOC-01:
+        level: violation
+        params: {flag_statuses: [adequate, conditional_met, conditional_unknown, not_listed, not_in_known_list]}
+      PD-DB-01:
+        level: violation
+  - id: "2026"
+    label:
+      en: "Since 27.03.2026: only biometric, genetic and telecom-user data must stay in Uzbekistan; others abroad under conditions (ZRU-1125, CMR No. 415)"
+      ru: "С 27.03.2026: в Узбекистане обязательно хранить только биометрические, генетические данные и данные абонентов связи; остальные — за рубежом при условиях (ЗРУ-1125, ПКМ № 415)"
+      uz: "27.03.2026 dan: faqat biometrik, genetik va aloqa abonentlari maʼlumotlari Oʻzbekistonda saqlanishi shart; qolganlari shartlar bilan chet elda (OʻRQ-1125, VMQ 415)"
+    in_force: {from: "2026-03-27", to: null}
+    current: true

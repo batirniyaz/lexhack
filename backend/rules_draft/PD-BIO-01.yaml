@@ -14,7 +14,10 @@ legal_basis:
     url: "https://lex.uz/docs/-4396419"
     url_ru: "https://lex.uz/ru/docs/4396428"
     edition_date: "2026-09-12"
-sanction: null
+sanction: "Administrative Code art. 46² part 1 (storage on technical means in Uzbekistan) — 7 BCA citizens / 50 BCA officials; repeat after a penalty — Criminal Code art. 141²; risk of listing in the register of violators and access restriction (CMR No. 707, annex 3)."
+sanction_uz: "MJtK 46²-moddasi 1-qismi (7 / 50 BHM) + buzuvchilar reyestriga kiritilish va saytga kirish cheklanishi xavfi (VMQ 707, 3-ilova)."
+sanction_ru: "КоАО ст. 46² ч. 1 (7 / 50 БРВ) + риск внесения в Реестр нарушителей и ограничения доступа к сайту (ПКМ № 707, прил. 3)."
+sanction_source: "R-02 research/legal-liability.md (21.11.2026), not a lawyer's opinion"
 fix:
   en: "Confirm where uploaded photos are stored and processed; biometric data must stay on servers in Uzbekistan."
   ru: "Подтвердите, где хранятся и обрабатываются загружаемые фото; биометрия должна оставаться на серверах в Узбекистане."

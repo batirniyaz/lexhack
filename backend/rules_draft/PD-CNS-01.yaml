@@ -13,7 +13,10 @@ legal_basis:
     quote_ru: null
     url: "https://lex.uz/ru/docs/4396428"
     edition_date: null
-sanction: "Administrative Code art. 46-2 (NOT VERIFIED, V-05)"
+sanction: "Administrative Code art. 46² part 1 — fine 7 BCA (3,080,000 UZS) for citizens, 50 BCA (22,000,000 UZS) for officials; after a penalty, within 1 year — Criminal Code art. 141² (100–150 BCA). BCA 440,000 UZS from 01.09.2026 (PF-115)."
+sanction_uz: "MJtK 46²-moddasi 1-qismi: fuqarolarga 7 BHM (3 080 000 soʻm), mansabdor shaxslarga 50 BHM (22 000 000 soʻm) jarima. Jazodan keyin bir yil ichida takrorlansa — JK 141²-moddasi."
+sanction_ru: "КоАО ст. 46² ч. 1: штраф гражданам 7 БРВ (3 080 000 сум), должностным лицам 50 БРВ (22 000 000 сум). Повторно в течение года после взыскания — УК ст. 141²."
+sanction_source: "R-02 research/legal-liability.md (21.11.2026), not a lawyer's opinion"
 fix:
   en: "Add a consent checkbox (not pre-ticked) with a link to the personal-data policy, the purpose and the list of data."
   ru: "Добавьте чекбокс согласия (без предустановленной галочки) со ссылкой на политику обработки персданных, целью и перечнем данных."

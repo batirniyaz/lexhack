@@ -22,7 +22,10 @@ legal_basis:
     quote_ru: null
     url: null
     edition_date: null
-sanction: null
+sanction: "Uncertain: Administrative Code art. 46² part 1 still uses the pre-2026 localization wording (not aligned with art. 27¹ as amended by ZRU-1125); no sanction if one of the art. 27¹ part 3 bases exists."
+sanction_uz: "Noaniqlik: MJtK 46²-moddasi 1-qismida lokalizatsiya boʻyicha 2021-yilgi matn saqlangan va yangi 27¹-modda bilan muvofiqlashtirilmagan; 27¹-modda 3-qismidagi asoslardan biri boʻlsa, sanksiya yoʻq."
+sanction_ru: "Неопределённость: КоАО ст. 46² ч. 1 сохраняет формулировку о локализации 2021 года, не согласованную с новой ст. 27¹; санкции нет, если есть одно из оснований ст. 27¹ ч. 3."
+sanction_source: "R-02 research/legal-liability.md (21.11.2026), not a lawyer's opinion"
 fix:
   en: "Keep the data in Uzbekistan or in a listed country, or document the legal ground (standard contractual clauses / binding corporate rules / international standard) for this recipient."
   ru: "Храните данные в Узбекистане или в стране из перечня, либо документально оформите основание (стандартные договорные условия / обязательные корпоративные правила / международный стандарт) для этого получателя."

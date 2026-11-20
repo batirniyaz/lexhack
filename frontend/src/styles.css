@@ -179,3 +179,18 @@ body { font-family: var(--font-family-body); }
 .q-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .q-file:focus-within { outline: 2px solid currentColor; outline-offset: 2px; }
 @media (max-width: 640px) { .q-dl > div { grid-template-columns: 1fr; gap: 2px; } }
+
+/* "Law changed -> status changed" (F-16) */
+.q-lawchange { border: 1px solid var(--q-rule); border-radius: 12px; padding: 20px 22px; background: var(--q-sheet); }
+.q-lc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.q-lc-col { display: grid; gap: 4px; align-content: start; }
+.q-lc-col + .q-lc-col { border-inline-start: 1px solid var(--q-rule); padding-inline-start: 20px; }
+.q-lc-score { font-size: 34px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.q-lc-score span { font-size: 15px; font-weight: 400; color: var(--q-muted); margin-inline-start: 2px; }
+.q-lc-changes { margin: 16px 0 0; padding-inline-start: 18px; display: grid; gap: 4px; font-size: 14px; }
+.q-lc-quote { margin-top: 14px; font-size: 14px; }
+.q-lc-quote summary { cursor: pointer; color: var(--q-muted); }
+.q-lc-quote blockquote { margin-top: 10px; }
+@media (max-width: 640px) { .q-lc-grid { grid-template-columns: 1fr; } .q-lc-col + .q-lc-col { border-inline-start: 0; padding-inline-start: 0; border-top: 1px solid var(--q-rule); padding-top: 14px; } }
+.q-checklist.q-cov li { grid-template-columns: 190px minmax(0, 1fr); }
+@media (max-width: 640px) { .q-checklist.q-cov li { grid-template-columns: 1fr; gap: 4px; } }

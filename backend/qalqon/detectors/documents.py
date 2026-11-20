@@ -56,7 +56,7 @@ COMPANIES = {
     "Microsoft": ["microsoft"], "VK / Mail.ru Group": ["vk.com", "vkontakte", "вконтакте", "mail.ru"],
 }
 KIND_WORDS = {
-    "analytics": ["analitik", "аналитич", "analytic", "statistik", "статистик", "statistic"],
+    "analytics": ["analitik", "аналитич", "analytic", "statistik", "статистик", "статистич", "statistic"],
     "advertising": ["reklama", "реклам", "advertis"],
     "marketing": ["marketing", "маркетинг"],
     "session_replay": ["seans", "сеанс", "session record", "запись действий"],

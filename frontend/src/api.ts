@@ -36,6 +36,7 @@ export interface Finding {
   evidence: Evidence[]
   legal_basis: LegalBasis[]
   sanction: string | null
+  sanction_local?: { uz: string | null; ru: string | null; source: string | null } | null
   fix: Localized
   verified: boolean
   counts_for_score: boolean
@@ -65,6 +66,23 @@ export interface Report {
   label?: string
   scope?: Scope
   policy_coverage?: Coverage[] | null
+  law_change?: LawChange | null
+}
+/** The same saved facts evaluated under the previous wording of the law (F-16). */
+export interface LawVersionSummary {
+  id: string
+  label: Localized
+  in_force: { from: string; to: string | null }
+  score: number | null
+  levels: Record<Level, number>
+  findings: Record<string, Level>
+  basis?: LegalBasis
+}
+export interface LawChange {
+  previous: LawVersionSummary
+  current: LawVersionSummary
+  changes: { rule_id: string; before: Level | null; after: Level | null; title: Localized | null }[]
+  note: string
 }
 /** How the policy names each tracking or AI service (F-17): product named / only company / only kind / not named. */
 export interface Coverage {

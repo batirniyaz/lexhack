@@ -111,3 +111,25 @@ def test_policy_coverage_levels():
     }
     levels = {row["entity"]: row["level"] for row in policy_coverage(facts)}
     assert levels == {"Yandex": "named", "Meta": "company", "Google": "kind", "TikTok / ByteDance": "none"}
+
+
+def test_law_change_old_localization_rule():
+    """F-16: under the pre-2026 art. 27¹ any foreign recipient breaks the rule; under the new one a DPF company is fine."""
+    from qalqon.rules_engine import evaluate
+    facts = {"site": "https://s.uz", "scanned_at": "2026-11-21T00:00:00+00:00", "stats": {},
+             "pages": [{"final_url": "https://s.uz/", "status": 200}],
+             "hosts": [{"host": "www.google-analytics.com", "third_party": True, "entity": "Google", "country": "US",
+                        "dpf": True, "category": "analytics", "on_landing": True}]}
+    change = evaluate(facts)["law_change"]
+    loc = [c for c in change["changes"] if c["rule_id"] == "PD-LOC-02"]
+    assert loc and loc[0]["before"] == "violation" and loc[0]["after"] is None
+    assert change["previous"]["score"] < change["current"]["score"]
+    assert "ZRU-666" in change["previous"]["basis"]["act"]
+
+
+def test_sanctions_follow_r02():
+    from qalqon.rules_engine import load_rules
+    rules = {r["id"]: r for r in load_rules()}
+    assert "50 BHM (22 000 000" in rules["PD-CNS-01"]["sanction_uz"]
+    assert rules["PD-TRK-01"].get("sanction") is None  # V-08 open: no fine shown
+    assert rules["PD-LOC-02"]["sanction_ru"].startswith("Неопределённость")
