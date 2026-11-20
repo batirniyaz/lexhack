@@ -11,6 +11,9 @@ import re
 from ..urls import host_of
 from . import TRACKING_CATEGORIES, detector
 
+# Services the policy must name: trackers + AI services that receive what visitors type (F-32).
+NAMED_CATEGORIES = TRACKING_CATEGORIES | {"ai"}
+
 # A promise with exceptions ("…except when…") is not a clean contradiction: the finding is downgraded one level.
 EXCEPTION_MARKERS = re.compile(r"mustasno|istisno|исключени|кроме случа|except|unless", re.I)
 
@@ -53,7 +56,7 @@ def _policy_text(facts: dict, policy: dict) -> str:
 
 
 def _tracking_hosts(facts: dict) -> list[dict]:
-    return [h for h in facts.get("hosts", []) if h["third_party"] and h.get("category") in TRACKING_CATEGORIES]
+    return [h for h in facts.get("hosts", []) if h["third_party"] and h.get("category") in NAMED_CATEGORIES]
 
 
 def _by_entity(hosts: list[dict]) -> dict[str, dict]:

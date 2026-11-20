@@ -4,7 +4,8 @@
 # dpf = participates in the EU-US Data Privacy Framework (relevant for CMR No. 415 "US only for DPF participants").
 #       Values are NOT VERIFIED — check on https://www.dataprivacyframework.gov/list before the pitch (Role 2).
 # category: analytics | advertising | social | tag_manager | session_replay | cdn | fonts | hosting | payments |
-#           crm | chat | captcha | ab_testing | maps | translation | marketing | government | other
+#           crm | chat | captcha | ab_testing | maps | translation | marketing | government | ai | other
+# ai = AI model APIs and AI chat/voice services called from the browser (F-32). Their countries are NOT VERIFIED.
 entities:
   - name: Google
     country: US
@@ -27,6 +28,8 @@ entities:
       firebaseio.com: hosting
       firebasedatabase.app: hosting
       firebaseapp.com: hosting
+      generativelanguage.googleapis.com: ai
+      aiplatform.googleapis.com: ai
     category: other
   - name: Meta
     country: US
@@ -40,6 +43,7 @@ entities:
     country: RU
     domains: [yandex.ru, yandex.net, yandex.com, yandex.uz, yandex.kz, yastatic.net, yandexcloud.net, ya.ru]
     category_by_domain:
+      llm.api.cloud.yandex.net: ai
       mc.yandex.ru: analytics
       mc.yandex.com: analytics
       yastatic.net: cdn
@@ -56,10 +60,12 @@ entities:
   - name: Microsoft
     country: US
     dpf: true
-    domains: [clarity.ms, bing.com, microsoft.com, windows.net, aka.ms, msecnd.net, azureedge.net, azurefd.net, live.com]
+    domains: [clarity.ms, bing.com, microsoft.com, windows.net, aka.ms, msecnd.net, azureedge.net, azurefd.net, live.com,
+              openai.azure.com]
     category_by_domain:
       clarity.ms: session_replay
       bing.com: advertising
+      openai.azure.com: ai
     category: hosting
   - name: Amazon Web Services
     country: US
@@ -171,3 +177,68 @@ entities:
     country: UZ
     domains: [www.uz]
     category: analytics
+  # --- AI services (F-32, 21.11). Company countries are NOT VERIFIED (Role 2); dpf unknown unless stated. ---
+  - name: OpenAI
+    country: US
+    domains: [api.openai.com, chatgpt.com, oaiusercontent.com]
+    category: ai
+  - name: Anthropic
+    country: US
+    domains: [api.anthropic.com]
+    category: ai
+  - name: Mistral AI
+    country: FR
+    domains: [api.mistral.ai]
+    category: ai
+  - name: DeepSeek
+    country: CN
+    domains: [api.deepseek.com]
+    category: ai
+  - name: Cohere
+    country: CA
+    domains: [api.cohere.com, api.cohere.ai]
+    category: ai
+  - name: Groq
+    country: US
+    domains: [api.groq.com]
+    category: ai
+  - name: OpenRouter
+    country: US
+    domains: [openrouter.ai]
+    category: ai
+  - name: Hugging Face
+    country: US
+    domains: [api-inference.huggingface.co, router.huggingface.co]
+    category: ai
+  - name: Sber GigaChat
+    country: RU
+    domains: [gigachat.devices.sberbank.ru]
+    category: ai
+  - name: Alibaba Cloud (Qwen / DashScope)
+    country: CN
+    domains: [dashscope.aliyuncs.com, dashscope-intl.aliyuncs.com]
+    category: ai
+  - name: ElevenLabs
+    country: US
+    domains: [api.elevenlabs.io, elevenlabs.io]
+    category: ai
+  - name: Deepgram
+    country: US
+    domains: [api.deepgram.com]
+    category: ai
+  - name: AssemblyAI
+    country: US
+    domains: [api.assemblyai.com]
+    category: ai
+  - name: Chatbase
+    country: US
+    domains: [chatbase.co]
+    category: ai
+  - name: Botpress
+    country: CA
+    domains: [botpress.cloud]
+    category: ai
+  - name: Voiceflow
+    country: CA
+    domains: [voiceflow.com, general-runtime.voiceflow.com]
+    category: ai

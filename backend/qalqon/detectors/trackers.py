@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import re
 
+from ..uz_ids import find_in_url
+
 from . import TRACKING_CATEGORIES, detector
 
 _EMAIL = re.compile(r"[A-Za-z0-9._%+-]+(?:@|%40)[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
@@ -71,4 +73,12 @@ def url_pii(facts: dict, params: dict):
                 seen.add((request["host"], kind))
                 evidence.append({"summary": f"A {kind} appears in a request URL sent to {request['host']}",
                                  "data": {"host": request["host"], "kind": kind, "sample": _mask(match.group(0))}})
+        # Uzbek identifiers in query parameters, validated (F-33): PINFL, passport, Uzcard/Humo cards.
+        for item in find_in_url(request["url"]):
+            if item["kind"] in ("email", "phone") or (request["host"], item["kind"]) in seen:
+                continue  # e-mail and phone are covered by the patterns above
+            seen.add((request["host"], item["kind"]))
+            evidence.append({"summary": f"A {item['kind']} ({item['param']}) appears in a request URL sent to {request['host']}",
+                             "data": {"host": request["host"], "kind": item["kind"], "param": item["param"],
+                                      "sample": item["sample"]}})
     return evidence

@@ -370,13 +370,13 @@ export const CATEGORY: Record<Lang, Record<string, string>> = {
     analytics: 'analitika', advertising: 'reklama', tag_manager: 'teg menejeri', session_replay: 'seans yozuvi',
     social: 'ijtimoiy tarmoq', marketing: 'marketing', ab_testing: 'A/B test', cdn: 'CDN', fonts: 'shriftlar',
     hosting: 'hosting', payments: 'toʻlov', crm: 'CRM', chat: 'chat', captcha: 'kapcha', maps: 'xarita',
-    translation: 'tarjima', government: 'davlat xizmati', other: 'boshqa',
+    translation: 'tarjima', government: 'davlat xizmati', ai: 'sunʼiy intellekt xizmati', other: 'boshqa',
   },
   ru: {
     analytics: 'аналитика', advertising: 'реклама', tag_manager: 'тег-менеджер', session_replay: 'запись сессий',
     social: 'соцсеть', marketing: 'маркетинг', ab_testing: 'A/B-тест', cdn: 'CDN', fonts: 'шрифты',
     hosting: 'хостинг', payments: 'оплата', crm: 'CRM', chat: 'чат', captcha: 'капча', maps: 'карты',
-    translation: 'перевод', government: 'госуслуга', other: 'другое',
+    translation: 'перевод', government: 'госуслуга', ai: 'сервис ИИ', other: 'другое',
   },
 }
 
