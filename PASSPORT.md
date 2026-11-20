@@ -3,7 +3,7 @@
 > **Product name:** Probo (D-022). Earlier working name: Qalqon; the Python package is still `qalqon`.
 > **Hackathon:** LexHackathon 2026, TSUL, Tashkent, 20–22 November
 > **Track:** 1 — "Huquqiy xizmatlarni ko'rsatish" (legal services)
-> **Passport version:** 0.12 · 21.11.2026, 01:10
+> **Passport version:** 0.13 · 21.11.2026, 04:30
 > **Document owner:** Role 1 (Tech/AI lead). Others send changes in the formats from §11.
 
 ---
@@ -215,6 +215,8 @@ lexhack/
 
 **Prices are a hypothesis for now.** We test them in interviews (R-06). Similar products with per-domain subscriptions: Cookiebot, Termly, OneTrust (check their prices in R-04).
 
+> **v0.13 — public pricing replaced by business model v2 (D-026, `research/business-model-v2.md`):** four audit categories (I Express 100k, II Full 250k, III Active from 1.5M, IV Expert from 5M UZS per audit, hypotheses); the user buys monthly tokens per category with a volume discount (1 → 100%, 2 → 150%, 3 → 190%…) and mixes categories freely; one free partial Express audit after registration; law-change re-checks are free. The plan table above is kept for history.
+
 ---
 
 ## 8. Competitive landscape — starting point for research
@@ -229,9 +231,9 @@ Role 3 checks and extends this list and turns it into a table in the §11.3 form
 | noyb | In 2021 its software recognized unlawful cookie banners and generated complaints (560 sites in the first wave) | Precedent: automation plus a legal outcome |
 | Darrow | Finds legal violations in open data for law firms | Precedent for the "violations → clients for lawyers" business model |
 | State Unitary Enterprise "Cybersecurity Center" (csec.uz, under the State Security Service) | Mandatory examination of **government bodies'** information resources under the Cybersecurity Law (ZRU-764). They look for **vulnerabilities** (OWASP). In 9 months of 2026: 225 web resource examinations; in Q1 2026: 252 vulnerabilities, 169 of them on government resources. Prices not published (R-09) | **Not a competitor but a neighboring area.** They answer "can the site be hacked", we answer "does the site handle data lawfully". They work mainly with the public sector, we work with private business. A partnership is possible |
-| CIS / Central Asia | **UNKNOWN — the main question of R-04** | |
+| CIS / Central Asia | Russia: 14+ 152-FZ website scanners since 2024 (help152, Metascan, fzscan, toolfox…); they cite Russian law. Uzbekistan, Kazakhstan, Belarus, Kyrgyzstan: no scanner found, only law firms and manual audits (`research/competitors.md`, 21.11) | The Uzbek niche is empty as far as public sources show |
 
-**Our advantage (draft):** Uzbek law and language, a database of local services (who stores data in the country), the "written vs does" check, generation of corrected documents, the data flow map.
+**Our advantage (v0.13, after R-04):** "the first scanner for Uzbek law" — not "the first in the world". Policy-vs-behaviour, country maps and scores exist in global tools; our moat is ZRU-547, art. 27¹ and the CMR 415 list in lawyer-editable YAML, quotes checked by code, Uzbek and Russian, a local service catalog, and scans from an Uzbek IP (`research/competitors-global-v2.md`).
 
 ---
 
@@ -301,7 +303,7 @@ Statuses: `MVP` (built before the checkpoint) · `Final` (by 22.11) · `Roadmap`
 
 | ID | Feature | What it gives | Complexity | Status |
 |---|---|---|---|---|
-| F-01 | "Policy vs behavior" check | The main difference from all competitors | M | MVP |
+| F-01 | "Policy vs behavior" check | Core of the report. Not unique globally (several global tools have it, `research/competitors-global-v2.md`); unique **for Uzbek law** with quotes checked by code | M | MVP |
 | F-02 | Data flow map (site → servers by country on a world map) | Wow effect in the demo | S | MVP |
 | F-03 | Mass scan of the top 100 .uz sites → anonymized report "Uz-net Privacy 2026" | A number for the pitch, PR, data accumulation | M | MVP |
 | F-04 | Generation of corrected documents (policy, consent) in UZ/RU | Closes the whole "found → fixed" cycle | M | Final |
@@ -317,6 +319,18 @@ Statuses: `MVP` (built before the checkpoint) · `Final` (by 22.11) · `Roadmap`
 | F-14 | Recording mode: a client employee walks through the site (including the personal account) in our browser or extension, and we record the traffic | Solves logins, SMS codes, OneID and captchas | M | Roadmap |
 | F-15 | Inside-out: read-only access to the client's cloud and a scan of the database schema for personal data columns (the agent runs at the client) | We know exactly where and what data is stored | L | Roadmap |
 | F-16 | "The law changed — your status changed" alert (as with ZRU-1125 and CMR No. 415 in 2026) | The main reason to subscribe | S | Final |
+| F-17 | Policy coverage per service in 4 levels: named / company named / only the kind / not found (from WhoGetsMyData) | Sharper PD-POL-02 | S | MVP (21.11) |
+| F-19 | Signed evidence: scope block, SHA-256 of facts/HAR/report, Ed25519 signature, public verify page | Evidence a lawyer can rely on; "same facts → same score" (F-27) | S | MVP (21.11) |
+| F-20 | Fine range per finding in BCA | Shows the stakes | S | Mechanism MVP; numbers only after V-05 and V-11 are confirmed |
+| F-21 | Scans run from an Uzbek IP (our server, Uzbektelekom AS8193, checked 21.11) | Sites behave differently for foreign scanners (`research/competitors-handson.md`) | — | Done; shown in the report scope |
+| F-32 | AI services in the catalog (OpenAI, Anthropic, Gemini, DeepSeek, YandexGPT, GigaChat, chat widgets…) feeding PD-LOC-02 / PD-POL-02 | Ready for sites that use AI from the browser (0 of our 8 reference sites do today) | S | MVP (21.11), not a pitch item |
+| F-33 | Uzbek identifiers in URLs and forms: PINFL, passport series, +998 phones, card numbers (Luhn) | Fewer false findings, local knowledge | S | MVP (21.11) |
+| F-34 | Law citations from lex.uz via lex-rag in every finding (verbatim article text, link, edition date; code checks the quote) | Legal criterion; D-013 actually used | S | MVP (21.11) |
+| F-35 | E-commerce transparency pilot (D-027): seller identity, offer and return terms, Uzbek version | First step beyond personal data, narrow and verifiable | M | MVP/Final (21.11) |
+| F-36 | Registration + one free Express audit with a partial report | Funnel of business model v2 | M | Final (screens to agree) |
+| F-37 | Token wallet per audit category, volume discount, monitoring spends tokens | Business model v2 (D-026) | M | Final (demo top-up) |
+| F-38 | Payme / Click payments | Real revenue | M | Roadmap |
+| F-18, F-22–F-26, F-28–F-31 | Research proposals not taken now (consent phases, review queue, scanner IPs, WEC export, B2G grace-period mode, two vantage points, register lookup, document kit, web perimeter) | See `research/*-v2.md` for each reason | — | Roadmap / Rejected |
 
 ---
 
@@ -407,7 +421,7 @@ Total = (T + B + S) / 3. Each mentor scores 5 criteria from 1 to 10, and the ave
 - **"What happens when the law changes?"** The opposite of a problem: every change is a reason to re-check the client. Rules are stored as settings, and the lawyer updates them without a programmer. Localization is one check among many.
 - **"Don't sites block bots?"** We use a real browser and a slow pace. Clients add us to their allowlist themselves.
 - **"Won't the government build its own?"** Then we become a contractor (B2G). EU regulators already use this approach (EDPS Website Evidence Collector).
-- **"What if OneTrust or Cookiebot come?"** They don't have Uzbek law, the language or a database of local services.
+- **"What if OneTrust or Cookiebot come?"** They don't have Uzbek law, the language or a database of local services. None of the 27 global tools studied mentions Uzbekistan; the closest paid ones are enterprise products (Privado from $600 per site per month). Our defence is depth on one country and local data, not a secret technology.
 - **"Do you depend on OpenAI/Claude?"** The main checks run on rules. The LLM is needed only for texts, and it can be replaced with an open model.
 - **"Doesn't the Cybersecurity Center already do this?"** No. The Center looks for vulnerabilities, mostly on government sites: "can the site be hacked". We check legal compliance: "does the site collect and transfer data lawfully". We don't do pentests (D-008). These are neighboring areas, and a partnership is possible.
 - **"How will you know where the database is?"** At level 1, from indirect signs: the ASNs of API servers, cloud databases in the page code, storage links, DNS. At level 2, with test data and the client's consent. At level 3, from inside. Whatever we can't see, we honestly mark "undetermined" (§4).
@@ -422,24 +436,24 @@ Until the status is `CONFIRMED`, we **don't state** these facts in the pitch.
 | ID | Claim | Status | Who |
 |---|---|---|---|
 | V-01 | The Law of Uzbekistan "On Personal Data" is ZRU-547 of 02.07.2019, in force since 01.10.2019. Consent — art. 21, cross-border transfer — art. 15, database registration — art. 20, biometrics — art. 26, liability — art. 33 | CONFIRMED (details and table of contents, lex.uz/ru/docs/4396428). The texts of articles 15/21/33 still have to be copied out (R-01) | 2 |
-| V-02 | Art. 27-1 as amended by ZRU-1125 of 26.03.2026: mandatory localization covers biometrics, genetics and users of telecom operators; everything else may be stored abroad under one of three conditions (adequate country / standard contractual clauses or binding corporate rules / international standards) | CONFIRMED (lex.uz, unofficial Russian translation; the Uzbek text is official) | 2 |
-| V-03 | The authorized body is the State Personalization Center under the Cabinet of Ministers (art. 8); it keeps the State Register of personal data databases. Model procedures were approved by Minister of Justice orders No. 19-mh and No. 20-mh of 14–15.11.2023 | CONFIRMED (lex.uz, art. 8 with the LexUz commentary) | 2 |
+| V-02 | Art. 27-1 as amended by ZRU-1125 of 26.03.2026: mandatory localization covers biometrics, genetics and users of telecom operators; everything else may be stored abroad under one of three conditions (adequate country / standard contractual clauses or binding corporate rules / international standards) | CONFIRMED 21.11 (official Uzbek text, `research/legal-27-1-2026.md`) | 2 |
+| V-03 | The authorized body is the State Personalization Center under the Cabinet of Ministers (art. 8); it keeps the State Register of personal data databases. Model procedures were approved by Minister of Justice orders No. 19-mh and No. 20-mh of 14–15.11.2023 | REFUTED in practice 21.11: the function is exercised by the MoI Migration and Personalization Department (CMR 821, PP-14, CMR 415); art. 8 still has the old name | 2 |
 | V-04 | A State Register of personal data databases exists; is there a public search? | NOT VERIFIED | 2 |
 | V-05 | The Code of Administrative Liability has an article on liability for violating personal data legislation; the fine amount | NOT VERIFIED | 2 |
 | V-06 | The Criminal Code has an article on violating personal data legislation | NOT VERIFIED | 2 |
 | V-07 | In 2021 Uzbekistan restricted access to several social networks for violating localization requirements | NOT VERIFIED | 2 |
 | V-08 | An IP address and a cookie ID are personal data under Uzbek law | NOT VERIFIED | 2 |
 | V-09 | Cross-border transfer rules (which article, what conditions) | NOT VERIFIED | 2 |
-| V-10 | The number of domains in the .uz zone | NOT VERIFIED | 3 |
+| V-10 | The number of domains in the .uz zone | CONFIRMED 21.11: 182,338 active .uz domains (cctld.uz), `research/market.md` | 3 |
 | V-11 | The BCA value for 2026 | NOT VERIFIED | 2 |
-| V-12 | CMR No. 415 of 29.07.2026 (in force since 03.08.2026): a list of 49 countries with equivalent protection — Russia, the EU, the UK, Korea, Japan; the US only for EU-US DPF participants; KZ, AE, TR, CN are not on it. Breach notification — 24 h / 72 h | PARTIAL (pactum.uz); check against lex.uz | 2 |
-| V-13 | Database registration in the State Register is now tied to the list in part 2 of art. 27-1 (new edition of art. 20). The procedure is CMR No. 71 of 08.02.2020: free, 5 working days | PARTIAL (pactum.uz) | 2 |
+| V-12 | CMR No. 415 of 29.07.2026 (in force since 03.08.2026): a list of 49 countries with equivalent protection — Russia, the EU, the UK, Korea, Japan; the US only for EU-US DPF participants; KZ, AE, TR, CN are not on it. Breach notification — 24 h / 72 h | CONFIRMED with corrections 21.11: 49 entries (30 EU/EEA + 15 states + 4 territories + US for DPF only); 24 h / 72 h is for leaks during cross-border transfer; list in `rules/countries.yaml` | 2 |
+| V-13 | Database registration in the State Register is now tied to the list in part 2 of art. 27-1 (new edition of art. 20). The procedure is CMR No. 71 of 08.02.2020: free, 5 working days | CONFIRMED (law side) 21.11; CMR 71 procedure not re-checked | 2 |
 | V-14 | Cybersecurity Center (csec.uz, Presidential Resolution PP-4452 of 14.09.2019, under the State Security Service): examination of government bodies' information resources is mandatory (ZRU-764); 225 web resource examinations in 9 months of 2026; Q1 2026: 252 vulnerabilities, 169 of them on government resources. Prices not published | PARTIAL (lex.uz, csec.uz, 1prime.ru) | 3 |
 | V-15 | Does checking websites for vulnerabilities require a license or permit? | NOT VERIFIED | 2 |
-| V-16 | A Telegram bot as the recipient of leads: is the recipient's country determined by where the servers are or by the company's jurisdiction (UAE)? | NOT VERIFIED | 2 |
+| V-16 | A Telegram bot as the recipient of leads: is the recipient's country determined by where the servers are or by the company's jurisdiction (UAE)? | INTERPRETATION 21.11 (research, not a lawyer): territory first; company test only for the US; report both countries | 2 |
 | V-17 | lex.uz terms of use: personal use only; copying for profit only with written permission. What may a commercial service do (quotes with a link?), and can we get official access from the Ministry of Justice? | NOT VERIFIED (this is what the lex-rag README says) | 2 |
-| V-18 | Art. 27¹ part 2: are **visitors of a telecom operator's website** "users of its telecom services" whose data must stay in Uzbekistan? Decides whether trackers on a telecom site are 🔴 or 🟡 | NOT VERIFIED | 2 |
-| V-19 | EU-US DPF participation of Google LLC, Meta Platforms, Microsoft, Amazon, Cloudflare (`dpf: true` in `backend/data/entities.yaml`) | NOT VERIFIED — check https://www.dataprivacyframework.gov/list | 2 |
+| V-18 | Art. 27¹ part 2: are **visitors of a telecom operator's website** "users of its telecom services" whose data must stay in Uzbekistan? Decides whether trackers on a telecom site are 🔴 or 🟡 | PARTLY VERIFIED 21.11: "user" = consumer of telecom services (ZRU-1015 art. 3); logged-in subscribers yes, anonymous visitors no — lawyer's call | 2 |
+| V-19 | EU-US DPF participation of Google LLC, Meta Platforms, Microsoft, Amazon, Cloudflare (`dpf: true` in `backend/data/entities.yaml`) | CONFIRMED 21.11: all five Active on dataprivacyframework.gov; Meta "re-certification under review" | 2 |
 
 ---
 
@@ -470,6 +484,10 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 | D-022 | 21.11 | The product name is **Probo** (team decision). It replaces the working name Qalqon (D-014) in the UI, README and pitch. The Python package keeps the name `qalqon` until after the hackathon | Renaming the package now would touch every import and command right before the checkpoint |
 | D-023 | 21.11 | Frontend P0 (PRODUCT.md §9): React 19 + Vite + TypeScript + Astryx (theme-neutral) + self-hosted fonts; screens Home, Live scan, Report (Overview, Findings, Data flows, Policy), History; presentation mode also hides brand aliases from `reference_sites.yaml`. Login/profile move to P1 (Role 1 decision) | Core value first; auth done in a hurry is a security risk |
 | D-024 | 21.11 | Public demo at **https://probo.aicenterkk.tech**: one Docker container (API + web app) on Role 1's always-on machine behind the existing Cloudflare tunnel; 6 scans/hour per IP and 100/day, optional access key. Update with `bash deploy/push-to-server.sh` | Jury and mentors can open it by link; limits protect LLM spend and the machine |
+| D-025 | 21.11 | Research triage (`research/README-v2.md` + a `-v2.md` per file): accepted F-17, F-19, F-20 (numbers only after V-05), F-21, F-32…F-35, W2, W4 (narrow), W9-light; rejected or roadmap: AI legal review (W3), sector packs (W5), active services M3–M16, signed agent traffic, live badge, e-mails to site owners, security checks. Positioning: "the first scanner for Uzbek law" | Stay narrow and unique; only what works on any public URL, adds no false findings and fits before the final |
+| D-026 | 21.11 | Business model v2 (`research/business-model-v2.md`): four audit categories by client access and our cost; monthly tokens per category with a volume discount; categories can be mixed; one free partial Express audit after registration; law-change re-checks free. Replaces the plan table in §7 as public pricing | Pay for what you use, still monthly; simple to explain; the v1 cost formula stays an internal floor |
+| D-027 | 21.11 | Pilot beyond personal data: e-commerce transparency (seller identity, offer and return terms, Uzbek version), rules `EC-*`, norms via lex-rag, `verified: false` until Role 2 confirms | The request for wider legal checks, kept to one sector and three verifiable checks |
+| D-028 | 21.11 | `rules/countries.yaml` (R-10, verbatim CMR 415) replaces the draft list; the list is closed (`complete: true`), so a country not on it is "not listed" | Research R-10 |
 | D-019 | 20.11 | **Precision over recall on real sites:** a detector reports only what it can show with clear evidence; doubtful cases are left out or worded as "check whether…". Every new detector is checked against real scan evidence before it ships | We scan real, named companies (D-017); one false finding in front of the jury costs more than a missed one |
 | D-018 | 20.11 | If the scanner lands on a bot-protection page (captcha, Cloudflare challenge) its requests are marked `challenge` and never produce findings; a site that never passes is reported as "closed to the check", not as compliant or non-compliant | Verified: one delivery site sometimes returns a Yandex SmartCaptcha page — its Yandex requests would have been a false finding |
 | D-017 | 20.11 | **No "Demo Market".** The demo uses real sites, one per sector (`backend/data/reference_sites.yaml`): passive scan only, pre-scanned and cached, one live scan on stage. In anything public they are anonymized ("Marketplace A", "Telecom F"); D-003 still applies. Active mode (canaries) is not shown on real sites (D-009) | Real findings are more convincing and save build time; anonymity avoids naming companies at a Ministry event |
@@ -533,3 +551,4 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 - **0.10** — 20.11 21:00 — LLM policy analysis + "policy vs behaviour" works on real sites (ARCHITECTURE.md step 5). D-020, D-021. Batch of 8: average score 84.6; trackers before consent on 7/8, Webvisor on 5/8, policy silent about services it uses on 3/8. **For Role 2:** the policy elements we check are listed in `backend/qalqon/llm/policy.py` (`ELEMENTS`) — please confirm against art. 22 ZRU-547 and Minjust order No. 20-mx which are mandatory. **For Role 3 (pitch):** take numbers only from `GET /api/stats` (anonymized).
 - **0.11** — 21.11 00:20 — product renamed to Probo (D-022); frontend P0 done (D-023, `PRODUCT.md`, `frontend/DESIGN.md`). **For Role 3:** check the Uzbek and Russian UI texts in `frontend/src/i18n.tsx` and add brand spellings to `aliases` in `backend/data/reference_sites.yaml` so presentation mode hides them.
 - **0.12** — 21.11 01:10 — dark mode fixed, Probo icon, P1 without login (forms/evidence tabs, site history with diff, share links, PDF), public demo deployed (D-024, `deploy/README.md`).
+- **0.13** — 21.11 04:30 — research review: D-025 (accepted / rejected, `research/README-v2.md`), D-026 (business model v2), D-027 (e-commerce pilot), D-028 (closed country list); facts V-02, V-03, V-10, V-12, V-13, V-16, V-18, V-19 updated from `research/legal-27-1-2026.md` and `research/market.md`; §8 and §13 positioning; public demo hides real site names (D-003 fix). **For the team:** the task list before 14:00 is in `research/README-v2.md`.
