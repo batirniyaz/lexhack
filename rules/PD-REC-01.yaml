@@ -28,6 +28,9 @@ legal_basis:
     url_ru: "https://lex.uz/ru/docs/4396428"
     edition_date: "12.09.2026"
 sanction: "If typed personal data reach the replay provider without consent — Administrative Code art. 46² part 1 (7 BCA citizens / 50 BCA officials); see research/legal-liability.md."
+sanction_uz: "Kiritilgan shaxsga doir maʼlumotlar roziliksiz yozuv xizmatiga yetib borsa — MJtK 46²-moddasi 1-qismi: fuqarolarga 7 BHM, mansabdor shaxslarga 50 BHM jarima."
+sanction_ru: "Если введённые персональные данные попадают в сервис записи без согласия — КоАО ст. 46² ч. 1: штраф гражданам 7 БРВ, должностным лицам 50 БРВ."
+sanction_source: "R-02 research/legal-liability.md (21.11.2026), not a lawyer's opinion"
 fix:
   en: "Turn session recording off on pages with forms, or mask every input field; name the recording service in the policy and record sessions only after consent."
   ru: "Отключите запись сессий на страницах с формами или маскируйте все поля ввода; укажите сервис записи в политике и записывайте сессии только после согласия."

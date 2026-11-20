@@ -44,6 +44,9 @@ legal_basis:
     url: "https://lex.uz/docs/-6663967"
     edition_date: "15.11.2023"
 sanction: "Administrative Code art. 46² part 1 — fine 7 BCA (3,080,000 UZS) for citizens, 50 BCA (22,000,000 UZS) for officials, if processing has no legal ground; after a penalty, within 1 year — Criminal Code art. 141² (100–150 BCA). BCA 440,000 UZS from 01.09.2026 (PF-115)."
+sanction_uz: "Agar ishlov berishning huquqiy asosi boʻlmasa — MJtK 46²-moddasi 1-qismi: fuqarolarga 7 BHM (3 080 000 soʻm), mansabdor shaxslarga 50 BHM (22 000 000 soʻm) jarima. Jazodan keyin bir yil ichida takrorlansa — JK 141²-moddasi."
+sanction_ru: "Если у обработки нет правового основания — КоАО ст. 46² ч. 1: штраф гражданам 7 БРВ (3 080 000 сум), должностным лицам 50 БРВ (22 000 000 сум). Повторно в течение года после взыскания — УК ст. 141²."
+sanction_source: "R-02 research/legal-liability.md (21.11.2026), not a lawyer's opinion"
 fix:
   en: "Next to the submit button add a consent checkbox (not pre-ticked) or a consent sentence with a link to the policy. State who the operator is, the purposes, the data collected, the retention period, recipients and countries, and how to withdraw consent."
   ru: "Рядом с кнопкой отправки добавьте чекбокс согласия (без предустановленной галочки) или фразу о согласии со ссылкой на политику. Укажите оператора, цели, состав данных, срок хранения, получателей и страны, порядок отзыва согласия."
