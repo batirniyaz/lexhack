@@ -57,7 +57,7 @@ def rules_version() -> str:
     for path in files:
         if path.exists():
             digest.update(path.name.encode())
-            digest.update(path.read_bytes())
+            digest.update(path.read_bytes().replace(b"\r\n", b"\n"))  # same hash on Windows and Linux checkouts
     return digest.hexdigest()[:12]
 
 
