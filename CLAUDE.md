@@ -1,36 +1,36 @@
 # CLAUDE.md
 
-Проект **Qalqon** — сканер соответствия сайтов закону РУз о персональных данных. LexHackathon 2026, трек 1. Команда из 3 человек.
+Project **Qalqon**: a scanner that checks websites against Uzbekistan's personal data law. LexHackathon 2026, track 1. A team of 3.
 
-## Перед любой работой
-1. Прочитай `PASSPORT.md` целиком. Это единый источник правды для команды и всех ИИ-ассистентов.
-2. Решения из §15 паспорта («Журнал решений») не оспаривай. Улучшения предлагай как «Фишки» (§10).
-3. Узнай роль своего человека (§3) и работай по задачам этой роли (§9).
+## Before any work
+1. Read `PASSPORT.md` in full. It is the single source of truth for the team and all AI assistants.
+2. Don't challenge the decisions in passport §15 ("Decision log"). Propose improvements as "Features" (§10).
+3. Find out your person's role (§3) and work on that role's tasks (§9).
 
-## Правила
-- Факты — только с источником. Законы — только с lex.uz, с дословной цитатой. Что не проверено, помечай `НЕ ПРОВЕРЕНО`.
-- Форматы результатов — строго по §11: шапка research-файлов, YAML-схема правил, таблица конкурентов, таблица фактов.
-- Куда класть результаты:
-  - ресёрч → `research/`;
-  - правила → `rules/<ID>.yaml`;
-  - питч → `pitch/`;
-  - код → `backend/`, `frontend/`, `demo-site/`.
-- Новые детекторы (поле `detector` в YAML) не придумывай без согласования с Ролью 1. Список детекторов в §5.
-- Если меняешь `PASSPORT.md`, подними версию в шапке и добавь строку в «Журнал изменений». Редактирует паспорт только Роль 1, остальные присылают предложения.
-- Язык документов — русский. Тексты интерфейса и питча делай дополнительно на узбекском (латиница).
+## Rules
+- Facts only with a source. Laws only from lex.uz, with a verbatim quote. Mark anything unverified as `NOT VERIFIED`.
+- Result formats strictly per §11: research file header, rule YAML schema, competitor table, fact-check table.
+- Where results go:
+  - research → `research/`;
+  - rules → `rules/<ID>.yaml`;
+  - pitch → `pitch/`;
+  - code → `backend/`, `frontend/`, `demo-site/`.
+- Don't invent new detectors (the `detector` field in YAML) without agreeing with Role 1. The detector list is in §5.
+- If you change `PASSPORT.md`, bump the version in its header and add a line to the "Changelog". Only Role 1 edits the passport; others send proposals.
+- Document language: English. Interface and pitch texts additionally in Uzbek (Latin script) and Russian.
 
-## Код
-- Архитектура, контракт `facts.json`, API и план сборки по шагам — в `ARCHITECTURE.md`. Читать перед любой правкой кода.
-- Главный принцип: код собирает факты, правила (YAML) решают, LLM только читает тексты и объясняет.
-- Backend: Python 3.11+, FastAPI, Playwright. LLM: Claude API (`claude-sonnet-5-5` для анализа, `claude-haiku-5-5` для массовых задач), ответы в структурированном JSON с цитатами.
-- Находки называются «признаки нарушения», уровни: violation 🔴 / risk 🟡 / recommendation ⚪.
-- В демо и публичной статистике не называем конкретные реальные сайты. Для демо используем `demo-site/`.
+## Code
+- Architecture, the `facts.json` contract, the API and the step-by-step build plan are in `ARCHITECTURE.md`. Read it before any code change.
+- Main principle: code collects facts, rules (YAML) decide, the LLM only reads texts and explains.
+- Backend: Python 3.11+, FastAPI, Playwright. LLM: Claude API (`claude-sonnet-5-5` for analysis, `claude-haiku-5-5` for mass tasks), answers in structured JSON with quotes.
+- Findings are called "signs of violation"; levels: violation 🔴 / risk 🟡 / recommendation ⚪.
+- In the demo and in public statistics we don't name specific real websites. For the demo we use `demo-site/`.
 
-## Git (репозиторий github.com/batirniyaz/lexhack, ветка main)
-- Перед началом работы и перед каждым пушем: `git pull --rebase`.
-- Каждый пишет **только в свои папки**: Роль 1 — код и `PASSPORT.md`, Роль 2 — `research/legal-*`, `rules/`, Роль 3 — `research/` (остальное), `pitch/`. Так конфликтов не будет.
-- `PASSPORT.md` меняет только Роль 1. Предложения к нему пишите в свои research-файлы (раздел «Вопросы к команде») или в «Фишки».
-- Сообщение коммита — коротко, на русском: что добавлено. Секреты (`.env`, ключи API) не коммитить.
+## Git (repository github.com/batirniyaz/lexhack, branch main)
+- Before starting work and before every push: `git pull --rebase`.
+- Everyone writes **only to their own folders**: Role 1 — code and `PASSPORT.md`; Role 2 — `research/legal-*`, `rules/`; Role 3 — the rest of `research/`, `pitch/`. That way there are no conflicts.
+- Only Role 1 changes `PASSPORT.md`. Write proposals for it in your research files ("Questions for the team" section) or as "Features".
+- Commit messages: short, in English, saying what was added. Never commit secrets (`.env`, API keys).
 
-## Дедлайн
-Чекпоинт с отбором в финал — **21.11, 14:00**. Рабочий прототип нужен к этому времени.
+## Deadline
+Checkpoint with selection for the final: **21.11, 14:00**. A working prototype is needed by then.

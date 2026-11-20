@@ -10,7 +10,7 @@
 > 1. **The legal engine already exists.** Conclusion 2 and P-F3 are covered by lex-rag: 55,000 lex.uz acts, hybrid search and code-checked quotes, called as an external service (D-013). Rules decide violations; RAG only quotes and explains (D-010). lex.uz changes are tracked through its RSS feed and article hashes (D-011). **What stays new in this file: the product check for builders (P-F4) and the combined report (P-F5).**
 > 2. **Active security checks (P-F7) contradict D-008:** the team doesn't search for vulnerabilities or do pentests. Withdrawn unless the team changes D-008. The passive check for secrets in page JavaScript (part of P-F6) is close to vulnerability scanning, so it is a question for the team under D-008. Personal data in URLs is already covered by PD-LEAK-01.
 > 3. **Canary form tests** run only on clients' sites with written consent (D-009).
-> 4. **Localization changed in 2026** (ЗРУ-1125, ПКМ № 415, passport §2). Any example below that assumes "all data must stay in Uzbekistan" is outdated.
+> 4. **Localization changed in 2026** (ZRU-1125, CMR No. 415, passport §2). Any example below that assumes "all data must stay in Uzbekistan" is outdated.
 > 5. **lex.uz terms of use** (V-17) may limit storing and reusing the corpus commercially.
 > 6. **IDs renamed to avoid clashes:** F-13…F-17 became P-F3…P-F7, and the suggested decision D-013 became P-D6, because those IDs are already taken in the passport. Role 1 assigns real IDs to anything accepted.
 

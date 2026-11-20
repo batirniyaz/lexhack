@@ -8,7 +8,7 @@
 
 > **Read first: conflicts with passport v0.4**
 > 1. **The team's architecture is the root `ARCHITECTURE.md`.** Use this file only as a list of suggestions.
-> 2. **Localization rules changed.** Sections 7–8 assume `allowed_countries: [UZ]`. That is outdated: art. 27-1 was rewritten by ЗРУ-1125 (passport §2). Mandatory storage in Uzbekistan now covers only biometric, genetic and telecom-user data; other data may go abroad under conditions. Allowed countries come from `rules/countries.yaml` (ПКМ № 415, R-10).
+> 2. **Localization rules changed.** Sections 7–8 assume `allowed_countries: [UZ]`. That is outdated: art. 27-1 was rewritten by ZRU-1125 (passport §2). Mandatory storage in Uzbekistan now covers only biometric, genetic and telecom-user data; other data may go abroad under conditions. Allowed countries come from `rules/countries.yaml` (CMR No. 415, R-10).
 > 3. **Legal citations come from lex-rag** as an external service (D-013); rules, not the LLM, decide violations (D-010).
 > 4. **Live feed:** v0.4 uses SSE (D-012); this file proposes polling.
 > 5. **Canary form probe:** v0.4 allows it only on clients' sites with written consent, plus our demo site (D-009).
@@ -789,7 +789,7 @@ Also add to the structure in passport §6: `backend/core/`, `backend/enrich/`, `
 4. **Role 2:** does "by clicking the button you agree…" without a checkbox count as consent (`accept_text_only`)?
 5. **Role 2:** are IP addresses and cookie IDs personal data (V-08)? `require_identifier` in PD-LOC-02 depends on the answer.
 6. **Role 2 (R-08):** is the canary form probe with a cancelled send acceptable on client sites? Do we respect robots.txt in the batch?
-7. **Role 2:** confirm the list of required policy items in `catalog/policy_items.yaml` against the text of ЗРУ-547 (R-01). It's a draft for now.
+7. **Role 2:** confirm the list of required policy items in `catalog/policy_items.yaml` against the text of ZRU-547 (R-01). It's a draft for now.
 8. **Everyone:** where do we host the public copy of the demo site?
 
 ---

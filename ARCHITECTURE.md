@@ -1,61 +1,61 @@
-# Qalqon — архитектура и план сборки
+# Qalqon — architecture and build plan
 
-> Для Роли 1 (код) и технического ментора. Продукт и решения описаны в `PASSPORT.md`, здесь — как это устроено и в каком порядке собираем.
-> Версия 0.1 · 20.11.2026
+> For Role 1 (code) and the technical mentor. The product and the decisions are described in `PASSPORT.md`; this file covers how it is built and in what order we build it.
+> Version 0.2 · 20.11.2026 (version 0.1 translated into English, no content changes)
 
-## 1. Общая схема
+## 1. Overall scheme
 
 ```
                 ┌──────────────── frontend (React + Vite) ────────────────┐
-                │  ввод URL → живая лента событий (SSE) → отчёт + карта    │
+                │  URL input → live event feed (SSE) → report + map       │
                 └───────────────▲──────────────────────────┬───────────────┘
                                 │ SSE / JSON               │ POST /api/scans
 ┌───────────────────────────────┴──────────────────────────▼──────────────────────────────┐
 │ backend (FastAPI)                                                                       │
 │                                                                                         │
-│  1. scanner/     Playwright: обход страниц, перехват запросов, куки, формы, хуки JS      │
-│        │  сырые наблюдения                                                              │
-│  2. enrich/      IP→страна/ASN · домен→владелец трекера · CDN · DNS (MX/SPF)              │
-│        │  факты (facts.json)                                                            │
-│  3. detectors/   по одной функции на детектор из §5 паспорта → доказательства            │
+│  1. scanner/     Playwright: page crawl, request interception, cookies, forms, JS hooks │
+│        │  raw observations                                                              │
+│  2. enrich/      IP→country/ASN · domain→tracker owner · CDN · DNS (MX/SPF)             │
+│        │  facts (facts.json)                                                            │
+│  3. detectors/   one function per detector from passport §5 → evidence                  │
 │        │                                                                                │
-│  4. rules/       движок: rules/*.yaml (юрист) + детекторы → находки 🔴🟡⚪ + оценка        │
+│  4. rules/       engine: rules/*.yaml (lawyer) + detectors → findings 🔴🟡⚪ + score       │
 │        │                                                                                │
-│  5. llm/         Claude: разбор политики/оферты, сверка «написано vs делает»,            │
-│        │         объяснение находки простым языком (UZ/RU)                              │
-│  6. legal/       lex-rag API → цитаты · монитор lex.uz (RSS + хеши статей)               │
+│  5. llm/         Claude: policy/offer parsing, "written vs does" check,                 │
+│        │         plain-language explanation of a finding (UZ/RU)                        │
+│  6. legal/       lex-rag API → quotes · lex.uz monitor (RSS + article hashes)           │
 │        ▼                                                                                │
 │  store (SQLite): scans, pages, requests, findings                                       │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
           ▲                                             ▲
-   demo-site/ (наш «нарушитель»)              lex-rag (внешний сервис, заявлен жюри)
+   demo-site/ (our "violator")                 lex-rag (external service, declared to the jury)
 ```
 
-**Главный принцип:** код собирает факты, правила решают, LLM только читает тексты и объясняет. Решение о нарушении никогда не принимает модель (D-010).
+**Main principle:** code collects facts, rules decide, the LLM only reads texts and explains. The model never makes the decision about a violation (D-010).
 
-## 2. Компоненты
+## 2. Components
 
-### 2.1 scanner/ — что видит браузер
-- Playwright async, Chromium в фоне, новый контекст на каждый скан, локаль `uz-UZ`, обычный user-agent.
-- **Обход сайта:** главная страница → внутренние ссылки того же домена + `sitemap.xml`. Сначала заходим на страницы, где в URL или тексте встречается `contact|aloqa|kontakt|register|ro'yxat|checkout|buyurtma|login|kirish|anketa`. Лимит: `MAX_PAGES=20`, глубина 2.
-- **Перехват:**
-  - `page.on("request")`: URL, метод, тип ресурса, `post_data`, страница-инициатор, метка времени;
-  - `page.on("response")`: `response.server_addr()` даёт IP сервера, плюс статус и заголовки;
-  - `record_har_path` → HAR-файл как доказательство.
-- **«До согласия»:** первые 5 секунд после загрузки главной без кликов. Всё, что ушло за это время, помечается `before_consent=true`.
-- **Хуки (`add_init_script`)** перехватывают вызовы `getUserMedia`, `geolocation.getCurrentPosition`, `fetch`, `XMLHttpRequest.open`, `sendBeacon` и логируют их в `window.__qalqon`.
-- **Формы:** поля (`name`, `id`, `type`, `placeholder`, `label`, `autocomplete`, `pattern`, `maxlength`), `action`, `method`, чекбоксы и текст рядом с ними, `input[type=file]` с `accept`/`capture`.
-- **JS-файлы:** тела скриптов → регулярки на `firebaseio.com|firebasedatabase.app|supabase.co|amazonaws.com|storage.googleapis.com|api.telegram.org|script.google.com|amocrm|bitrix24`.
-- **Документы:** ссылки с текстом `maxfiylik|siyosat|политик|конфиденц|privacy|oferta|оферт|shartlar|условия` → скачиваем текст (HTML или PDF).
-- **Режим 2 (только клиенты и демо-сайт):** заполнение форм канарейками и отправка, вход по сохранённой сессии (`storage_state`).
+### 2.1 scanner/ — what the browser sees
+- Playwright async, headless Chromium, a new context for every scan, locale `uz-UZ`, a normal user agent.
+- **Site crawl:** home page → internal links of the same domain + `sitemap.xml`. We first visit pages whose URL or text contains `contact|aloqa|kontakt|register|ro'yxat|checkout|buyurtma|login|kirish|anketa`. Limit: `MAX_PAGES=20`, depth 2.
+- **Interception:**
+  - `page.on("request")`: URL, method, resource type, `post_data`, initiating page, timestamp;
+  - `page.on("response")`: `response.server_addr()` gives the server's IP, plus the status and headers;
+  - `record_har_path` → a HAR file as evidence.
+- **"Before consent":** the first 5 seconds after the home page loads, with no clicks. Everything sent during that time is marked `before_consent=true`.
+- **Hooks (`add_init_script`)** intercept calls to `getUserMedia`, `geolocation.getCurrentPosition`, `fetch`, `XMLHttpRequest.open`, `sendBeacon` and log them to `window.__qalqon`.
+- **Forms:** fields (`name`, `id`, `type`, `placeholder`, `label`, `autocomplete`, `pattern`, `maxlength`), `action`, `method`, checkboxes and the text next to them, `input[type=file]` with `accept`/`capture`.
+- **JS files:** script bodies → regexes for `firebaseio.com|firebasedatabase.app|supabase.co|amazonaws.com|storage.googleapis.com|api.telegram.org|script.google.com|amocrm|bitrix24`.
+- **Documents:** links with the text `maxfiylik|siyosat|политик|конфиденц|privacy|oferta|оферт|shartlar|условия` → we download the text (HTML or PDF). The Cyrillic words in this pattern match Russian-language sites and stay as they are.
+- **Mode 2 (clients and the demo site only):** filling forms with canaries and submitting them, logging in with a saved session (`storage_state`).
 
-### 2.2 enrich/ — превращаем наблюдения в факты
-- **Гео и ASN:** офлайн-базы DB-IP Lite (country + ASN, `.mmdb`, без регистрации). Файлы лежат в `data/geo/` и не попадают в git. ASN Cloudflare, Akamai, Fastly, CloudFront → `country="?"`, `is_cdn=true`.
-- **Узбекские провайдеры:** `data/uz_asn.yaml` — Uztelecom, UNICON.UZ, Sarkor, TPS, Beeline UZ, Ucell, Uzmobile… Это наш список, пополняется.
-- **Трекеры:** Disconnect `services.json` + `data/uz_services.yaml` (местные SaaS и CRM: где хранят данные) → `entity`, `category`, `company_country`.
-- **DNS:** `dnspython` → MX, TXT/SPF. Сертификаты: `crt.sh` JSON (пассивно).
+### 2.2 enrich/ — turning observations into facts
+- **Geo and ASN:** offline DB-IP Lite databases (country + ASN, `.mmdb`, no registration needed). The files live in `data/geo/` and don't go into git. The ASNs of Cloudflare, Akamai, Fastly and CloudFront → `country="?"`, `is_cdn=true`.
+- **Uzbek providers:** `data/uz_asn.yaml` — Uztelecom, UNICON.UZ, Sarkor, TPS, Beeline UZ, Ucell, Uzmobile… This is our own list, and it keeps growing.
+- **Trackers:** Disconnect `services.json` + `data/uz_services.yaml` (local SaaS and CRMs, and where they store data) → `entity`, `category`, `company_country`.
+- **DNS:** `dnspython` → MX, TXT/SPF. Certificates: `crt.sh` JSON (passive).
 
-### 2.3 Модель фактов (`facts.json`) — контракт между scanner и detectors
+### 2.3 Fact model (`facts.json`) — the contract between the scanner and the detectors
 
 ```json
 {
@@ -83,111 +83,111 @@
 }
 ```
 
-### 2.4 detectors/ + rules/ — как принимается решение
-- Детектор — чистая функция `detect(facts, params) -> list[Evidence]`. Её легко покрыть тестами на фикстурах.
-- Правило (`rules/<ID>.yaml`, схема в §11.2 паспорта) называет детектор, уровень, правовое основание и способ исправления.
-- Движок: для каждого правила вызывает детектор; если есть доказательства, создаётся находка `{rule_id, level, evidence[], legal_basis[], fix}`.
-- Если у правила `verified: false`, в отчёте у находки стоит пометка «норма не подтверждена юристом».
-- Оценка: 100 − 15·🔴 − 5·🟡 − 1·⚪, минимум 0.
-- `rules/countries.yaml` (Роль 2, R-10) задаёт перечень «адекватных» стран по ПКМ № 415.
+### 2.4 detectors/ + rules/ — how a decision is made
+- A detector is a pure function `detect(facts, params) -> list[Evidence]`. It is easy to cover with tests on fixtures.
+- A rule (`rules/<ID>.yaml`, schema in passport §11.2) names the detector, the level, the legal basis and how to fix it.
+- The engine calls the detector for each rule; if there is evidence, it creates a finding `{rule_id, level, evidence[], legal_basis[], fix}`.
+- If a rule has `verified: false`, its finding in the report is marked "norm not confirmed by the lawyer".
+- Score: 100 − 15·🔴 − 5·🟡 − 1·⚪, minimum 0.
+- `rules/countries.yaml` (Role 2, R-10) sets the list of "adequate" countries under CMR No. 415.
 
-### 2.5 llm/ — только тексты
-- `policy.py`: текст политики → JSON с полями `elements` (есть ли оператор, цели, сроки, права субъекта, трансграничная передача, контакт) и `claims` («храним в РУз», «не передаём третьим лицам», «используем Google Analytics»…). **У каждого пункта дословная цитата.** Если цитаты в тексте нет, код отбрасывает пункт (приём из lex-rag).
-- `mismatch.py`: `claims` × факты → противоречия (PD-MIS-01). Сопоставление делает код, LLM только нормализует формулировки обещаний.
-- `explain.py`: находка → 2–3 предложения простым языком на UZ и RU.
-- Модели: `claude-sonnet-5-5` для документов, `claude-haiku-5-5` для массового скана и объяснений. Ключ — `ANTHROPIC_API_KEY` в `.env`.
+### 2.5 llm/ — texts only
+- `policy.py`: policy text → JSON with the fields `elements` (whether the policy names the operator, purposes, retention periods, data subject rights, cross-border transfer, a contact) and `claims` ("we store data in Uzbekistan", "we don't share with third parties", "we use Google Analytics"…). **Every item has a verbatim quote.** If the quote is not in the text, the code drops the item (a technique taken from lex-rag).
+- `mismatch.py`: `claims` × facts → contradictions (PD-MIS-01). The code does the matching; the LLM only normalizes the wording of the promises.
+- `explain.py`: finding → 2–3 plain-language sentences in UZ and RU.
+- Models: `claude-sonnet-5-5` for documents, `claude-haiku-5-5` for mass scans and explanations. The key is `ANTHROPIC_API_KEY` in `.env`.
 
-### 2.6 legal/ — законы
-- `lexrag.py`: клиент к API lex-rag (`POST /v1/rag/query`, Bearer). По `legal_basis` из правила достаёт актуальную цитату и ссылку. Переменные `LEXRAG_URL`, `LEXRAG_API_KEY` в `.env`.
-- `monitor.py` (после чекпоинта): RSS `lex.uz/ru/rss` раз в час + ежедневная сверка хешей статей отслеживаемых актов → алерт и `verified:false` у затронутых правил.
-- **lex-rag сделан до хакатона,** поэтому заявляем его жюри (п. 6.5). Его код в этот репозиторий не копируем, вызываем как внешний сервис.
+### 2.6 legal/ — laws
+- `lexrag.py`: a client for the lex-rag API (`POST /v1/rag/query`, Bearer). Using a rule's `legal_basis`, it fetches the current quote and link. The variables `LEXRAG_URL` and `LEXRAG_API_KEY` go in `.env`.
+- `monitor.py` (after the checkpoint): the RSS feed `lex.uz/ru/rss` every hour + a daily check of article hashes of the tracked acts → an alert and `verified:false` on the affected rules.
+- **lex-rag was built before the hackathon,** so we declare it to the jury (clause 6.5). We don't copy its code into this repository; we call it as an external service.
 
 ### 2.7 API (FastAPI)
 
-| Метод | Путь | Что делает |
+| Method | Path | What it does |
 |---|---|---|
-| POST | `/api/scans` | `{url, mode}` → `{scan_id}`, скан запускается в фоне |
-| GET | `/api/scans/{id}/events` | SSE: живая лента («найден трекер Meta → США») |
-| GET | `/api/scans/{id}` | Итог: оценка, находки, факты |
-| GET | `/api/scans/{id}/har` | Доказательства |
-| GET | `/api/stats` | Обезличенная статистика батч-скана |
+| POST | `/api/scans` | `{url, mode}` → `{scan_id}`; the scan runs in the background |
+| GET | `/api/scans/{id}/events` | SSE: the live feed ("Meta tracker found → USA") |
+| GET | `/api/scans/{id}` | The result: score, findings, facts |
+| GET | `/api/scans/{id}/har` | Evidence |
+| GET | `/api/stats` | Anonymized batch-scan statistics |
 
 ### 2.8 frontend/
-React + Vite + TypeScript + Tailwind, один экран:
-1. Поле URL и кнопка «Tekshirish».
-2. **Живая лента** событий скана (SSE). Это главный вау-момент на демо.
-3. Отчёт: оценка 0–100, находки по уровням со статьями и «как исправить», **карта потоков данных** (Узбекистан → страны), вкладка «доказательства».
-4. Языки: узбекский (латиница) и русский.
+React + Vite + TypeScript + Tailwind, one screen:
+1. A URL field and a "Tekshirish" ("Check") button.
+2. A **live feed** of scan events (SSE). This is the main wow moment of the demo.
+3. The report: score 0–100, findings by level with law articles and "how to fix", a **data flow map** (Uzbekistan → countries), an "evidence" tab.
+4. Languages: Uzbek (Latin) and Russian.
 
 ### 2.9 demo-site/
-Статичный интернет-магазин «Demo Market», специально с нарушениями. Каждое нарушение соответствует одному правилу:
+A static online shop, "Demo Market", built with violations on purpose. Each violation matches one rule:
 
-| Нарушение | Правило |
+| Violation | Rule |
 |---|---|
-| Meta Pixel и Google Analytics грузятся до согласия | PD-TRK-01, PD-LOC-02 |
-| Форма «Buyurtma» (имя, телефон, ПИНФЛ) без согласия, отправка в `api.telegram.org` | PD-CNS-01, PD-PII-01, PD-LOC-01 |
-| Страница «Selfie bilan tasdiqlash» (камера) | PD-BIO-01 |
-| В политике написано «ma'lumotlar faqat O'zbekistonda saqlanadi, uchinchi shaxslarga berilmaydi» | PD-MIS-01 |
-| Вебвизор / Clarity | PD-REC-01 |
+| Meta Pixel and Google Analytics load before consent | PD-TRK-01, PD-LOC-02 |
+| The "Buyurtma" (order) form (name, phone, PINFL) has no consent and is sent to `api.telegram.org` | PD-CNS-01, PD-PII-01, PD-LOC-01 |
+| A "Selfie bilan tasdiqlash" (selfie verification) page that uses the camera | PD-BIO-01 |
+| The policy says "ma'lumotlar faqat O'zbekistonda saqlanadi, uchinchi shaxslarga berilmaydi" ("data is stored only in Uzbekistan and is not passed to third parties") | PD-MIS-01 |
+| Webvisor / Clarity | PD-REC-01 |
 
-ID трекеров фальшивые, реальные данные никуда не уходят, но запросы видны. Канарейки (режим 2) показываем на этом же сайте.
+The tracker IDs are fake, so no real data goes anywhere, but the requests are visible. We show canaries (mode 2) on the same site.
 
-## 3. Структура репозитория
+## 3. Repository structure
 
 ```
 lexhack/
   PASSPORT.md  ARCHITECTURE.md  CLAUDE.md  .env.example
   backend/
     qalqon/
-      api.py  store.py  config.py  scan.py      ← scan.py: CLI «python -m qalqon.scan URL»
+      api.py  store.py  config.py  scan.py      ← scan.py: CLI "python -m qalqon.scan URL"
       scanner/  crawler.py  hooks.js  forms.py  documents.py
       enrich/   geo.py  trackers.py  dns.py
-      detectors/  __init__.py (реестр)  locality.py  trackers.py  forms.py  biometrics.py  backends.py  security.py
+      detectors/  __init__.py (registry)  locality.py  trackers.py  forms.py  biometrics.py  backends.py  security.py
       rules_engine.py
       llm/      client.py  policy.py  mismatch.py  explain.py
       legal/    lexrag.py  monitor.py
-    data/       uz_asn.yaml  uz_services.yaml  (geo/ — вне git)
+    data/       uz_asn.yaml  uz_services.yaml  (geo/ — outside git)
     tests/      fixtures/ (facts.json)  test_detectors.py  test_rules.py
     requirements.txt
-  rules/        *.yaml  countries.yaml         ← Роль 2
+  rules/        *.yaml  countries.yaml         ← Role 2
   frontend/
   demo-site/
-  research/  pitch/                            ← Роли 2 и 3
+  research/  pitch/                            ← Roles 2 and 3
 ```
 
-## 4. План сборки
+## 4. Build plan
 
-Каждый шаг заканчивается проверяемым результатом. После каждого шага: коммит → `git pull --rebase` → прочитать новый ресёрч ребят → push.
+Each step ends with a result we can check. After every step: commit → `git pull --rebase` → read the team's new research → push.
 
-| # | Когда | Шаг | Готово, когда |
+| # | When | Step | Done when |
 |---|---|---|---|
-| 0 | 20.11 ~19:00 | Каркас: venv, requirements, `playwright install chromium`, `.env.example`, FastAPI `/health` | `uvicorn` поднимается, Chromium открывает страницу |
-| 1 | до ~20:00 | **scanner**: обход + перехват + куки + IP серверов → `facts.json` | `python -m qalqon.scan https://lex.uz` печатает число страниц, запросов и сторонних хостов |
-| 2 | до ~20:30 | **enrich**: гео/ASN/CDN + трекеры. **demo-site** v1 | В `facts.json` у запросов есть `country` и `tracker`; демо-сайт открывается локально |
-| 3 | до 21:00 | **формы + хуки + JS-разбор**, детекторы и 3 правила (PD-LOC-01, PD-TRK-01, PD-CNS-01, пока черновые YAML) | Скан демо-сайта выдаёт 3+ находки с уровнями и оценкой |
-| 4 | вечер/ночь | Батч-скан по списку сайтов от Роли 3 → `/api/stats` (обезличенно) | Есть цифра «X% из N сайтов…» |
-| 5 | 21.11 10:00–11:30 | **llm**: разбор политики + PD-MIS-01; правила Роли 2 подключены | На демо-сайте находится противоречие «политика vs поведение» с цитатой |
-| 6 | 11:30–13:00 | **frontend**: URL → живая лента → отчёт (без карты) | Полный сценарий в браузере за ~1 мин |
-| 7 | 13:00–14:00 | README, схема, тесты детекторов, репетиция 10 минут для каждого ментора | — |
-| — | **14:00** | **ЧЕКПОИНТ** | |
-| 8 | после | Карта потоков, канарейки, lex-rag цитаты, монитор lex.uz, PDF-отчёт, генерация документов | Для финала |
+| 0 | 20.11 ~19:00 | Skeleton: venv, requirements, `playwright install chromium`, `.env.example`, FastAPI `/health` | `uvicorn` starts and Chromium opens a page |
+| 1 | by ~20:00 | **scanner**: crawl + interception + cookies + server IPs → `facts.json` | `python -m qalqon.scan https://lex.uz` prints the number of pages, requests and third-party hosts |
+| 2 | by ~20:30 | **enrich**: geo/ASN/CDN + trackers. **demo-site** v1 | Requests in `facts.json` have `country` and `tracker`; the demo site opens locally |
+| 3 | by 21:00 | **forms + hooks + JS parsing**, detectors and 3 rules (PD-LOC-01, PD-TRK-01, PD-CNS-01; draft YAML for now) | A scan of the demo site gives 3+ findings with levels and a score |
+| 4 | evening/night | Batch scan over the list of sites from Role 3 → `/api/stats` (anonymized) | We have a number: "X% of N sites…" |
+| 5 | 21.11 10:00–11:30 | **llm**: policy parsing + PD-MIS-01; Role 2's rules connected | A "policy vs behavior" contradiction with a quote is found on the demo site |
+| 6 | 11:30–13:00 | **frontend**: URL → live feed → report (no map) | The full scenario runs in the browser in ~1 min |
+| 7 | 13:00–14:00 | README, diagram, detector tests, a 10-minute rehearsal for each mentor | — |
+| — | **14:00** | **CHECKPOINT** | |
+| 8 | after | Flow map, canaries, lex-rag quotes, lex.uz monitor, PDF report, document generation | For the final |
 
-**Что режем, если не успеваем (по порядку):** карта → PDF → DNS/crt.sh → батч. **Не режем никогда:** живой скан, находки со статьями, PD-MIS-01.
+**What we cut if we fall behind (in this order):** map → PDF → DNS/crt.sh → batch scan. **Never cut:** the live scan, findings with law articles, PD-MIS-01.
 
-## 5. Сценарий демо (2 минуты)
-1. Вводим адрес Demo Market. Живая лента: «Meta → США, до согласия», «форма: телефон и ПИНФЛ → api.telegram.org», «камера запрошена».
-2. Отчёт: оценка 23/100. Находка 🔴 «Политика обещает хранить данные только в Узбекистане, а заявки уходят в Telegram» — показываем цитату из политики рядом с запросом.
-3. Клик по статье: цитата ст. 27-1 с lex.uz (через lex-rag).
-4. Слайд со статистикой батч-скана: «X% из N популярных сайтов передают данные за рубеж до согласия» (обезличенно).
+## 5. Demo script (2 minutes)
+1. We enter the Demo Market address. Live feed: "Meta → USA, before consent", "form: phone and PINFL → api.telegram.org", "camera requested".
+2. Report: score 23/100. Finding 🔴 "The policy promises to store data only in Uzbekistan, but leads go to Telegram" — we show the quote from the policy next to the request.
+3. Click on the article: the quote of art. 27-1 from lex.uz (via lex-rag).
+4. A slide with batch-scan statistics: "X% of N popular sites send data abroad before consent" (anonymized).
 
-## 6. Технические риски
+## 6. Technical risks
 
-| Риск | Что делаем |
+| Risk | What we do |
 |---|---|
-| Защита от ботов (Cloudflare challenge) | Помечаем сайт «закрыт от проверки», клиент добавляет нас в белый список |
-| IP за CDN | `country="?"`, честно пишем об этом в отчёте |
-| Формы на чистом JS без `action` | Хуки `fetch`/XHR + разбор JS-файлов; полная картина — в режиме 2 |
-| LLM путается на узбекском | Цитаты обязательны, без цитаты пункт отбрасывается; модель Sonnet для документов |
-| Сеть на площадке | Демо-сайт работает локально; заранее записанное видео демо как запасной план |
-| Время | Порядок урезания из §4 |
-| Условия lex.uz (только личное использование) | В продукте храним только хеши статей, короткие цитаты и ссылки. Просим у Минюста официальный доступ к данным (это есть в призах) — V-17 |
+| Bot protection (Cloudflare challenge) | We mark the site "closed to checking"; the client adds us to their allowlist |
+| IP behind a CDN | `country="?"`, and we say so honestly in the report |
+| Pure-JS forms without an `action` | `fetch`/XHR hooks + JS file parsing; the full picture in mode 2 |
+| The LLM gets confused by Uzbek | Quotes are mandatory, an item without a quote is dropped; the Sonnet model for documents |
+| Network at the venue | The demo site runs locally; a pre-recorded demo video as a backup plan |
+| Time | The cut order from §4 |
+| lex.uz terms (personal use only) | In the product we store only article hashes, short quotes and links. We ask the Ministry of Justice for official data access (it is among the prizes) — V-17 |
