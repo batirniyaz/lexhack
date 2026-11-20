@@ -1,0 +1,12 @@
+# Candidate real sites for the demo, one per sector (D-017). Passive scan only (D-009).
+# Public materials never name them: the report's presentation mode shows "Marketplace A" etc. (D-003).
+# The team confirms the final set; add/replace freely.
+sites:
+  - {sector: marketplace,   label: "Marketplace A",   url: "https://uzum.uz"}
+  - {sector: classifieds,   label: "Classifieds B",   url: "https://www.olx.uz"}
+  - {sector: food_delivery, label: "Delivery C",      url: "https://express24.uz"}
+  - {sector: payments,      label: "Payments D",      url: "https://payme.uz"}
+  - {sector: bank,          label: "Bank E",          url: "https://kapitalbank.uz"}
+  - {sector: telecom,       label: "Telecom F",       url: "https://beeline.uz"}
+  - {sector: jobs,          label: "Jobs G",          url: "https://hh.uz"}
+  - {sector: education,     label: "Education H",     url: "https://najottalim.uz"}

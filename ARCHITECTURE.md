@@ -123,6 +123,8 @@ React + Vite + TypeScript + Tailwind, one screen:
 4. Languages: Uzbek (Latin) and Russian.
 
 ### 2.9 demo-site/
+
+> **Superseded by D-017 (20.11, 19:45):** we do not build "Demo Market". The demo uses **real sites, one per sector** (`backend/data/reference_sites.yaml`), scanned passively, pre-scanned and cached, shown **anonymized** in presentation mode ("Marketplace A", "Telecom F"…). Golden tests use frozen `facts.json` files from these scans. A tiny local test page may be added later only to show active mode (canaries), which is not allowed on real sites (D-009). The original plan below is kept for reference.
 A static online shop, "Demo Market", built with violations on purpose. Each violation matches one rule:
 
 | Violation | Rule |
@@ -168,6 +170,8 @@ lexhack/
 ## 4. Build plan
 
 **Progress:** step 0 ✅ (venv, deps, health API) · step 1 ✅ 20.11 19:30 — `python -m qalqon.scan <url>` crawls with priority to contact/terms/login pages, records every request with server IP, cookies (landing vs later), storage keys, HAR; `--events` streams JSON lines; SSRF guard refuses private targets. Tested on lex.uz: 4 pages, 138 requests, 12 third-party hosts.
+· step 4 (batch) pulled forward ✅ 20.11 19:45 — `python -m qalqon.batch data/reference_sites.yaml` scanned 8 real sites in parallel, all reachable. **Known gap:** SPA sites yield only 1 page (links are rendered late or are router buttons) → add `sitemap.xml` + common paths (`/contact`, `/privacy`, `/oferta`…) and a wait for `a[href]` in step 2.
+· lex-rag integration verified: `POST {LEXRAG_URL}/v1/rag/query` returns the official Uzbek text of art. 27¹ with citation and edition date in ~7 s.
 
 Each step ends with a result we can check. After every step: commit → `git pull --rebase` → read the team's new research → push.
 

@@ -3,7 +3,7 @@
 > **Working name:** Qalqon ("shield")
 > **Hackathon:** LexHackathon 2026, TSUL, Tashkent, 20–22 November
 > **Track:** 1 — "Huquqiy xizmatlarni ko'rsatish" (legal services)
-> **Passport version:** 0.6 · 20.11.2026, 20:00
+> **Passport version:** 0.7 · 20.11.2026, 19:45
 > **Document owner:** Role 1 (Tech/AI lead). Others send changes in the formats from §11.
 
 ---
@@ -463,6 +463,7 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 | D-014 | 20.11 | "Qalqon" ("shield" in Uzbek) is a **working name** only; the final name is chosen by the team later | Placeholder so files and code have a stable name |
 | D-015 | 20.11 | Adopted from `research/architecture-proposal.md`: scan in a separate process (Playwright vs `uvicorn --reload` on Windows), "collect once, evaluate many" (`rescore`), score per triggered rule, SSRF guard, demo site in bad + fixed versions with a golden test. Kept SSE instead of polling (D-012) | Robust demo, instant re-evaluation when rules change |
 | D-016 | 20.11 | Scanner navigation: `goto(wait_until="commit")` + fixed observation window, never `load`/`networkidle` | Verified on lex.uz: a hanging third-party script blocks `load` forever |
+| D-017 | 20.11 | **No "Demo Market".** The demo uses real sites, one per sector (`backend/data/reference_sites.yaml`): passive scan only, pre-scanned and cached, one live scan on stage. In anything public they are anonymized ("Marketplace A", "Telecom F"); D-003 still applies. Active mode (canaries) is not shown on real sites (D-009) | Real findings are more convincing and save build time; anonymity avoids naming companies at a Ministry event |
 
 ---
 
@@ -517,3 +518,4 @@ Assistants don't challenge these decisions. Only the team can change them, with 
   - the passport translated into English; team documents are now written in English (§0.6, `CLAUDE.md`). Interface and pitch texts stay in Uzbek (Latin) and Russian. No other content changes;
   - abbreviations ZRU, CMR, PP and TSUL added to the glossary (§17).
 - **0.6** — 20.11 20:00 — decisions D-014 (working name), D-015 (adopted parts of the research architecture proposal), D-016 (navigation strategy). Backend skeleton + virtualenv ready (ARCHITECTURE.md step 0). Open question for the team: the scope extension in `research/scope-extension-proposal.md` (product check for builders) — not decided yet.
+- **0.7** — 20.11 19:45 — D-017: real reference sites instead of Demo Market. Batch scan of 8 sectors done; lex-rag API verified. **Task for Role 3:** confirm/replace the candidate sites per sector in `backend/data/reference_sites.yaml` (missing: clinic/medical, insurance, real estate) — send proposals in `research/`.
