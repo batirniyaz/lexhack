@@ -111,7 +111,7 @@ export function LiveScan({ scanId, initialUrl, replay, onFinished }: {
   }, [state.log.length])
 
   const domain = siteDomain(state.url || initialUrl)
-  const mask = (text: string) => (anon && domain ? text.split(domain).join('sayt') : text)
+  const mask = (text: string) => (anon && domain ? text.split(domain).join(t.site_word) : text)
 
   const countries = useMemo(() => {
     const byCountry = new Map<string, MapCountry>()
@@ -126,7 +126,7 @@ export function LiveScan({ scanId, initialUrl, replay, onFinished }: {
   }, [state.hosts])
 
   const stages = [t.stage_pages, t.stage_network, t.stage_forms, t.stage_policy, t.stage_law]
-  const shownSite = anon ? 'sayt' : domain
+  const shownSite = anon ? t.site_word : domain
 
   return (
     <div>

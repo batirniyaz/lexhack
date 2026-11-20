@@ -73,7 +73,7 @@ export function ScanPage() {
       </div>
     )
   }
-  const displaySite = anon ? (result?.label ?? report.label ?? 'Sayt') : siteDomain(report.site)
+  const displaySite = anon ? (result?.label ?? report.label ?? t.site_word) : siteDomain(report.site)
   return (
     <div className="q-page">
       <ReportView report={report} facts={result?.facts} displaySite={displaySite} />

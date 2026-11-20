@@ -8,7 +8,10 @@ export function Header() {
   return (
     <>
       <header className="q-header">
-        <Link to="/" className="q-logo">Probo</Link>
+        <Link to="/" className="q-logo">
+          <img src="/favicon.svg" alt="" width={22} height={22} />
+          <span>Probo</span>
+        </Link>
         <nav className="q-nav" aria-label="Main">
           <Button variant="ghost" size="sm" label={t.nav_new} onClick={() => navigate('/')} />
           <Button variant="ghost" size="sm" label={t.nav_history} onClick={() => navigate('/history')} />

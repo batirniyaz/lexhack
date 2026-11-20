@@ -104,7 +104,7 @@ export function FlowMap({ data, live = false }: { data: MapCountry[]; live?: boo
               opacity={0.85} />
           )
         })}
-        <circle cx={origin[0]} cy={origin[1]} r={4.5} fill="var(--q-origin)" stroke="#fff" strokeWidth={2} />
+        <circle cx={origin[0]} cy={origin[1]} r={4.5} fill="var(--q-origin)" stroke="var(--q-paper)" strokeWidth={2} />
       </svg>
       {tip && (
         <div className="q-map-tip" style={{ left: tip.x, top: tip.y }}>

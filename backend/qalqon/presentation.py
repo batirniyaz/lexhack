@@ -85,6 +85,14 @@ def replay_events(scan_dir: Path) -> Iterator[dict]:
         for form in facts.get("forms", []):
             if form.get("collects_pd") and form["pages"][0] == page["final_url"]:
                 yield {"type": "form", "page": page["final_url"], "pd": form["pd_categories"], "consent": form["has_consent"]}
+        for doc in facts.get("documents", []):
+            if doc.get("visited") and doc.get("url") == page["final_url"]:
+                yield {"type": "document", "kind": doc.get("kind"), "url": doc["url"]}
+    policy = facts.get("policy") or {}
+    if policy:
+        yield {"type": "policy_start"}
+        yield {"type": "policy", "status": policy.get("status"), "reason": policy.get("reason"),
+               "documents": policy.get("documents"), "claims": len(policy.get("claims", [])), "cached": True}
     for finding in report.get("findings", []):
         yield {"type": "finding", "rule_id": finding["rule_id"], "level": finding["level"],
                "title": finding["title"], "evidence": [e["summary"] for e in finding["evidence"][:5]]}
