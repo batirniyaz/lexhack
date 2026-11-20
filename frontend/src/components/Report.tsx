@@ -8,7 +8,7 @@ import { Collapsible } from '@astryxdesign/core/Collapsible'
 import { Link } from '@astryxdesign/core/Link'
 import { Table, proportional } from '@astryxdesign/core/Table'
 import { TabList, Tab } from '@astryxdesign/core/TabList'
-import { api, authQuery, type Facts, type Finding, type Host, type Level, type Report } from '../api'
+import { api, authQuery, type Seal, type Facts, type Finding, type Host, type Level, type Report } from '../api'
 import { CATEGORY, CLAIM, ELEMENT, PD_TYPE, countryName, formatDate, useSettings } from '../i18n'
 import { FlowMap, statusKey, type MapCountry } from './FlowMap'
 
@@ -154,7 +154,7 @@ function FindingItem({ finding, open }: { finding: Finding; open: boolean }) {
                         {c.parts.map((p, j) => <span key={j} className="q-quote-part">{p.text}</span>)}
                       </blockquote>
                       <div className="q-quote-meta">
-                        {t.cite_meta(c.edition_date ? formatDate(c.edition_date) : '—')}
+                        {t.cite_meta(c.edition_date ? c.edition_date.split('-').reverse().join('.') : '—')}
                         {c.url && <> · <Link href={c.url}>{t.open_lex}</Link></>}
                       </div>
                     </div>
@@ -318,7 +318,43 @@ function FormsView({ facts }: { facts?: Facts }) {
 interface PageRow extends Record<string, unknown> { url: string; status: string; title: string }
 interface CookieRow extends Record<string, unknown> { key: string; name: string; domain: string; third: string; landing: string }
 
-function EvidenceView({ facts, scanId }: { facts?: Facts; scanId?: string }) {
+/** Scope + integrity: what was checked, from where, with which rules; hashes and the Ed25519 signature (F-19). */
+function SealView({ report, seal, scanId }: { report: Report; seal?: Seal | null; scanId?: string }) {
+  const { t } = useSettings()
+  const scope = report.scope
+  if (!scope) return null
+  const rows: [string, React.ReactNode][] = [
+    [t.seal_mode, t.seal_passive],
+    [t.seal_vantage, scope.vantage ?? t.seal_vantage_unknown],
+    [t.seal_when, scope.scanned_at ? formatDate(scope.scanned_at) : '—'],
+    [t.seal_pages, t.scanned(scope.pages_count ?? 0, scope.requests ?? 0)],
+    [t.seal_rules, <span className="q-mono">{scope.rules_version}</span>],
+  ]
+  if (scope.llm?.model) rows.push([t.seal_model, <span className="q-mono">{scope.llm.model} · {scope.llm.prompt_version}</span>])
+  if (seal) {
+    rows.push(['SHA-256 · report', <span className="q-mono q-hash">{seal.statement.sha256.report}</span>])
+    if (seal.statement.sha256.facts) rows.push(['SHA-256 · facts', <span className="q-mono q-hash">{seal.statement.sha256.facts}</span>])
+    if (seal.statement.sha256.har) rows.push(['SHA-256 · HAR', <span className="q-mono q-hash">{seal.statement.sha256.har}</span>])
+    rows.push([t.seal_signature, <span>{seal.algorithm} · <span className="q-mono">{seal.statement.key_id}</span> · {formatDate(seal.statement.sealed_at)}</span>])
+  }
+  return (
+    <section>
+      <h3 style={{ fontSize: 16, margin: '0 0 10px' }}>{t.seal_title}</h3>
+      <dl className="q-dl">
+        {rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+      </dl>
+      <p className="q-muted" style={{ fontSize: 13, margin: '10px 0 0' }}>{t.seal_note}</p>
+      {seal && scanId && (
+        <div style={{ display: 'flex', gap: 16, marginTop: 10, flexWrap: 'wrap' }}>
+          <Link href={`/api/scans/${scanId}/evidence?${authQuery(scanId)}`}>{t.seal_download}</Link>
+          <Link href="/verify">{t.seal_verify}</Link>
+        </div>
+      )}
+    </section>
+  )
+}
+
+function EvidenceView({ facts, scanId, report, seal }: { facts?: Facts; scanId?: string; report: Report; seal?: Seal | null }) {
   const { t } = useSettings()
   if (!facts) return null
   const pages: PageRow[] = facts.pages.map((p) => ({ url: p.final_url, status: String(p.status ?? '—'), title: p.title ?? '' }))
@@ -328,6 +364,7 @@ function EvidenceView({ facts, scanId }: { facts?: Facts; scanId?: string }) {
   }))
   return (
     <div style={{ display: 'grid', gap: 36 }}>
+      <SealView report={report} seal={seal} scanId={scanId} />
       {scanId && <div><Link href={`/api/scans/${scanId}/har?${authQuery(scanId)}`}>{t.ev_har}</Link></div>}
       <section>
         <h3 style={{ fontSize: 16, margin: '0 0 10px' }}>{t.ev_pages}</h3>
@@ -370,9 +407,10 @@ interface ReportViewProps {
   scanId?: string
   domain?: string
   readonly?: boolean
+  seal?: Seal | null
 }
 
-export function ReportView({ report, facts, displaySite, scanId, domain, readonly = false }: ReportViewProps) {
+export function ReportView({ report, facts, displaySite, scanId, domain, readonly = false, seal }: ReportViewProps) {
   const { t } = useSettings()
   const navigate = useNavigate()
   const [tab, setTab] = useState<TabKey>('overview')
@@ -443,7 +481,7 @@ export function ReportView({ report, facts, displaySite, scanId, domain, readonl
       case 'forms':
         return <FormsView facts={facts} />
       case 'evidence':
-        return <EvidenceView facts={facts} scanId={printing ? undefined : scanId} />
+        return <EvidenceView facts={facts} scanId={printing ? undefined : scanId} report={report} seal={seal} />
     }
   }
 

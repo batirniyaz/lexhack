@@ -17,6 +17,7 @@ from datetime import datetime
 
 from .config import SCANS_DIR
 from .enrich import enrich_event, enrich_facts
+from .evidence import write_seal
 from .llm.policy import analyze_policy
 from .rules_engine import evaluate, format_report
 from .scanner.crawler import crawl
@@ -99,6 +100,7 @@ def main(argv: list[str] | None = None) -> int:
     (out_dir / "facts.json").write_text(json.dumps(facts, ensure_ascii=False, indent=2), encoding="utf-8")
     report = evaluate(facts)
     (out_dir / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_seal(out_dir)  # hashes + Ed25519 signature (F-19)
 
     for finding in report["findings"]:
         emit({"type": "finding", "rule_id": finding["rule_id"], "level": finding["level"],

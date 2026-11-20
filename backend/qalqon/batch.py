@@ -18,6 +18,7 @@ import yaml
 
 from .config import SCANS_DIR
 from .enrich import enrich_facts
+from .evidence import write_seal
 from .llm.policy import analyze_policy
 from .rules_engine import evaluate
 from .scanner.crawler import crawl
@@ -47,6 +48,7 @@ async def _scan_one(entry: dict, out_root: Path, max_pages: int, sem: asyncio.Se
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "facts.json").write_text(json.dumps(facts, ensure_ascii=False, indent=2), encoding="utf-8")
     (out_dir / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_seal(out_dir)
     row["score"] = report["score"]
     icons = {"violation": "🔴", "risk": "🟡", "recommendation": "⚪"}
     row["findings"] = [f"{icons.get(f['level'], '?')}{f['rule_id']}" for f in report["findings"]]

@@ -11,3 +11,4 @@ httpx==0.28.1
 anthropic==2.11.0
 tldextract==5.4.0
 pytest==9.2.0
+cryptography==46.0.3

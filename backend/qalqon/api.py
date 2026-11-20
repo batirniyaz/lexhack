@@ -22,6 +22,7 @@ from sse_starlette.sse import EventSourceResponse
 from . import __version__
 from .config import REPO_ROOT, SCANS_DIR, settings
 from . import guard
+from .evidence import public_key_b64, key_id, verify as verify_seal
 from .guard import check_scan_allowed, is_owner, issue_scan_token, require_owner, require_view
 from .jobs import ScanJob, jobs
 from .presentation import aliases_for, anonymize, anonymize_other_references, label_for, replay_events
@@ -232,6 +233,27 @@ async def scan_events(scan_id: str, request: Request, replay: bool = False):
     return EventSourceResponse(live())
 
 
+@app.get("/api/scans/{scan_id:path}/evidence")
+def scan_evidence(scan_id: str, request: Request):
+    """Signed seal of the report (hashes of facts, HAR and report; Ed25519). Check it at /verify."""
+    require_view(request, scan_id)
+    path = _scan_dir(scan_id) / "seal.json"
+    if not path.exists():
+        raise HTTPException(404, "no seal for this scan")
+    return FileResponse(path, media_type="application/json", filename=f"{Path(scan_id).name}-evidence.json")
+
+
+@app.get("/api/verify/key")
+def verify_key() -> dict:
+    return {"algorithm": "Ed25519", "public_key": public_key_b64(), "key_id": key_id()}
+
+
+@app.post("/api/verify")
+def verify(seal: dict) -> dict:
+    """Anyone can check an evidence file: valid signature, our key, and a report this server issued."""
+    return verify_seal(seal)
+
+
 @app.get("/api/scans/{scan_id:path}/har")
 def scan_har(scan_id: str, request: Request):
     require_view(request, scan_id)
@@ -272,6 +294,8 @@ def _scan_result(scan_id: str, anon: bool = False, facts: bool = False) -> dict:
         domains = domains + [d.replace(".", "-") for d in domains]
         result = anonymize(result, domains, label_for(site), aliases_for(site))
         result = anonymize_other_references(result, site)
+    if not anon:
+        result["seal"] = _read_json(scan_dir / "seal.json")
     # Set after anonymizing: the frontend needs it for the site-history link (in presentation mode use full screen,
     # so the address bar with the domain is not visible).
     result["domain"] = registrable_domain(host_of(site))

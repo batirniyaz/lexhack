@@ -8,6 +8,7 @@ import { ScanPage } from './pages/ScanPage'
 import { History } from './pages/History'
 import { SitePage } from './pages/SitePage'
 import { SharedPage } from './pages/SharedPage'
+import { VerifyPage } from './pages/VerifyPage'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
               <Route path="/history" element={<History />} />
               <Route path="/sites/:domain" element={<SitePage />} />
               <Route path="/r/:token" element={<SharedPage />} />
+              <Route path="/verify" element={<VerifyPage />} />
               <Route path="*" element={<Home />} />
             </Routes>
           </main>

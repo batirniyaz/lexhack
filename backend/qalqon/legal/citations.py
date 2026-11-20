@@ -66,7 +66,10 @@ def fetch_article(act: str, article: str, *, use_cache: bool = True) -> Optional
         start = chunk.find(text)
         if text.rstrip().endswith(":") and start >= 0:
             # A part that introduces a list ("…shart:"): keep the list items from the same lex.uz chunk.
-            text = chunk[start:start + 700].strip()
+            text = chunk[start:].strip()
+            if len(text) > 1500:  # very long list: cut at a line end, never mid-word
+                cut = text.rfind("\n", 0, 1500)
+                text = text[:cut if cut > 0 else 1500].rstrip() + "\n…"
         parts.append({"part": c.get("part"), "text": text})
     system = data.get("system") or {}
     return {

@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 
 from .enrich import enrich_facts
+from .evidence import write_seal
 from .llm.policy import analyze_policy
 from .rules_engine import evaluate, format_report
 
@@ -30,6 +31,7 @@ def rescore_file(facts_path: Path, re_enrich: bool, llm: bool = False, llm_force
         facts_path.write_text(json.dumps(facts, ensure_ascii=False, indent=2), encoding="utf-8")
     report = evaluate(facts)
     (facts_path.parent / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_seal(facts_path.parent)
     return report
 
 

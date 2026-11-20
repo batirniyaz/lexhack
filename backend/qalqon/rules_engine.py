@@ -12,6 +12,7 @@ from pathlib import Path
 
 import yaml
 
+from .evidence import scope
 from .legal.citations import attach_quotes
 from .config import BACKEND_DIR, RULES_DIR
 from .detectors import DETECTORS
@@ -75,6 +76,7 @@ def evaluate(facts: dict) -> dict:
         "scanned_at": facts.get("scanned_at"),
         "countries_list": list_info(),
         "stats": facts.get("stats"),
+        "scope": scope(facts),  # what, when, from where, which rules/model (F-27)
     }
     if facts.get("blocked"):
         return {**base, "status": "blocked", "blocked": facts["blocked"], "score": None,

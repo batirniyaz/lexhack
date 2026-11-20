@@ -62,6 +62,40 @@ export interface Report {
   flows: Flow[]
   stats: Stats
   label?: string
+  scope?: Scope
+}
+/** What was checked, when, from where, with which rules and model (backend/qalqon/evidence.py). */
+export interface Scope {
+  mode: string
+  pages: string[]
+  pages_count: number | null
+  requests: number | null
+  scanned_at: string | null
+  vantage: string | null
+  scanner_version: string
+  rules_version: string
+  llm: { model: string | null; prompt_version: string | null } | null
+}
+export interface Seal {
+  statement: {
+    issuer: string
+    scan_id: string | null
+    site: string
+    scanned_at: string
+    score: number | null
+    sha256: { report: string; facts: string | null; har: string | null }
+    sealed_at: string
+    key_id: string
+  }
+  algorithm: string
+  public_key: string
+  signature: string
+}
+export interface VerifyResult {
+  valid_signature: boolean
+  our_key: boolean
+  known_report: boolean
+  statement?: Seal['statement']
 }
 export interface Host {
   host: string
@@ -117,6 +151,7 @@ export interface ScanResult {
   label?: string
   domain?: string | null
   scan_id?: string | null
+  seal?: Seal | null
 }
 export interface ScanListItem {
   scan_id: string
@@ -213,6 +248,14 @@ export const api = {
     getJson<ScanResult>(`/api/scans/${scanId}?facts=1${anon ? '&anon=1' : ''}`, scanId),
   health: () => getJson<{ public_mode: boolean; owner: boolean }>('/api/health'),
   sample: () => getJson<{ token: string; result: ScanResult }>('/api/sample'),
+  verify: async (seal: unknown): Promise<VerifyResult> => {
+    const response = await fetch('/api/verify', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(seal),
+    })
+    if (!response.ok) throw new ApiError(response.status, 'verify failed')
+    return response.json()
+  },
+  verifyKey: () => getJson<{ algorithm: string; public_key: string; key_id: string }>('/api/verify/key'),
   list: () => getJson<ScanListItem[]>('/api/scans?limit=100'),
   stats: () => getJson<MarketStats>('/api/stats'),
   site: (domain: string, anon: boolean) => getJson<SiteHistory>(`/api/sites/${encodeURIComponent(domain)}${anon ? '?anon=1' : ''}`),

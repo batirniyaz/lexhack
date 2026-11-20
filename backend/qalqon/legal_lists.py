@@ -44,8 +44,8 @@ def country_status(country: Optional[str], dpf: Optional[bool] = None) -> str:
         return "adequate"
     if country in lists["conditional"]:
         return "conditional_met" if dpf else "conditional_unknown"
-    if country in lists["not_listed_confirmed"]:
-        return "not_listed"
+    if country in lists["not_listed_confirmed"] or lists.get("complete"):
+        return "not_listed"  # the CMR 415 annex is a closed list (rules/countries.yaml: complete: true, D-028)
     return "not_in_known_list"
 
 

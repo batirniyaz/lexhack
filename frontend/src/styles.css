@@ -166,3 +166,16 @@ body { font-family: var(--font-family-body); }
   .q-finding { break-inside: avoid; }
   a { color: inherit; }
 }
+
+/* Scope + integrity (evidence seal) and the /verify page */
+.q-dl { display: grid; gap: 6px; margin: 0; }
+.q-dl > div { display: grid; grid-template-columns: minmax(150px, 220px) 1fr; gap: 12px; align-items: baseline; }
+.q-dl dt { color: var(--q-muted); font-size: 13px; }
+.q-dl dd { margin: 0; font-size: 14px; min-width: 0; }
+.q-hash { font-size: 12px; overflow-wrap: anywhere; }
+.q-textarea { width: 100%; box-sizing: border-box; font-size: 12px; padding: 10px 12px; border: 1px solid var(--q-rule); border-radius: 8px; background: var(--q-sheet); color: var(--q-ink); resize: vertical; }
+.q-textarea:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.q-file { position: relative; display: inline-flex; align-items: center; font-size: 14px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.q-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.q-file:focus-within { outline: 2px solid currentColor; outline-offset: 2px; }
+@media (max-width: 640px) { .q-dl > div { grid-template-columns: 1fr; gap: 2px; } }

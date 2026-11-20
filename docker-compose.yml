@@ -16,6 +16,8 @@ services:
       # Public demo (backend/qalqon/guard.py): real site names only for the owner (PROBO_OWNER_KEY in .env,
       # open the site once as /?key=<key>); visitors see only the scans they started. D-003, D-017.
       PROBO_PUBLIC: "1"
+      # Where scans run from (checked 21.11: egress IP of this machine is Uzbektelekom, AS8193). Shown in report scope.
+      PROBO_VANTAGE: "UZ — Uzbektelekom, AS8193"
       # Abuse protection; set PROBO_SCAN_KEY in .env to require a key for starting scans.
       PROBO_SCANS_PER_IP_HOUR: "6"
       PROBO_SCANS_PER_DAY: "100"
