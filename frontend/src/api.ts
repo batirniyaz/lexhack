@@ -149,9 +149,12 @@ export class ApiError extends Error {
 
 export const api = {
   startScan: async (url: string, maxPages?: number): Promise<{ scan_id: string }> => {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    const key = localStorage.getItem('q-key')
+    if (key) headers['X-Probo-Key'] = key
     const response = await fetch('/api/scans', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ url, max_pages: maxPages }),
     })
     const body = await response.json().catch(() => ({}))

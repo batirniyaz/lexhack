@@ -1,0 +1,17 @@
+.git
+.claude
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+backend/.venv
+backend/data/geo
+frontend/dist
+scans
+photos
+files
+*.mmdb
+*.har
+.env
+.env.*
+!.env.example
+CLAUDE.local.md

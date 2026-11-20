@@ -18,7 +18,23 @@ def test_scan_refuses_private_targets():
 
 
 def test_scan_id_cannot_escape_scans_dir():
-    assert client.get("/api/scans/../../etc").status_code in (400, 404)
+    # HTTP clients normalize "/api/scans/../../etc" to "/etc" (now served by the SPA), so test the guard directly.
+    import pytest
+    from fastapi import HTTPException
+    import qalqon.api as api_module
+    with pytest.raises(HTTPException) as err:
+        api_module._scan_dir("../../backend")
+    assert err.value.status_code == 400
+
+
+def test_frontend_route_never_serves_files_outside_dist():
+    import qalqon.api as api_module
+    if not api_module.FRONTEND_DIST.exists():
+        return  # frontend not built in this environment
+    response = client.get("/%2e%2e/%2e%2e/.env")
+    assert response.status_code in (200, 404)
+    assert "ANTHROPIC_API_KEY" not in response.text
+    assert client.get("/api/does-not-exist").status_code == 404
 
 
 def test_anonymize_hides_domains_everywhere():
@@ -60,6 +76,25 @@ def test_site_history_diff_delta_and_share(tmp_path, monkeypatch):
     shared = client.get(f"/api/shared/{token}").json()
     assert shared["report"]["score"] == 90 and shared["scan_id"] == "s2"
     assert client.get("/api/shared/not-a-token").status_code == 404
+
+
+def test_scan_rate_limit_and_access_key(monkeypatch):
+    import qalqon.api as api_module
+    from qalqon import guard
+
+    monkeypatch.setattr(api_module.jobs, "start", lambda job: job)  # no real scan
+    monkeypatch.setattr(guard, "PER_IP_HOUR", 2)
+    guard.reset()
+    target = {"url": "http://8.8.8.8"}  # public IP literal: no DNS needed
+    assert client.post("/api/scans", json=target).status_code == 202
+    assert client.post("/api/scans", json=target).status_code == 202
+    assert client.post("/api/scans", json=target).status_code == 429
+
+    guard.reset()
+    monkeypatch.setattr(guard, "SCAN_KEY", "secret-key")
+    assert client.post("/api/scans", json=target).status_code == 403
+    assert client.post("/api/scans", json=target, headers={"X-Probo-Key": "secret-key"}).status_code == 202
+    guard.reset()
 
 
 def test_anonymize_hides_brand_aliases_in_quotes():

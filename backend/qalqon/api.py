@@ -15,11 +15,13 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
 
 from . import __version__
-from .config import SCANS_DIR, settings
+from .config import REPO_ROOT, SCANS_DIR, settings
+from .guard import check_scan_allowed
 from .jobs import ScanJob, jobs
 from .presentation import aliases_for, anonymize, label_for, replay_events
 from .scan import new_scan_id
@@ -64,12 +66,13 @@ def health() -> dict:
 
 
 @app.post("/api/scans", status_code=202)
-async def create_scan(body: ScanRequest) -> dict:
+async def create_scan(body: ScanRequest, request: Request) -> dict:
     url = normalize_url(body.url)
     try:
         check_target(url)
     except TargetNotAllowed as exc:
         raise HTTPException(400, f"target not allowed: {exc}") from exc
+    check_scan_allowed(request)  # rate limits / access key (public deployment)
     job = jobs.start(ScanJob(scan_id=new_scan_id(url), url=url, max_pages=body.max_pages))
     return {"scan_id": job.scan_id, "status": job.status, "events": f"/api/scans/{job.scan_id}/events"}
 
@@ -251,3 +254,19 @@ def stats() -> dict:
         "sites_sending_to_country": dict(country_counts.most_common()),
         "note": "Anonymized: no site names. Passive scan; findings are signs of violation, not legal conclusions.",
     }
+
+
+# --- Built frontend (one container, one port). Declared last so every /api route above wins. ---
+FRONTEND_DIST = REPO_ROOT / "frontend" / "dist"
+
+if FRONTEND_DIST.exists():
+    app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def frontend(full_path: str):
+        if full_path.startswith("api/"):
+            raise HTTPException(404, "not found")
+        candidate = (FRONTEND_DIST / full_path).resolve()
+        if full_path and FRONTEND_DIST.resolve() in candidate.parents and candidate.is_file():
+            return FileResponse(candidate)
+        return FileResponse(FRONTEND_DIST / "index.html")  # SPA routes: /scan/…, /history, /sites/…, /r/…

@@ -149,6 +149,8 @@ const uz = {
   loading: 'Yuklanmoqda…',
   not_found: 'Bunday tekshiruv topilmadi',
   bad_url: 'Manzilni tekshiring: masalan, misol.uz',
+  rate_limited: 'Tekshiruvlar soni chegaralangan. Birozdan keyin qayta urinib koʻring.',
+  key_required: 'Tekshiruvni boshlash uchun kirish kaliti kerak.',
 }
 
 type Dict = typeof uz
@@ -298,6 +300,8 @@ const ru: Dict = {
   loading: 'Загрузка…',
   not_found: 'Такая проверка не найдена',
   bad_url: 'Проверьте адрес: например, primer.uz',
+  rate_limited: 'Число проверок ограничено. Попробуйте чуть позже.',
+  key_required: 'Для запуска проверки нужен ключ доступа.',
 }
 
 const DICTS: Record<Lang, Dict> = { uz, ru }

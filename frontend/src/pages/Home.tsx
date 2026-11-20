@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 import { Button } from '@astryxdesign/core/Button'
 import { Link } from '@astryxdesign/core/Link'
 import { TextInput } from '@astryxdesign/core/TextInput'
-import { api, type MarketStats, type ScanResult } from '../api'
+import { api, ApiError, type MarketStats, type ScanResult } from '../api'
 import { useSettings } from '../i18n'
 import { SaysDoes } from '../components/Report'
 
@@ -44,7 +44,9 @@ export function Home() {
       const { scan_id } = await api.startScan(value)
       navigate(`/scan/${scan_id}?url=${encodeURIComponent(value)}`)
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
+      setError(e instanceof ApiError && e.status === 429 ? t.rate_limited
+        : e instanceof ApiError && e.status === 403 ? t.key_required
+        : e instanceof Error ? e.message : String(e))
       setBusy(false)
     }
   }

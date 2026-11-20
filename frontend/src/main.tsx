@@ -17,6 +17,16 @@ import './styles.css'
 
 import App from './App.tsx'
 
+// Access key for starting scans on the public demo: open the site once with ?key=…, it is kept in this browser.
+const params = new URLSearchParams(window.location.search)
+const accessKey = params.get('key')
+if (accessKey) {
+  localStorage.setItem('q-key', accessKey)
+  params.delete('key')
+  const rest = params.toString()
+  window.history.replaceState(null, '', window.location.pathname + (rest ? `?${rest}` : ''))
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

@@ -1,0 +1,21 @@
+# Probo demo deployment. Secrets come from .env (never baked into the image).
+#   docker compose up -d --build     # build and start (restarts automatically with Docker)
+#   docker compose logs -f probo     # logs
+# Public access goes through the Cloudflare tunnel to 127.0.0.1:8090 (the port is not open to the LAN).
+services:
+  probo:
+    build: .
+    image: probo:latest
+    container_name: probo
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8090:8000"
+    env_file: .env
+    environment:
+      QALQON_HEADLESS: "true"
+      # Abuse protection for the public demo (see backend/qalqon/guard.py); set PROBO_SCAN_KEY in .env to require a key.
+      PROBO_SCANS_PER_IP_HOUR: "6"
+      PROBO_SCANS_PER_DAY: "100"
+    volumes:
+      - ./scans:/app/scans          # scan results, share links and the LLM cache survive rebuilds
+    shm_size: "1gb"                 # Chromium crashes with Docker's default 64 MB /dev/shm
