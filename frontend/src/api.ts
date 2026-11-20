@@ -102,8 +102,8 @@ export interface ScanResult {
   status?: string
   error?: string | null
   label?: string
-  domain?: string
-  scan_id?: string
+  domain?: string | null
+  scan_id?: string | null
 }
 export interface ScanListItem {
   scan_id: string
@@ -130,8 +130,44 @@ export interface MarketStats {
   sites_sending_to_country: Record<string, number>
 }
 
-async function getJson<T>(path: string): Promise<T> {
-  const response = await fetch(path)
+// Public demo (backend guard.py): the owner key unlocks everything; a per-scan token unlocks the scans this
+// browser started. Both live in localStorage and are sent with every request.
+const TOKENS_KEY = 'q-scan-tokens'
+
+function scanTokens(): Record<string, string> {
+  try {
+    return JSON.parse(localStorage.getItem(TOKENS_KEY) || '{}') as Record<string, string>
+  } catch {
+    return {}
+  }
+}
+
+function rememberToken(scanId: string, token: string) {
+  const entries = Object.entries({ ...scanTokens(), [scanId]: token }).slice(-100)
+  localStorage.setItem(TOKENS_KEY, JSON.stringify(Object.fromEntries(entries)))
+}
+
+function authHeaders(scanId?: string): Record<string, string> {
+  const headers: Record<string, string> = {}
+  const key = localStorage.getItem('q-key')
+  if (key) headers['X-Probo-Key'] = key
+  const token = scanId ? scanTokens()[scanId] : undefined
+  if (token) headers['X-Scan-Token'] = token
+  return headers
+}
+
+/** Query string with the same credentials, for plain links and EventSource (they cannot send headers). */
+export function authQuery(scanId?: string): string {
+  const params = new URLSearchParams()
+  const key = localStorage.getItem('q-key')
+  if (key) params.set('key', key)
+  const token = scanId ? scanTokens()[scanId] : undefined
+  if (token) params.set('t', token)
+  return params.toString()
+}
+
+async function getJson<T>(path: string, scanId?: string): Promise<T> {
+  const response = await fetch(path, { headers: authHeaders(scanId) })
   if (!response.ok) {
     const body = await response.json().catch(() => ({}))
     throw new ApiError(response.status, typeof body.detail === 'string' ? body.detail : response.statusText)
@@ -149,9 +185,7 @@ export class ApiError extends Error {
 
 export const api = {
   startScan: async (url: string, maxPages?: number): Promise<{ scan_id: string }> => {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-    const key = localStorage.getItem('q-key')
-    if (key) headers['X-Probo-Key'] = key
+    const headers: Record<string, string> = { 'Content-Type': 'application/json', ...authHeaders() }
     const response = await fetch('/api/scans', {
       method: 'POST',
       headers,
@@ -159,15 +193,18 @@ export const api = {
     })
     const body = await response.json().catch(() => ({}))
     if (!response.ok) throw new ApiError(response.status, typeof body.detail === 'string' ? body.detail : 'error')
+    if (body.token) rememberToken(body.scan_id, body.token)
     return body
   },
   result: (scanId: string, anon: boolean) =>
-    getJson<ScanResult>(`/api/scans/${scanId}?facts=1${anon ? '&anon=1' : ''}`),
+    getJson<ScanResult>(`/api/scans/${scanId}?facts=1${anon ? '&anon=1' : ''}`, scanId),
+  health: () => getJson<{ public_mode: boolean; owner: boolean }>('/api/health'),
+  sample: () => getJson<{ token: string; result: ScanResult }>('/api/sample'),
   list: () => getJson<ScanListItem[]>('/api/scans?limit=100'),
   stats: () => getJson<MarketStats>('/api/stats'),
   site: (domain: string, anon: boolean) => getJson<SiteHistory>(`/api/sites/${encodeURIComponent(domain)}${anon ? '?anon=1' : ''}`),
   share: async (scanId: string): Promise<{ token: string; path: string }> => {
-    const response = await fetch(`/api/scans/${scanId}/share`, { method: 'POST' })
+    const response = await fetch(`/api/scans/${scanId}/share`, { method: 'POST', headers: authHeaders(scanId) })
     if (!response.ok) throw new ApiError(response.status, 'share failed')
     return response.json()
   },
@@ -184,7 +221,8 @@ export type ScanEvent = { type: (typeof EVENT_TYPES)[number]; [key: string]: unk
 
 /** Subscribe to the live feed (or a replay). Returns a function that closes the stream. */
 export function subscribe(scanId: string, onEvent: (event: ScanEvent) => void, replay = false): () => void {
-  const source = new EventSource(`/api/scans/${scanId}/events${replay ? '?replay=1' : ''}`)
+  const query = [replay ? 'replay=1' : '', authQuery(scanId)].filter(Boolean).join('&')
+  const source = new EventSource(`/api/scans/${scanId}/events${query ? `?${query}` : ''}`)
   const handler = (message: MessageEvent) => {
     try {
       onEvent(JSON.parse(message.data) as ScanEvent)

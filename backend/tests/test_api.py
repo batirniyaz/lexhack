@@ -78,11 +78,12 @@ def test_site_history_diff_delta_and_share(tmp_path, monkeypatch):
     assert client.get("/api/shared/not-a-token").status_code == 404
 
 
-def test_scan_rate_limit_and_access_key(monkeypatch):
+def test_scan_rate_limit_and_access_key(tmp_path, monkeypatch):
     import qalqon.api as api_module
     from qalqon import guard
 
     monkeypatch.setattr(api_module.jobs, "start", lambda job: job)  # no real scan
+    monkeypatch.setattr(guard, "TOKENS_FILE", tmp_path / ".scan_tokens.json")
     monkeypatch.setattr(guard, "PER_IP_HOUR", 2)
     guard.reset()
     target = {"url": "http://8.8.8.8"}  # public IP literal: no DNS needed
@@ -94,6 +95,61 @@ def test_scan_rate_limit_and_access_key(monkeypatch):
     monkeypatch.setattr(guard, "SCAN_KEY", "secret-key")
     assert client.post("/api/scans", json=target).status_code == 403
     assert client.post("/api/scans", json=target, headers={"X-Probo-Key": "secret-key"}).status_code == 202
+    guard.reset()
+
+
+def test_public_mode_never_shows_real_site_names(tmp_path, monkeypatch):
+    """D-003: in the public demo a visitor sees only scans they started; shared links and the sample are anonymized."""
+    import json as _json
+    import qalqon.api as api_module
+    from qalqon import guard
+    monkeypatch.setattr(api_module, "SCANS_DIR", tmp_path)
+    monkeypatch.setattr(api_module, "SHARES_FILE", tmp_path / ".shares.json")
+    monkeypatch.setattr(guard, "TOKENS_FILE", tmp_path / ".scan_tokens.json")
+    monkeypatch.setattr(guard, "PUBLIC", True)
+    monkeypatch.setattr(guard, "OWNER_KEY", "owner-key")
+    monkeypatch.setattr(api_module.jobs, "start", lambda job: job)
+    guard.reset()
+    scan_id = "batch-1/uzum-uz"
+    d = tmp_path / scan_id
+    d.mkdir(parents=True)
+    report = {"scan_id": scan_id, "site": "https://uzum.uz", "scanned_at": "2026-11-20T10:00:00+00:00",
+              "status": "ok", "score": 79, "levels": {}, "stats": {}, "flows": [], "not_evaluated": [],
+              "findings": [{"rule_id": "PD-MIS-01", "level": "violation", "title": {"en": "x"},
+                            "evidence": [{"quote": "Uzum Market does not share data", "url": "https://uzum.uz/privacy"}]}]}
+    (d / "report.json").write_text(_json.dumps(report), encoding="utf-8")
+    (d / "facts.json").write_text(_json.dumps({"site": "https://uzum.uz", "site_domains": ["uzum.uz", "www.uzum.uz"]}),
+                                  encoding="utf-8")
+    (d / "scan.har").write_text("{}", encoding="utf-8")
+    owner = {"X-Probo-Key": "owner-key"}
+
+    assert client.get("/api/scans").json() == []
+    assert client.get("/api/scans", headers=owner).json()[0]["domain"] == "uzum.uz"
+    assert client.get(f"/api/scans/{scan_id}").status_code == 404
+    assert client.get(f"/api/scans/{scan_id}/har").status_code == 404
+    assert client.get(f"/api/scans/{scan_id}/events").status_code == 404
+    assert client.get("/api/sites/uzum.uz").status_code == 403
+    assert client.post(f"/api/scans/{scan_id}/share").status_code == 404
+    assert client.get(f"/api/scans/{scan_id}", headers=owner).json()["domain"] == "uzum.uz"
+    assert client.get(f"/api/scans/{scan_id}/har?key=owner-key").status_code == 200
+    assert client.get("/api/health").json()["owner"] is False
+    assert client.get("/api/health", headers=owner).json()["owner"] is True
+
+    token = client.post(f"/api/scans/{scan_id}/share", headers=owner).json()["token"]
+    shared = client.get(f"/api/shared/{token}")
+    assert shared.status_code == 200 and "uzum" not in shared.text.lower()
+    sample = client.get("/api/sample")
+    assert sample.status_code == 200 and "uzum" not in sample.text.lower()
+
+    started = client.post("/api/scans", json={"url": "http://8.8.8.8"}).json()
+    own = tmp_path / started["scan_id"]  # the job is stubbed: write its result by hand
+    own.mkdir(parents=True)
+    (own / "report.json").write_text(_json.dumps({**report, "scan_id": started["scan_id"], "site": "http://8.8.8.8"}),
+                                     encoding="utf-8")
+    assert client.get(f"/api/scans/{started['scan_id']}").status_code == 404  # no token: hidden
+    mine = client.get(f"/api/scans/{started['scan_id']}", headers={"X-Scan-Token": started["token"]})
+    assert mine.status_code == 200 and mine.json()["domain"] == "8.8.8.8"  # own scan: real name
+    assert client.get(f"/api/scans/{started['scan_id']}", headers={"X-Scan-Token": "wrong"}).status_code == 404
     guard.reset()
 
 

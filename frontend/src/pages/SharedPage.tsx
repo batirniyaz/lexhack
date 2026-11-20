@@ -19,11 +19,12 @@ export function SharedPage() {
     return <div className="q-page" style={{ paddingTop: 80 }}><EmptyState title={t.link_not_found} /></div>
   }
   const report = data.report
-  const displaySite = anon ? (data.label ?? report.label ?? t.site_word) : siteDomain(report.site)
+  const hidden = anon || data.domain === null  // null: the public demo anonymized it on the server
+  const displaySite = hidden ? (data.label ?? report.label ?? t.site_word) : siteDomain(report.site)
   return (
     <div className="q-page">
       <p className="q-muted q-noprint" style={{ margin: '24px 0 0' }}>{t.shared_note}</p>
-      <ReportView report={report} facts={data.facts} displaySite={displaySite} scanId={data.scan_id} readonly />
+      <ReportView report={report} facts={data.facts} displaySite={displaySite} scanId={data.scan_id ?? undefined} readonly />
     </div>
   )
 }

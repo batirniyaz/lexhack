@@ -21,7 +21,8 @@ from sse_starlette.sse import EventSourceResponse
 
 from . import __version__
 from .config import REPO_ROOT, SCANS_DIR, settings
-from .guard import check_scan_allowed
+from . import guard
+from .guard import check_scan_allowed, is_owner, issue_scan_token, require_owner, require_view
 from .jobs import ScanJob, jobs
 from .presentation import aliases_for, anonymize, label_for, replay_events
 from .scan import new_scan_id
@@ -56,12 +57,14 @@ def _read_json(path: Path) -> Optional[dict]:
 
 
 @app.get("/api/health")
-def health() -> dict:
+def health(request: Request) -> dict:
     return {
         "status": "ok",
         "version": __version__,
         "llm_configured": bool(settings.anthropic_api_key),
         "lexrag_configured": bool(settings.lexrag_url),
+        "public_mode": guard.PUBLIC,
+        "owner": is_owner(request),
     }
 
 
@@ -74,7 +77,8 @@ async def create_scan(body: ScanRequest, request: Request) -> dict:
         raise HTTPException(400, f"target not allowed: {exc}") from exc
     check_scan_allowed(request)  # rate limits / access key (public deployment)
     job = jobs.start(ScanJob(scan_id=new_scan_id(url), url=url, max_pages=body.max_pages))
-    return {"scan_id": job.scan_id, "status": job.status, "events": f"/api/scans/{job.scan_id}/events"}
+    return {"scan_id": job.scan_id, "status": job.status, "events": f"/api/scans/{job.scan_id}/events",
+            "token": issue_scan_token(job.scan_id)}
 
 
 def _all_reports() -> list[dict]:
@@ -100,8 +104,11 @@ def _all_reports() -> list[dict]:
 
 
 @app.get("/api/scans")
-def list_scans(limit: int = 50) -> list[dict]:
-    """Finished scans, newest first, with the score change against the previous scan of the same site."""
+def list_scans(request: Request, limit: int = 50) -> list[dict]:
+    """Finished scans, newest first, with the score change against the previous scan of the same site.
+    Public mode: owner only (scan ids and rows contain real domains)."""
+    if not is_owner(request):
+        return []
     rows = _all_reports()
     last_score: dict[str, Optional[int]] = {}
     for row in rows:
@@ -113,8 +120,9 @@ def list_scans(limit: int = 50) -> list[dict]:
 
 
 @app.get("/api/sites/{domain}")
-def site_history(domain: str, anon: bool = False) -> dict:
+def site_history(domain: str, request: Request, anon: bool = False) -> dict:
     """All scans of one site: score trend + what changed between the last two successful scans."""
+    require_owner(request)
     scans = [r for r in _all_reports() if r["domain"] == domain.lower()]
     if not scans:
         raise HTTPException(404, "no scans for this site")
@@ -146,8 +154,13 @@ def _shares() -> dict[str, str]:
 
 
 @app.post("/api/scans/{scan_id:path}/share")
-def share_scan(scan_id: str) -> dict:
+def share_scan(scan_id: str, request: Request) -> dict:
     """Read-only link for a finished report. The token is random; the same scan keeps its token."""
+    require_view(request, scan_id)
+    return _share(scan_id)
+
+
+def _share(scan_id: str) -> dict:
     if not (_scan_dir(scan_id) / "report.json").exists():
         raise HTTPException(404, "scan not found")
     shares = _shares()
@@ -159,16 +172,35 @@ def share_scan(scan_id: str) -> dict:
 
 
 @app.get("/api/shared/{token}")
-def shared_scan(token: str, anon: bool = False) -> dict:
+def shared_scan(token: str, request: Request, anon: bool = False) -> dict:
+    """Shared links are public by nature: in public mode they are always anonymized (D-003) for non-owners."""
     scan_id = _shares().get(token)
     if not scan_id:
         raise HTTPException(404, "link not found")
-    return {**scan_result(scan_id, anon=anon, facts=True), "scan_id": scan_id}
+    forced = not is_owner(request)
+    result = _scan_result(scan_id, anon=anon or forced, facts=True)
+    if forced:
+        result["domain"] = None
+        return {**result, "scan_id": None}
+    return {**result, "scan_id": scan_id}
+
+
+@app.get("/api/sample")
+def sample() -> dict:
+    """Example for the home page: the newest reference-site report with a "policy vs behaviour" finding,
+    anonymized, opened through a share link (so no scan id with a domain reaches the visitor)."""
+    for row in reversed(_all_reports()):
+        if row["status"] == "ok" and row["label"] != "Site" and any(f["rule_id"] == "PD-MIS-01" for f in row["_findings"]):
+            result = _scan_result(row["scan_id"], anon=True, facts=True)
+            result["domain"] = None
+            return {"token": _share(row["scan_id"])["token"], "result": result}
+    raise HTTPException(404, "no sample yet")
 
 
 @app.get("/api/scans/{scan_id:path}/events")
 async def scan_events(scan_id: str, request: Request, replay: bool = False):
     """Live feed (SSE). For finished scans, or with ?replay=1, the saved results are replayed with a short delay."""
+    require_view(request, scan_id)
     job = jobs.jobs.get(scan_id)
     if job is None or replay:
         scan_dir = _scan_dir(scan_id)
@@ -201,7 +233,8 @@ async def scan_events(scan_id: str, request: Request, replay: bool = False):
 
 
 @app.get("/api/scans/{scan_id:path}/har")
-def scan_har(scan_id: str):
+def scan_har(scan_id: str, request: Request):
+    require_view(request, scan_id)
     path = _scan_dir(scan_id) / "scan.har"
     if not path.exists():
         raise HTTPException(404, "no HAR for this scan")
@@ -209,8 +242,13 @@ def scan_har(scan_id: str):
 
 
 @app.get("/api/scans/{scan_id:path}")
-def scan_result(scan_id: str, anon: bool = False, facts: bool = False) -> dict:
+def scan_result(scan_id: str, request: Request, anon: bool = False, facts: bool = False) -> dict:
     """Report (+ optional facts). ?anon=1 hides the site's domain behind its sector label (presentation mode)."""
+    require_view(request, scan_id)
+    return _scan_result(scan_id, anon=anon, facts=facts)
+
+
+def _scan_result(scan_id: str, anon: bool = False, facts: bool = False) -> dict:
     job = jobs.jobs.get(scan_id)
     scan_dir = _scan_dir(scan_id)
     report = _read_json(scan_dir / "report.json")
@@ -229,6 +267,9 @@ def scan_result(scan_id: str, anon: bool = False, facts: bool = False) -> dict:
     site = report.get("site") or ""
     if anon:
         domains = (_read_json(scan_dir / "facts.json") or {}).get("site_domains") or []
+        domains = domains + [registrable_domain(host_of(site))]
+        # Scan ids and file names carry the domain as a slug ("uzum-uz"): hide those too.
+        domains = domains + [d.replace(".", "-") for d in domains]
         result = anonymize(result, domains, label_for(site), aliases_for(site))
     # Set after anonymizing: the frontend needs it for the site-history link (in presentation mode use full screen,
     # so the address bar with the domain is not visible).

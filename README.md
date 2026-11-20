@@ -134,6 +134,10 @@ docker compose logs -f probo
   (an ingress rule `probo.<domain> -> http://localhost:8090` + `cloudflared tunnel route dns`).
 - `./scans` is a volume: scan results, share links and the LLM cache survive rebuilds.
 - `restart: unless-stopped`: the container comes back when Docker starts. `shm_size: 1gb` is required for Chromium.
+- **Public mode** (`PROBO_PUBLIC=1`, D-003): real site names are shown only to the owner (`PROBO_OWNER_KEY` in `.env`;
+  open `https://…/?key=<key>` once). Visitors see only the scans they started (a per-scan token kept in their
+  browser); history, site pages and HAR files are closed to them; shared links and the home-page example are
+  anonymized on the server.
 - Abuse protection: 6 scans per hour per IP and 100 per day (`PROBO_SCANS_PER_IP_HOUR`, `PROBO_SCANS_PER_DAY`).
   Set `PROBO_SCAN_KEY` in `.env` to require a key: open the site once as `https://…/?key=<key>`, the browser keeps it.
 - **Docker Desktop over SSH (Windows):** the SSH session cannot use the Windows credential manager, so even pulling

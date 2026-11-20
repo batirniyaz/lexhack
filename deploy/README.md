@@ -5,7 +5,7 @@ Public URL: **https://probo.aicenterkk.tech** (Cloudflare tunnel `stomadent` on 
 | What | Where |
 |---|---|
 | Code | `D:\code\per\lexhack` on the server (updated from a git bundle; the server has no GitHub access) |
-| Secrets | `D:\code\per\lexhack\.env` on the server only |
+| Secrets | `D:\code\per\lexhack\.env` on the server only (incl. `PROBO_OWNER_KEY`: open the site once as `/?key=<key>` to see real names and history) |
 | Container | `docker compose` service `probo`, `127.0.0.1:8090 -> 8000`, `restart: unless-stopped` |
 | Data | `D:\code\per\lexhack\scans` (volume): scans, share links, LLM cache |
 | Tunnel rule | `C:\Users\batirniyaz\.cloudflared\config.yml`: `probo.aicenterkk.tech -> http://localhost:8090` (backup `config.yml.bak-20261121-010441`) |

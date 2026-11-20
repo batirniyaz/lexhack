@@ -8,7 +8,7 @@ import { Collapsible } from '@astryxdesign/core/Collapsible'
 import { Link } from '@astryxdesign/core/Link'
 import { Table, proportional } from '@astryxdesign/core/Table'
 import { TabList, Tab } from '@astryxdesign/core/TabList'
-import { api, type Facts, type Finding, type Host, type Level, type Report } from '../api'
+import { api, authQuery, type Facts, type Finding, type Host, type Level, type Report } from '../api'
 import { CATEGORY, CLAIM, ELEMENT, PD_TYPE, countryName, formatDate, useSettings } from '../i18n'
 import { FlowMap, statusKey, type MapCountry } from './FlowMap'
 
@@ -316,7 +316,7 @@ function EvidenceView({ facts, scanId }: { facts?: Facts; scanId?: string }) {
   }))
   return (
     <div style={{ display: 'grid', gap: 36 }}>
-      {scanId && <div><Link href={`/api/scans/${scanId}/har`}>{t.ev_har}</Link></div>}
+      {scanId && <div><Link href={`/api/scans/${scanId}/har?${authQuery(scanId)}`}>{t.ev_har}</Link></div>}
       <section>
         <h3 style={{ fontSize: 16, margin: '0 0 10px' }}>{t.ev_pages}</h3>
         <Table<PageRow> data={pages} idKey="url" density="compact" columns={[

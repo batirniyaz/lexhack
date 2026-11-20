@@ -27,7 +27,12 @@ export function History() {
   const navigate = useNavigate()
   const [items, setItems] = useState<ScanListItem[] | null>(null)
 
-  useEffect(() => { api.list().then(setItems).catch(() => setItems([])) }, [])
+  const [closed, setClosed] = useState(false)  // public demo without the owner key
+
+  useEffect(() => {
+    api.list().then(setItems).catch(() => setItems([]))
+    api.health().then((h) => setClosed(h.public_mode && !h.owner)).catch(() => undefined)
+  }, [])
 
   if (items === null) return <div className="q-page" style={{ paddingTop: 80 }}><Spinner label={t.loading} /></div>
 
@@ -50,7 +55,8 @@ export function History() {
         <Button variant="primary" label={t.nav_new} onClick={() => navigate('/')} />
       </div>
       {rows.length === 0 ? (
-        <EmptyState title={t.history_empty} description={t.history_empty_text}
+        <EmptyState title={closed ? t.history_private : t.history_empty}
+          description={closed ? t.history_private_text : t.history_empty_text}
           actions={<Button variant="primary" label={t.nav_new} onClick={() => navigate('/')} />} />
       ) : (
         <Table<Row>

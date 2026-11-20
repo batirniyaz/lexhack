@@ -15,20 +15,12 @@ export function Home() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [stats, setStats] = useState<MarketStats | null>(null)
-  const [sample, setSample] = useState<{ id: string; result: ScanResult } | null>(null)
+  const [sample, setSample] = useState<{ token: string; result: ScanResult } | null>(null)
 
   useEffect(() => {
     api.stats().then(setStats).catch(() => setStats(null))
-    // Sample: a finished, anonymized report that shows a "policy vs behaviour" finding.
-    api.list().then(async (scans) => {
-      for (const scan of scans.filter((s) => s.status === 'ok').slice(0, 20)) {
-        const result = await api.result(scan.scan_id, true)
-        if (result.report?.findings.some((f) => f.rule_id === 'PD-MIS-01')) {
-          setSample({ id: scan.scan_id, result })
-          return
-        }
-      }
-    }).catch(() => undefined)
+    // Sample: an anonymized reference-site report with a "policy vs behaviour" finding, opened via a share link.
+    api.sample().then(setSample).catch(() => setSample(null))
   }, [])
 
   const submit = async (event: FormEvent) => {
@@ -74,7 +66,7 @@ export function Home() {
           <h2>{t.sample_title}</h2>
           <SaysDoes finding={mismatch} facts={sample.result.facts} />
           <div style={{ marginTop: 12 }}>
-            <Link href={`/scan/${sample.id}`} onClick={(e) => { e.preventDefault(); navigate(`/scan/${sample.id}`) }}>
+            <Link href={`/r/${sample.token}`} onClick={(e) => { e.preventDefault(); navigate(`/r/${sample.token}`) }}>
               {t.sample_open}
             </Link>
           </div>
