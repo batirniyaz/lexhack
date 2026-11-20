@@ -10,6 +10,7 @@ params:
 legal_basis:
   - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
     article: "27¹, part 3 (ed. ZRU-1125 of 26.03.2026)"
+    articles: ["27¹", "15"]   # article numbers for verbatim citations (qalqon.legal.citations)
     quote_uz: "Ushbu moddaning ikkinchi qismida nazarda tutilmagan shaxsga doir maʼlumotlar kuyidagi shartlardan biri bajarilgan taqdirda, Oʻzbekiston Respublikasi hududidan tashqarida saqlanishi va ularga ishlov berilishi mumkin: chet davlatni shaxsga doir maʼlumotlarning bir xil himoya qilinishini taʼminlovchi davlat sifatida tan olish; operator tomonidan vakolatli davlat organi tasdiqlaydigan talablarga javob beruvchi standart shartnomaviy shartlar yoki majburiy korporativ qoidalar qabul qilinishi va ularga rioya etilishi; …"
     quote_ru: "Персональные данные, не предусмотренные частью второй настоящей статьи, могут храниться и обрабатываться за пределами территории Республики Узбекистан при выполнении одного из следующих условий: признание иностранного государства государством, обеспечивающим адекватную защиту персональных данных; принятие и соблюдение оператором стандартных договорных условий или обязательных корпоративных правил…; соблюдение оператором международных стандартов…"
     url: "https://lex.uz/docs/-4396419"

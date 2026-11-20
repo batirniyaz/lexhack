@@ -80,6 +80,9 @@ body { font-family: var(--font-family-body); }
 /* Serif quotes from documents and laws */
 .q-quote { font-family: var(--q-serif); font-size: 16px; line-height: 1.7; margin: 0; padding-inline-start: 14px; border-inline-start: 2px solid var(--q-rule); }
 .q-quote-meta { font-size: 13px; color: var(--q-muted); margin-top: 6px; }
+.q-quote-heading { display: block; font-weight: 600; margin-bottom: 6px; }
+.q-quote-part { display: block; white-space: pre-line; }
+.q-quote-part + .q-quote-part { margin-top: 8px; }
 
 /* Machine text */
 .q-mono { font-family: var(--q-mono); font-size: 13px; }

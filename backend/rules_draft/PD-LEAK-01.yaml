@@ -8,6 +8,7 @@ detector: url_pii
 legal_basis:
   - act: "ZRU-547"
     article: "13 (providing personal data), 28 (confidentiality) — NOT VERIFIED"
+    articles: ["13", "28"]   # article numbers for verbatim citations (qalqon.legal.citations)
     quote_uz: null
     quote_ru: null
     url: "https://lex.uz/ru/docs/4396428"

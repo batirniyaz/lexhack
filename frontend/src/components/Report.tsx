@@ -147,7 +147,19 @@ function FindingItem({ finding, open }: { finding: Finding; open: boolean }) {
                   {b.quote_uz && <div className="q-quote-meta">{t.official}</div>}
                   {lang === 'ru' && b.quote_ru && <blockquote className="q-quote" style={{ marginTop: 8 }}>{b.quote_ru}</blockquote>}
                   {lang === 'ru' && b.quote_ru && <div className="q-quote-meta">{t.unofficial}</div>}
-                  {(b.url || b.url_ru) && (
+                  {!b.quote_uz && b.citations?.map((c) => (
+                    <div key={c.article} style={{ marginTop: 8 }}>
+                      <blockquote className="q-quote">
+                        {c.heading && <span className="q-quote-heading">{c.heading}</span>}
+                        {c.parts.map((p, j) => <span key={j} className="q-quote-part">{p.text}</span>)}
+                      </blockquote>
+                      <div className="q-quote-meta">
+                        {t.cite_meta(c.edition_date ? formatDate(c.edition_date) : '—')}
+                        {c.url && <> · <Link href={c.url}>{t.open_lex}</Link></>}
+                      </div>
+                    </div>
+                  ))}
+                  {!b.citations?.length && (b.url || b.url_ru) && (
                     <div className="q-quote-meta"><Link href={(lang === 'ru' && b.url_ru) || b.url || ''}>{t.open_lex}</Link></div>
                   )}
                 </div>

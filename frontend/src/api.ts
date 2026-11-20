@@ -12,6 +12,19 @@ export interface LegalBasis {
   url: string | null
   url_ru?: string | null
   edition_date: string | null
+  articles?: string[]
+  citations?: Citation[]
+}
+/** Verbatim article text from lex.uz via lex-rag (backend/qalqon/legal/citations.py); not verified by a lawyer. */
+export interface Citation {
+  act: string
+  article: string
+  heading: string
+  parts: { part: string | null; text: string }[]
+  url: string | null
+  edition_date: string | null
+  source: string
+  verified_by_lawyer: boolean
 }
 export interface Finding {
   rule_id: string

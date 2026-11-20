@@ -12,6 +12,7 @@ from pathlib import Path
 
 import yaml
 
+from .legal.citations import attach_quotes
 from .config import BACKEND_DIR, RULES_DIR
 from .detectors import DETECTORS
 from .legal_lists import country_status, list_info
@@ -102,7 +103,7 @@ def evaluate(facts: dict) -> dict:
             "downgraded": downgraded,
             "title": rule.get("title", {}),
             "evidence": evidence,
-            "legal_basis": rule.get("legal_basis", []),
+            "legal_basis": attach_quotes(rule.get("legal_basis", [])),  # + verbatim lex.uz text (F-34)
             "sanction": rule.get("sanction"),
             "fix": rule.get("fix", {}),
             "verified": bool(rule.get("verified")),

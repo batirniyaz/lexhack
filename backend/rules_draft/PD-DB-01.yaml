@@ -8,6 +8,7 @@ detector: baas_detect
 legal_basis:
   - act: "ZRU-547"
     article: "27¹ (ed. ZRU-1125 of 26.03.2026)"
+    articles: ["27¹"]   # article numbers for verbatim citations (qalqon.legal.citations)
     quote_uz: null
     quote_ru: null
     url: "https://lex.uz/docs/-4396419"
