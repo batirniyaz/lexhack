@@ -1,0 +1,21 @@
+id: PD-LEAK-01
+title:
+  en: "Personal data (email / phone) leaks to third parties in request URLs"
+  ru: "Персданные (e-mail / телефон) утекают третьим лицам в адресах запросов"
+  uz: "Shaxsga doir maʼlumotlar (e-mail / telefon) soʻrov manzillarida uchinchi shaxslarga oqib ketmoqda"
+level: violation
+detector: url_pii
+legal_basis:
+  - act: "ZRU-547"
+    article: "13 (providing personal data), 28 (confidentiality) — NOT VERIFIED"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/ru/docs/4396428"
+    edition_date: null
+sanction: null
+fix:
+  en: "Never put personal data into URLs; strip query parameters before they reach analytics."
+  ru: "Не помещайте персданные в URL; очищайте параметры до передачи в аналитику."
+  uz: "Shaxsga doir maʼlumotlarni URL ga qoʻymang."
+verified: false
+author: "Role 1 draft"

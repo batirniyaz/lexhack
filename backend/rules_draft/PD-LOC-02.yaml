@@ -1,0 +1,24 @@
+id: PD-LOC-02
+title:
+  en: "Trackers send visitor identifiers to a country outside the adequate-protection list"
+  ru: "Трекеры передают идентификаторы посетителей в страну вне перечня"
+  uz: "Trekerlar tashrif buyuruvchi identifikatorlarini roʻyxatga kirmagan davlatga yubormoqda"
+level: risk
+detector: foreign_requests
+params:
+  categories: [analytics, advertising, session_replay, social, marketing, ab_testing]
+  flag_statuses: [not_listed, not_in_known_list, conditional_unknown]
+legal_basis:
+  - act: "ZRU-547"
+    article: "27¹, part 3 (ed. ZRU-1125 of 26.03.2026); art. 15 (cross-border transfer)"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/docs/-4396419"
+    edition_date: "2026-09-12"
+sanction: null
+fix:
+  en: "Remove the tracker, switch to a provider in Uzbekistan or a listed country, or document the legal ground. Whether IP/cookie IDs are personal data is still open (V-08)."
+  ru: "Уберите трекер, перейдите на провайдера в Узбекистане или в стране из перечня, либо оформите основание. Являются ли IP и cookie-ID персданными — открытый вопрос (V-08)."
+  uz: "Trekerni olib tashlang, Oʻzbekistondagi yoki roʻyxatdagi davlatdagi provayderga oʻting yoki asosni hujjatlashtiring."
+verified: false
+author: "Role 1 draft"

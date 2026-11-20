@@ -17,6 +17,7 @@ from datetime import datetime
 
 from .config import SCANS_DIR
 from .enrich import enrich_event, enrich_facts
+from .rules_engine import evaluate, format_report
 from .scanner.crawler import crawl
 from .urls import TargetNotAllowed, check_target, host_of, normalize_url
 
@@ -88,11 +89,19 @@ def main(argv: list[str] | None = None) -> int:
     facts["scan_id"] = scan_id
     enrich_facts(facts)
     (out_dir / "facts.json").write_text(json.dumps(facts, ensure_ascii=False, indent=2), encoding="utf-8")
+    report = evaluate(facts)
+    (out_dir / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    emit({"type": "done", "scan_id": scan_id, "stats": facts["stats"]})
+    for finding in report["findings"]:
+        emit({"type": "finding", "rule_id": finding["rule_id"], "level": finding["level"],
+              "title": finding["title"], "evidence": [e["summary"] for e in finding["evidence"][:5]]})
+    emit({"type": "done", "scan_id": scan_id, "status": report["status"], "score": report["score"],
+          "levels": report.get("levels"), "stats": facts["stats"]})
     if not args.events:
         print(_summary(facts))
-        print(f"\nsaved: {out_dir / 'facts.json'}")
+        print()
+        print(format_report(report))
+        print(f"\nsaved: {out_dir}")
     return 0
 
 

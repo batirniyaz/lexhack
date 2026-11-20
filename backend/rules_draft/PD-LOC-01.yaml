@@ -1,0 +1,30 @@
+id: PD-LOC-01
+title:
+  en: "Personal data from forms goes to a country outside the adequate-protection list"
+  ru: "Данные из форм уходят в страну вне перечня стран с адекватной защитой"
+  uz: "Shakl maʼlumotlari himoya darajasi yetarli davlatlar roʻyxatiga kirmagan davlatga yuborilmoqda"
+level: risk
+detector: form_submit_destination
+params:
+  flag_statuses: [not_listed, not_in_known_list, conditional_unknown]
+legal_basis:
+  - act: "ZRU-547 «Shaxsga doir maʼlumotlar toʻgʻrisida» / «О персональных данных»"
+    article: "27¹, part 3 (ed. ZRU-1125 of 26.03.2026)"
+    quote_uz: "Ushbu moddaning ikkinchi qismida nazarda tutilmagan shaxsga doir maʼlumotlar kuyidagi shartlardan biri bajarilgan taqdirda, Oʻzbekiston Respublikasi hududidan tashqarida saqlanishi va ularga ishlov berilishi mumkin: chet davlatni shaxsga doir maʼlumotlarning bir xil himoya qilinishini taʼminlovchi davlat sifatida tan olish; operator tomonidan vakolatli davlat organi tasdiqlaydigan talablarga javob beruvchi standart shartnomaviy shartlar yoki majburiy korporativ qoidalar qabul qilinishi va ularga rioya etilishi; …"
+    quote_ru: "Персональные данные, не предусмотренные частью второй настоящей статьи, могут храниться и обрабатываться за пределами территории Республики Узбекистан при выполнении одного из следующих условий: признание иностранного государства государством, обеспечивающим адекватную защиту персональных данных; принятие и соблюдение оператором стандартных договорных условий или обязательных корпоративных правил…; соблюдение оператором международных стандартов…"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "2026-09-12"
+  - act: "CMR No. 415 of 29.07.2026 (list of countries with adequate protection)"
+    article: null
+    quote_uz: null
+    quote_ru: null
+    url: null
+    edition_date: null
+sanction: null
+fix:
+  en: "Keep the data in Uzbekistan or in a listed country, or document the legal ground (standard contractual clauses / binding corporate rules / international standard) for this recipient."
+  ru: "Храните данные в Узбекистане или в стране из перечня, либо документально оформите основание (стандартные договорные условия / обязательные корпоративные правила / международный стандарт) для этого получателя."
+  uz: "Maʼlumotlarni Oʻzbekistonda yoki roʻyxatdagi davlatda saqlang yoki ushbu qabul qiluvchi uchun asosni (standart shartnomaviy shartlar / majburiy korporativ qoidalar / xalqaro standart) hujjatlashtiring."
+verified: false
+author: "Role 1 draft"

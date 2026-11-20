@@ -1,0 +1,22 @@
+id: PD-BIO-01
+title:
+  en: "Possible biometric data (selfie / camera) — must be stored in Uzbekistan"
+  ru: "Возможные биометрические данные (селфи / камера) — обязаны храниться в Узбекистане"
+  uz: "Ehtimoliy biometrik maʼlumotlar (selfi / kamera) — Oʻzbekistonda saqlanishi shart"
+level: risk
+detector: biometric_capture
+legal_basis:
+  - act: "ZRU-547"
+    article: "27¹, part 2 (ed. ZRU-1125 of 26.03.2026); art. 26"
+    quote_uz: "Quyidagi shaxsga doir maʼlumotlar Oʻzbekiston Respublikasi hududida saqlanishi shart: jismoniy shaxslarning biometrik maʼlumotlari; jismoniy shaxslarning genetik maʼlumotlari; …"
+    quote_ru: "Обязательному хранению на территории Республики Узбекистан подлежат следующие персональные данные: биометрические данные физических лиц; генетические данные физических лиц; …"
+    url: "https://lex.uz/docs/-4396419"
+    url_ru: "https://lex.uz/ru/docs/4396428"
+    edition_date: "2026-09-12"
+sanction: null
+fix:
+  en: "Confirm where uploaded photos are stored and processed; biometric data must stay on servers in Uzbekistan."
+  ru: "Подтвердите, где хранятся и обрабатываются загружаемые фото; биометрия должна оставаться на серверах в Узбекистане."
+  uz: "Yuklangan rasmlar qayerda saqlanishini tasdiqlang; biometrik maʼlumotlar Oʻzbekistondagi serverlarda qolishi shart."
+verified: false
+author: "Role 1 draft"

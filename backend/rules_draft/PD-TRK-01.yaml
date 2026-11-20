@@ -1,0 +1,23 @@
+id: PD-TRK-01
+title:
+  en: "Trackers load on the first visit, before any consent"
+  ru: "Трекеры загружаются при первом визите, до какого-либо согласия"
+  uz: "Trekerlar birinchi tashrifda, hech qanday roziliksiz yuklanmoqda"
+level: risk
+detector: trackers_before_consent
+params:
+  categories: [analytics, advertising, session_replay, social, marketing, ab_testing]
+legal_basis:
+  - act: "ZRU-547"
+    article: "21 (giving and withdrawing consent)"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/ru/docs/4396428"
+    edition_date: null
+sanction: null
+fix:
+  en: "Load analytics and advertising scripts only after the visitor agrees (consent banner), or document why consent is not required."
+  ru: "Загружайте аналитику и рекламные скрипты только после согласия посетителя (баннер согласия) или обоснуйте, почему согласие не требуется."
+  uz: "Analitika va reklama skriptlarini faqat tashrif buyuruvchi rozilik bergandan keyin yuklang (rozilik banneri)."
+verified: false
+author: "Role 1 draft"

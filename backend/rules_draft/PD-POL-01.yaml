@@ -1,0 +1,21 @@
+id: PD-POL-01
+title:
+  en: "No privacy / personal-data policy found"
+  ru: "Не найдена политика конфиденциальности / обработки персданных"
+  uz: "Maxfiylik / shaxsga doir maʼlumotlar siyosati topilmadi"
+level: risk
+detector: privacy_policy_present
+legal_basis:
+  - act: "ZRU-547"
+    article: "22 (information about processing); Minjust order No. 20-mx of 15.11.2023 (typical processing procedure) — NOT VERIFIED"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/ru/docs/4396428"
+    edition_date: null
+sanction: null
+fix:
+  en: "Publish a personal-data policy: operator, purposes, data, retention, recipients and countries, subject rights, contact."
+  ru: "Опубликуйте политику обработки персданных: оператор, цели, состав данных, сроки, получатели и страны, права субъекта, контакты."
+  uz: "Shaxsga doir maʼlumotlar siyosatini eʼlon qiling: operator, maqsadlar, maʼlumotlar, muddatlar, qabul qiluvchilar, huquqlar, aloqa."
+verified: false
+author: "Role 1 draft"

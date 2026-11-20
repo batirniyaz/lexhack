@@ -1,0 +1,23 @@
+id: PD-PII-01
+title:
+  en: "A form asks for sensitive identifiers (passport, PINFL, card, photo)"
+  ru: "Форма запрашивает чувствительные данные (паспорт, ПИНФЛ, карта, фото)"
+  uz: "Shakl nozik maʼlumotlarni soʻramoqda (pasport, JShShIR, karta, rasm)"
+level: risk
+detector: form_pd_fields
+params:
+  categories: [passport, pinfl, card, photo]
+legal_basis:
+  - act: "ZRU-547"
+    article: "5 (principles), 19 (processing requirements) — purpose limitation and proportionality (NOT VERIFIED)"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/ru/docs/4396428"
+    edition_date: null
+sanction: null
+fix:
+  en: "Ask for these data only if the stated purpose requires them; card numbers belong on the payment provider's page."
+  ru: "Запрашивайте эти данные, только если этого требует заявленная цель; номер карты — на странице платёжного провайдера."
+  uz: "Bu maʼlumotlarni faqat maqsad talab qilsa soʻrang; karta raqami toʻlov provayderi sahifasida kiritilsin."
+verified: false
+author: "Role 1 draft"

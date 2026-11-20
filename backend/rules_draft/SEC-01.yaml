@@ -1,0 +1,21 @@
+id: SEC-01
+title:
+  en: "Pages or personal-data forms without HTTPS"
+  ru: "Страницы или формы с персданными без HTTPS"
+  uz: "HTTPS siz sahifalar yoki shakllar"
+level: risk
+detector: https
+legal_basis:
+  - act: "ZRU-547"
+    article: "27 (guarantees of protection) — NOT VERIFIED"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/ru/docs/4396428"
+    edition_date: null
+sanction: null
+fix:
+  en: "Serve every page over HTTPS and redirect HTTP to HTTPS."
+  ru: "Отдавайте все страницы по HTTPS и перенаправляйте HTTP на HTTPS."
+  uz: "Barcha sahifalarni HTTPS orqali bering."
+verified: false
+author: "Role 1 draft"

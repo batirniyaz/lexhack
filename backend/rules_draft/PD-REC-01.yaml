@@ -1,0 +1,21 @@
+id: PD-REC-01
+title:
+  en: "Session recording captures what visitors type and click"
+  ru: "Запись сессий фиксирует ввод и клики посетителей"
+  uz: "Seans yozuvi tashrif buyuruvchilar kiritgan maʼlumot va bosishlarni yozib olmoqda"
+level: risk
+detector: session_replay
+legal_basis:
+  - act: "ZRU-547"
+    article: "21 (consent), 27¹ part 3 (transfer abroad) — NOT VERIFIED"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/ru/docs/4396428"
+    edition_date: null
+sanction: null
+fix:
+  en: "Turn off session recording or mask every form field; mention it in the policy and ask for consent."
+  ru: "Отключите запись сессий или маскируйте все поля форм; укажите это в политике и получите согласие."
+  uz: "Seans yozuvini oʻchiring yoki barcha shakl maydonlarini yashiring; siyosatda koʻrsating va rozilik oling."
+verified: false
+author: "Role 1 draft"

@@ -1,0 +1,21 @@
+id: PD-CNS-01
+title:
+  en: "A form collects personal data without consent"
+  ru: "Форма собирает персональные данные без согласия"
+  uz: "Shakl shaxsga doir maʼlumotlarni roziliksiz yigʻmoqda"
+level: violation
+detector: form_consent
+legal_basis:
+  - act: "ZRU-547"
+    article: "21 (giving and withdrawing consent)"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/ru/docs/4396428"
+    edition_date: null
+sanction: "Administrative Code art. 46-2 (NOT VERIFIED, V-05)"
+fix:
+  en: "Add a consent checkbox (not pre-ticked) with a link to the personal-data policy, the purpose and the list of data."
+  ru: "Добавьте чекбокс согласия (без предустановленной галочки) со ссылкой на политику обработки персданных, целью и перечнем данных."
+  uz: "Shaxsga doir maʼlumotlar siyosatiga havola, maqsad va maʼlumotlar roʻyxati bilan rozilik belgisini (oldindan belgilanmagan) qoʻshing."
+verified: false
+author: "Role 1 draft"

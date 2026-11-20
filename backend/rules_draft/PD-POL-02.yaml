@@ -1,0 +1,21 @@
+id: PD-POL-02
+title:
+  en: "The policy lacks required elements"
+  ru: "В политике нет обязательных пунктов"
+  uz: "Siyosatda majburiy bandlar yoʻq"
+level: risk
+detector: policy_content
+legal_basis:
+  - act: "ZRU-547"
+    article: "22 — NOT VERIFIED"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/ru/docs/4396428"
+    edition_date: null
+sanction: null
+fix:
+  en: "Add the missing items listed in the evidence."
+  ru: "Добавьте недостающие пункты из доказательств."
+  uz: "Yetishmayotgan bandlarni qoʻshing."
+verified: false
+author: "Role 1 draft"

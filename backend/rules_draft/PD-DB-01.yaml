@@ -1,0 +1,21 @@
+id: PD-DB-01
+title:
+  en: "The site's database / file storage is a foreign cloud service (seen in page code)"
+  ru: "База данных / хранилище файлов сайта — зарубежный облачный сервис (видно в коде страницы)"
+  uz: "Saytning maʼlumotlar bazasi / fayl ombori — xorijiy bulut xizmati (sahifa kodida koʻrinadi)"
+level: risk
+detector: baas_detect
+legal_basis:
+  - act: "ZRU-547"
+    article: "27¹ (ed. ZRU-1125 of 26.03.2026)"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/docs/-4396419"
+    edition_date: "2026-09-12"
+sanction: null
+fix:
+  en: "Check which personal data are stored there: biometric, genetic and telecom-user data must stay in Uzbekistan; other data need a legal ground."
+  ru: "Проверьте, какие персданные там хранятся: биометрия, генетика и данные абонентов телеком-операторов — только в Узбекистане, остальное — при наличии основания."
+  uz: "U yerda qaysi shaxsga doir maʼlumotlar saqlanishini tekshiring."
+verified: false
+author: "Role 1 draft"

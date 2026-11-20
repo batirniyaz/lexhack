@@ -18,6 +18,7 @@ import yaml
 
 from .config import SCANS_DIR
 from .enrich import enrich_facts
+from .rules_engine import evaluate
 from .scanner.crawler import crawl
 from .urls import TargetNotAllowed, check_target, host_of, normalize_url
 
@@ -37,9 +38,14 @@ async def _scan_one(entry: dict, out_root: Path, max_pages: int, sem: asyncio.Se
             row["error"] = f"{type(exc).__name__}: {str(exc).splitlines()[0][:150]}"
             return row
     enrich_facts(facts)
+    report = evaluate(facts)
     out_dir = out_root / host_of(url).replace(".", "-")
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "facts.json").write_text(json.dumps(facts, ensure_ascii=False, indent=2), encoding="utf-8")
+    (out_dir / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    row["score"] = report["score"]
+    icons = {"violation": "🔴", "risk": "🟡", "recommendation": "⚪"}
+    row["findings"] = [f"{icons.get(f['level'], '?')}{f['rule_id']}" for f in report["findings"]]
     third = [r for r in facts["requests"] if r["third_party"]]
     landing_hosts = sorted({r["host"] for r in third if r["phase"] == "landing"})
     row.update(
@@ -88,6 +94,7 @@ def main(argv: list[str] | None = None) -> int:
             f"cookies={row['cookies']:3d} (3p {row['third_party_cookies']})"
         )
         print(f"       flows: {row['flows']}  owners: {', '.join(row['entities'])}")
+        print(f"       score: {row['score']}  findings: {' '.join(row['findings'])}")
     print(f"\nsaved: {out_root}")
     return 0
 

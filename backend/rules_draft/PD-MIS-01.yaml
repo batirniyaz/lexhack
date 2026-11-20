@@ -1,0 +1,21 @@
+id: PD-MIS-01
+title:
+  en: "The policy contradicts what the site actually does"
+  ru: "Политика противоречит реальному поведению сайта"
+  uz: "Siyosat saytning haqiqiy xatti-harakatiga zid"
+level: violation
+detector: policy_vs_behavior
+legal_basis:
+  - act: "ZRU-547"
+    article: "22 (truthful information to the subject) — NOT VERIFIED"
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/ru/docs/4396428"
+    edition_date: null
+sanction: null
+fix:
+  en: "Either change the site's behaviour or correct the policy so that it describes reality."
+  ru: "Либо измените поведение сайта, либо исправьте политику, чтобы она описывала реальность."
+  uz: "Yoki sayt xatti-harakatini oʻzgartiring, yoki siyosatni haqiqatga moslashtiring."
+verified: false
+author: "Role 1 draft"

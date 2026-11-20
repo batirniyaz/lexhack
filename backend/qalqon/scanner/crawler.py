@@ -1,4 +1,4 @@
-"""Headless crawl of one site: every network request, server IPs, cookies, storage keys and links.
+"""Headless crawl of one site: requests + server IPs, cookies, forms, permissions, legal documents, backends in code.
 
 Navigation never waits for `load` / `networkidle` (ARCHITECTURE.md §2.1, decision D-016):
 one hanging third-party script would block those events forever. We commit the navigation,
@@ -19,6 +19,8 @@ from playwright.async_api import BrowserContext, Page, Request, Response, async_
 
 from ..config import settings
 from ..urls import host_of, normalize_url, registrable_domain
+from .analysis import analyze_form, document_kind, find_backends, has_webvisor
+from .page_js import HOOKS_JS, LINKS_JS, PAGE_JS, TEXT_JS
 
 Emit = Callable[[dict], None]
 
@@ -41,6 +43,8 @@ MAX_DEPTH = 2
 MAX_LINKS_PER_PAGE = 300
 MIN_LINKS = 5            # fewer links than this after the observation window -> wait and read again (SPA)
 SITEMAP_LIMIT = 20       # non-priority sitemap URLs to queue
+MAX_SCRIPT_READS = 60    # script bodies scanned for backends per site
+MAX_SCRIPT_BYTES = 3_000_000
 # Public pages any visitor could open; probed only if the site does not answer 200 to every path.
 COMMON_PATHS = (
     "/contact", "/contacts", "/aloqa", "/privacy", "/privacy-policy", "/policy",
@@ -57,13 +61,10 @@ CHALLENGE_TITLES = (
     ("access denied", "access-denied"),
 )
 CHALLENGE_EXTRA_WAIT_MS = 8000
-
-LINKS_JS = """() => Array.from(document.querySelectorAll('a[href]'))
-  .map(a => [a.href, (a.textContent || '').trim().slice(0, 80)])"""
-STORAGE_JS = """() => {
-  const keys = (s) => { try { return Object.keys(s); } catch (e) { return []; } };
-  return { local: keys(window.localStorage), session: keys(window.sessionStorage) };
-}"""
+SECURITY_HEADERS = (
+    "strict-transport-security", "content-security-policy", "x-content-type-options",
+    "x-frame-options", "referrer-policy", "permissions-policy", "server",
+)
 
 
 def _noop(_: dict) -> None:
@@ -77,9 +78,11 @@ class _Recorder:
         self.site_domains = site_domains
         self.emit = emit
         self.records: list[dict] = []
+        self.backends: list[dict] = []
         self._by_request: dict[Request, dict] = {}
         self._tasks: set[asyncio.Task] = set()
         self._announced_hosts: set[str] = set()
+        self._script_reads = 0
         self.current_page: Optional[str] = None
         self.phase = "landing"  # 'landing' = first page, nothing clicked; then 'crawl'
         self.t0 = time.monotonic()
@@ -142,6 +145,16 @@ class _Recorder:
                 "third_party": record["third_party"],
                 "phase": record["phase"],
             })
+        if record["type"] == "script" and record["phase"] != "challenge" and self._script_reads < MAX_SCRIPT_READS:
+            self._script_reads += 1
+            try:
+                body = await response.body()
+            except Exception:
+                body = b""
+            if body and len(body) <= MAX_SCRIPT_BYTES:
+                for item in find_backends(body.decode("utf-8", errors="ignore"), record["url"]):
+                    item["page"] = record["page"]
+                    self.backends.append(item)
 
     def on_failed(self, request: Request) -> None:
         record = self._by_request.get(request)
@@ -173,6 +186,20 @@ def _challenge(final_url: str, title: Optional[str]) -> Optional[str]:
     return None
 
 
+def _priority(url: str, text: str) -> int:
+    haystack = (url + " " + text).lower()
+    return 0 if any(word in haystack for word in PRIORITY_WORDS) else 1
+
+
+def _crawlable(url: str, site_domains: set[str]) -> bool:
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        return False
+    if registrable_domain(host_of(url)) not in site_domains:
+        return False
+    return not parsed.path.lower().endswith(SKIP_EXTENSIONS)
+
+
 async def _discover(context: BrowserContext, start_url: str, site_domains: set[str]) -> list[tuple[int, str]]:
     """Extra pages for SPAs that render few <a href> links: sitemap.xml + common public paths."""
     parsed = urlparse(start_url)
@@ -185,7 +212,6 @@ async def _discover(context: BrowserContext, start_url: str, site_domains: set[s
         except Exception:
             return None
 
-    # sitemap.xml (one level of sitemap index)
     response = await fetch(origin + "/sitemap.xml")
     if response is not None and response.ok:
         text = await response.text()
@@ -208,7 +234,6 @@ async def _discover(context: BrowserContext, start_url: str, site_domains: set[s
                 plain += 1
             found.append((priority, urldefrag(loc)[0]))
 
-    # Common paths — skipped when the site answers 200 to any path (SPA catch-all).
     probe = await fetch(origin + "/qalqon-404-probe-7f3a", timeout=6000)
     if probe is not None and probe.status == 404:
         responses = await asyncio.gather(*(fetch(origin + path, timeout=6000) for path in COMMON_PATHS))
@@ -222,58 +247,54 @@ async def _discover(context: BrowserContext, start_url: str, site_domains: set[s
     return found
 
 
-def _priority(url: str, text: str) -> int:
-    haystack = (url + " " + text).lower()
-    return 0 if any(word in haystack for word in PRIORITY_WORDS) else 1
-
-
-def _crawlable(url: str, site_domains: set[str]) -> bool:
-    parsed = urlparse(url)
-    if parsed.scheme not in ("http", "https"):
-        return False
-    if registrable_domain(host_of(url)) not in site_domains:
-        return False
-    return not parsed.path.lower().endswith(SKIP_EXTENSIONS)
+async def _collect(page: Page, info: dict) -> None:
+    """Read everything we need from the DOM of the current page into `info`."""
+    info["final_url"] = page.url
+    try:
+        data = await page.evaluate(PAGE_JS)
+    except Exception:
+        data = None
+    if data:
+        info["title"] = data["title"]
+        info["storage_keys"] = data["storage_keys"]
+        info["permissions"] = data["permissions"]
+        info["forms"] = [analyze_form(form) for form in data["forms"]]
+        info["legal_links"] = data["legal_links"]
+        info["inline_backends"] = [
+            item for script in data["inline_scripts"] for item in find_backends(script, f"inline script on {page.url}")
+        ]
+        info["webvisor"] = any(has_webvisor(script) for script in data["inline_scripts"])
+    info["challenge"] = _challenge(info["final_url"], info["title"])
+    kind = None if info["challenge"] else document_kind(info["final_url"], info["title"] or "")
+    if kind:
+        try:
+            info["document"] = {"kind": kind, "text": await page.evaluate(TEXT_JS)}
+        except Exception:
+            pass
 
 
 async def _visit(page: Page, url: str, observe_ms: int, nav_timeout_ms: int) -> dict:
     started = time.monotonic()
-    status: Optional[int] = None
+    response = None
     error: Optional[str] = None
     try:
         response = await page.goto(url, wait_until="commit", timeout=nav_timeout_ms)
-        status = response.status if response else None
     except Exception as exc:
         error = f"{type(exc).__name__}: {str(exc).splitlines()[0][:200]}"
     await page.wait_for_timeout(observe_ms)
     info = {
         "url": url,
         "final_url": page.url,
-        "status": status,
+        "status": response.status if response else None,
         "title": None,
         "error": error,
+        "headers": {k: v for k, v in (response.headers if response else {}).items() if k in SECURITY_HEADERS},
         "storage_keys": {"local": [], "session": []},
         "observed_ms": 0,
     }
-    try:
-        info["title"] = await page.evaluate("document.title")
-        info["storage_keys"] = await page.evaluate(STORAGE_JS)
-    except Exception:
-        pass
-    info["challenge"] = _challenge(info["final_url"], info["title"])
+    await _collect(page, info)
     info["observed_ms"] = int((time.monotonic() - started) * 1000)
     return info
-
-
-async def _refresh(page: Page, info: dict) -> None:
-    """Re-read title / URL / challenge state after an extra wait."""
-    try:
-        info["title"] = await page.evaluate("document.title")
-        info["storage_keys"] = await page.evaluate(STORAGE_JS)
-    except Exception:
-        pass
-    info["final_url"] = page.url
-    info["challenge"] = _challenge(info["final_url"], info["title"])
 
 
 async def _links(page: Page) -> list[tuple[str, str]]:
@@ -300,6 +321,64 @@ def _cookie_facts(cookies: list[dict], landing_keys: set[tuple[str, str]], site_
             "set_on_landing": (c.get("name"), c.get("domain")) in landing_keys,
         })
     return result
+
+
+def _form_signature(form: dict) -> tuple:
+    return (form.get("action"), tuple((f["name"], f["label"][:40], f["type"]) for f in form["fields"]))
+
+
+def _assemble_page_facts(pages: list[dict], script_backends: list[dict]) -> dict:
+    """Move per-page DOM findings into site-level lists (forms de-duplicated across pages)."""
+    forms: dict[tuple, dict] = {}
+    permissions, uploads, webvisor_pages = [], [], []
+    documents: dict[str, dict] = {}
+    legal_links: dict[str, dict] = {}
+    backends: dict[tuple, dict] = {}
+    for item in script_backends:
+        backends.setdefault((item["kind"], item.get("region")), item)
+
+    for p in pages:
+        page_url = p["final_url"]
+        per_page = {k: p.pop(k, None) for k in ("forms", "permissions", "legal_links", "inline_backends", "webvisor", "document")}
+        if p.get("challenge"):
+            continue
+        for form in per_page["forms"] or []:
+            signature = _form_signature(form)
+            if signature in forms:
+                forms[signature]["pages"].append(page_url)
+                continue
+            form["pages"] = [page_url]
+            forms[signature] = form
+            for field in form["fields"]:
+                if field["type"] == "file":
+                    uploads.append({"page": page_url, "label": field["label"], "accept": field["accept"],
+                                    "capture": field["capture"], "pd": field.get("pd"), "destination": None})
+        for permission in per_page["permissions"] or []:
+            permissions.append({**permission, "page": page_url})
+        for item in per_page["inline_backends"] or []:
+            backends.setdefault((item["kind"], item.get("region")), {**item, "page": page_url})
+        if per_page["webvisor"]:
+            webvisor_pages.append(page_url)
+        if per_page["document"]:
+            documents[_key(page_url)] = {
+                "kind": per_page["document"]["kind"], "url": page_url, "title": p["title"],
+                "visited": True, "text": per_page["document"]["text"],
+            }
+        for link in per_page["legal_links"] or []:
+            legal_links.setdefault(_key(link["href"]), link)
+
+    for key, link in legal_links.items():
+        if key not in documents:
+            documents[key] = {"kind": document_kind(link["href"], link["text"]), "url": link["href"],
+                              "title": link["text"], "visited": False, "text": None}
+    return {
+        "forms": list(forms.values()),
+        "permissions": permissions,
+        "uploads": uploads,
+        "backends": list(backends.values()),
+        "documents": list(documents.values()),
+        "session_replay": {"webvisor_pages": webvisor_pages},
+    }
 
 
 async def crawl(
@@ -329,6 +408,7 @@ async def crawl(
             record_har_path=str(har_path) if har_path else None,
             record_har_content="omit",
         )
+        await context.add_init_script(HOOKS_JS)
         recorder = _Recorder(site_domains, emit)
         context.on("request", recorder.on_request)
         context.on("response", recorder.on_response)
@@ -364,7 +444,7 @@ async def crawl(
                     for record in recorder.records:
                         record["phase"] = "challenge"
                     await page.wait_for_timeout(CHALLENGE_EXTRA_WAIT_MS)
-                    await _refresh(page, info)
+                    await _collect(page, info)
                     if info["challenge"]:
                         blocked = kind
                         pages.append(info)
@@ -374,6 +454,7 @@ async def crawl(
                     # Treat the real page as the landing from here on; earlier requests stay marked 'challenge'.
                     recorder.current_page = info["final_url"]
                     await page.wait_for_timeout(observe_ms)
+                    await _collect(page, info)
                 # The landing page may redirect to another registrable domain (example.uz -> example.com).
                 landing_domain = registrable_domain(host_of(info["final_url"]))
                 if landing_domain and landing_domain not in site_domains:
@@ -388,6 +469,13 @@ async def crawl(
                 pages.append(info)
                 if info["challenge"]:
                     continue  # no links from a challenge page
+
+            for form in info.get("forms", []):
+                if form["collects_pd"]:
+                    emit({"type": "form", "page": info["final_url"], "pd": form["pd_categories"],
+                          "consent": form["has_consent"]})
+            if info.get("document"):
+                emit({"type": "document", "kind": info["document"]["kind"], "url": info["final_url"]})
 
             if depth < MAX_DEPTH:
                 links = await _links(page)
@@ -407,6 +495,7 @@ async def crawl(
         record["third_party"] = registrable_domain(record["host"]) not in site_domains
         record["pending"] = record["status"] is None and record["failed"] is None
 
+    page_facts = _assemble_page_facts(pages, recorder.backends)
     third_party_hosts = sorted({r["host"] for r in recorder.records if r["third_party"]})
     return {
         "schema": 1,
@@ -419,12 +508,8 @@ async def crawl(
         "pages": pages,
         "requests": recorder.records,
         "cookies": _cookie_facts(cookies, landing_cookie_keys, site_domains),
-        "forms": [],
-        "permissions": [],
-        "uploads": [],
-        "backends": [],
+        **page_facts,
         "dns": {},
-        "documents": [],
         "policy": {},
         "stats": {
             "pages": len(pages),
@@ -434,5 +519,7 @@ async def crawl(
             "cookies": len(cookies),
             "pending_requests": sum(1 for r in recorder.records if r["pending"]),
             "challenge_pages": sum(1 for p in pages if p.get("challenge")),
+            "forms_with_pd": sum(1 for f in page_facts["forms"] if f["collects_pd"]),
+            "documents_found": len(page_facts["documents"]),
         },
     }
