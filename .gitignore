@@ -30,3 +30,6 @@ scans/
 Thumbs.db
 .idea/
 .vscode/
+
+# Personal Claude instructions (per developer)
+CLAUDE.local.md
