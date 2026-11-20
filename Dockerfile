@@ -19,8 +19,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app/backend
 
 # Dependencies first (cached unless requirements change); Chromium with its system libraries.
+# libatomic1: Playwright's bundled node driver needs it and python:3.11-slim does not ship it (verified 21.11).
 COPY backend/requirements.txt ./
-RUN pip install -r requirements.txt \
+RUN apt-get update && apt-get install -y --no-install-recommends libatomic1 && rm -rf /var/lib/apt/lists/* \
+ && pip install -r requirements.txt \
  && python -m playwright install --with-deps chromium
 
 # Source code (secrets, scans, node_modules, venv are excluded by .dockerignore).

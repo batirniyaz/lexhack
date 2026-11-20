@@ -120,6 +120,27 @@ curl localhost:8000/api/stats                               # anonymized numbers
 
 Event payloads are documented in `ARCHITECTURE.md` (API section).
 
+### Deployment (Docker)
+
+One container serves the API and the built web app on one port (`Dockerfile`, `docker-compose.yml`):
+
+```bash
+cp .env.example .env            # fill in the keys
+docker compose up -d --build    # builds the web app, installs Chromium, downloads the geo databases
+docker compose logs -f probo
+```
+
+- The container listens on `127.0.0.1:8090` only; public access goes through a Cloudflare tunnel
+  (an ingress rule `probo.<domain> -> http://localhost:8090` + `cloudflared tunnel route dns`).
+- `./scans` is a volume: scan results, share links and the LLM cache survive rebuilds.
+- `restart: unless-stopped`: the container comes back when Docker starts. `shm_size: 1gb` is required for Chromium.
+- Abuse protection: 6 scans per hour per IP and 100 per day (`PROBO_SCANS_PER_IP_HOUR`, `PROBO_SCANS_PER_DAY`).
+  Set `PROBO_SCAN_KEY` in `.env` to require a key: open the site once as `https://…/?key=<key>`, the browser keeps it.
+- **Docker Desktop over SSH (Windows):** the SSH session cannot use the Windows credential manager, so even pulling
+  public images fails with "error getting credentials". Use a copy of `~/.docker` without `credsStore`, point
+  `DOCKER_CONFIG` to it, and call `docker.exe` by full path with its folder removed from `PATH` (so the CLI does not
+  auto-detect `docker-credential-desktop`).
+
 ---
 
 ## What is checked
