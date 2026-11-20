@@ -13,10 +13,10 @@ import asyncio
 import json
 import re
 import sys
-from collections import defaultdict
 from datetime import datetime
 
 from .config import SCANS_DIR
+from .enrich import enrich_event, enrich_facts
 from .scanner.crawler import crawl
 from .urls import TargetNotAllowed, check_target, host_of, normalize_url
 
@@ -33,23 +33,24 @@ def _summary(facts: dict) -> str:
         f"site: {facts['site']}  (domains: {', '.join(facts['site_domains'])})",
         f"pages: {stats['pages']}  requests: {stats['requests']}  "
         f"third-party requests: {stats['third_party_requests']}  cookies: {stats['cookies']}  "
-        f"hanging: {stats['pending_requests']}",
-        "third-party hosts:",
+        f"hanging: {stats['pending_requests']}  challenge pages: {stats.get('challenge_pages', 0)}",
     ]
-    by_host: dict[str, set] = defaultdict(set)
-    landing: set[str] = set()
-    for r in facts["requests"]:
-        if r["third_party"]:
-            if r["ip"]:
-                by_host[r["host"]].add(r["ip"])
-            else:
-                by_host.setdefault(r["host"], set())
-            if r["phase"] == "landing":
-                landing.add(r["host"])
-    for host in sorted(by_host):
-        ips = ", ".join(sorted(by_host[host])) or "no response"
-        mark = "  [landing]" if host in landing else ""
-        lines.append(f"  {host:45s} {ips}{mark}")
+    if facts.get("blocked"):
+        lines.append(f"!! BLOCKED by bot protection ({facts['blocked']}) — results are not about the site itself")
+    lines.append("pages:")
+    for p in facts["pages"]:
+        mark = f"  [challenge: {p['challenge']}]" if p.get("challenge") else ""
+        lines.append(f"  {p['status']}  {p['final_url'][:70]}  | {(p['title'] or '')[:40]}{mark}")
+    lines.append("third-party hosts (server country / network → owner, company country, category):")
+    for row in facts.get("hosts", []):
+        if not row["third_party"]:
+            continue
+        server = "CDN" if row["is_cdn"] else (row["server_country"] or "?")
+        owner = f"{row['entity']} ({row['company_country']}), {row['category']}" if row["entity"] else "unknown owner"
+        mark = "  [landing]" if row["on_landing"] else ""
+        lines.append(f"  {row['host'][:42]:42s} {server:4s} {(row['org'] or '')[:22]:22s} → {owner}{mark}")
+    if facts.get("flows"):
+        lines.append("data flows by country: " + ", ".join(f"{c}: {len(h)}" for c, h in facts["flows"].items()))
     return "\n".join(lines)
 
 
@@ -68,7 +69,7 @@ def main(argv: list[str] | None = None) -> int:
 
     def emit(event: dict) -> None:
         if args.events:
-            print(json.dumps(event, ensure_ascii=False), flush=True)
+            print(json.dumps(enrich_event(event), ensure_ascii=False), flush=True)
 
     try:
         check_target(url, allow_private=args.allow_private)
@@ -85,6 +86,7 @@ def main(argv: list[str] | None = None) -> int:
 
     facts = asyncio.run(crawl(url, max_pages=args.max_pages, har_path=None if args.no_har else out_dir / "scan.har", emit=emit))
     facts["scan_id"] = scan_id
+    enrich_facts(facts)
     (out_dir / "facts.json").write_text(json.dumps(facts, ensure_ascii=False, indent=2), encoding="utf-8")
 
     emit({"type": "done", "scan_id": scan_id, "stats": facts["stats"]})

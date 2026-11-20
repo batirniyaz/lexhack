@@ -1,0 +1,173 @@
+# Who owns a third-party host, and where that company is registered.
+# Matching: a host matches a domain if it equals it or ends with "." + domain. Most specific (longest) domain wins.
+# country = ISO 3166-1 alpha-2 of the company that receives the data (legal entity), not the server location.
+# dpf = participates in the EU-US Data Privacy Framework (relevant for CMR No. 415 "US only for DPF participants").
+#       Values are NOT VERIFIED — check on https://www.dataprivacyframework.gov/list before the pitch (Role 2).
+# category: analytics | advertising | social | tag_manager | session_replay | cdn | fonts | hosting | payments |
+#           crm | chat | captcha | ab_testing | maps | translation | marketing | government | other
+entities:
+  - name: Google
+    country: US
+    dpf: true
+    domains: [google-analytics.com, analytics.google.com, googletagmanager.com, doubleclick.net, googleadservices.com,
+              googlesyndication.com, google.com, google.co.uz, google.ru, gstatic.com, googleapis.com, youtube.com,
+              ytimg.com, googleusercontent.com, firebaseio.com, firebasedatabase.app, firebaseapp.com, recaptcha.net]
+    category_by_domain:
+      google-analytics.com: analytics
+      analytics.google.com: analytics
+      googletagmanager.com: tag_manager
+      doubleclick.net: advertising
+      googleadservices.com: advertising
+      googlesyndication.com: advertising
+      gstatic.com: cdn
+      fonts.googleapis.com: fonts
+      fonts.gstatic.com: fonts
+      translate.googleapis.com: translation
+      translate.google.com: translation
+      firebaseio.com: hosting
+      firebasedatabase.app: hosting
+      firebaseapp.com: hosting
+    category: other
+  - name: Meta
+    country: US
+    dpf: true
+    domains: [facebook.net, facebook.com, fbcdn.net, instagram.com, cdninstagram.com, whatsapp.net]
+    category_by_domain:
+      facebook.net: advertising
+      facebook.com: advertising
+    category: social
+  - name: Yandex
+    country: RU
+    domains: [yandex.ru, yandex.net, yandex.com, yandex.uz, yandex.kz, yastatic.net, yandexcloud.net, ya.ru]
+    category_by_domain:
+      mc.yandex.ru: analytics
+      mc.yandex.com: analytics
+      yastatic.net: cdn
+      avatars.mds.yandex.net: cdn
+      smartcaptcha.yandexcloud.net: captcha
+    category: other
+  - name: VK / Mail.ru Group
+    country: RU
+    domains: [vk.com, vk.ru, userapi.com, mail.ru, mycdn.me, ok.ru, top-fwz1.mail.ru, mytarget.ru]
+    category_by_domain:
+      top-fwz1.mail.ru: analytics
+      mytarget.ru: advertising
+    category: social
+  - name: Microsoft
+    country: US
+    dpf: true
+    domains: [clarity.ms, bing.com, microsoft.com, windows.net, aka.ms, msecnd.net, azureedge.net, azurefd.net, live.com]
+    category_by_domain:
+      clarity.ms: session_replay
+      bing.com: advertising
+    category: hosting
+  - name: Amazon Web Services
+    country: US
+    dpf: true
+    domains: [amazonaws.com, on.aws, cloudfront.net, awsstatic.com]
+    category: hosting
+  - name: Cloudflare
+    country: US
+    dpf: true
+    domains: [cloudflare.com, cloudflareinsights.com, cloudflare-dns.com]
+    category_by_domain:
+      challenges.cloudflare.com: captcha
+      static.cloudflareinsights.com: analytics
+    category: cdn
+  - name: AppsFlyer
+    country: IL
+    domains: [appsflyer.com, appsflyersdk.com, onelink.me]
+    category: marketing
+  - name: TikTok / ByteDance
+    country: SG   # TikTok Pte. Ltd. serves most non-US markets; parent ByteDance is in CN — NOT VERIFIED which entity applies
+    domains: [tiktok.com, tiktokcdn.com, tiktokv.com, byteoversea.com, ibytedtos.com, analytics.tiktok.com]
+    category: advertising
+  - name: Telegram
+    country: AE
+    domains: [telegram.org, t.me, telegram.me, telesco.pe]
+    category: chat
+  - name: Hotjar
+    country: MT
+    domains: [hotjar.com, hotjar.io]
+    category: session_replay
+  - name: GrowthBook
+    country: US
+    domains: [growthbook.io]
+    category: ab_testing
+  - name: jsDelivr
+    country: PL
+    domains: [jsdelivr.net]
+    category: cdn
+  - name: Blockthrough
+    country: CA
+    domains: [btloader.com]
+    category: advertising
+  - name: OLX Group
+    country: NL
+    domains: [olxcdn.com, olx.org]
+    category: cdn
+  - name: Bitrix24
+    country: RU   # NOT VERIFIED — Bitrix24 has several legal entities
+    domains: [bitrix24.ru, bitrix24.com, bitrix24.uz, bitrix.info]
+    category: crm
+  - name: amoCRM / Kommo
+    country: RU   # NOT VERIFIED
+    domains: [amocrm.ru, amocrm.com, kommo.com]
+    category: crm
+  - name: Jivo
+    country: RU   # NOT VERIFIED
+    domains: [jivosite.com, jivo.ru, jivosite.ru]
+    category: chat
+  - name: Tawk.to
+    country: US
+    domains: [tawk.to]
+    category: chat
+  - name: Mixpanel
+    country: US
+    domains: [mixpanel.com, mxpnl.com]
+    category: analytics
+  - name: Amplitude
+    country: US
+    domains: [amplitude.com]
+    category: analytics
+  - name: Sentry
+    country: US
+    domains: [sentry.io, sentry-cdn.com]
+    category: other
+  - name: OneSignal
+    country: US
+    domains: [onesignal.com]
+    category: marketing
+  - name: Supabase
+    country: US
+    domains: [supabase.co, supabase.in]
+    category: hosting
+  - name: Criteo
+    country: FR
+    domains: [criteo.com, criteo.net]
+    category: advertising
+  # --- Uzbekistan ---
+  - name: Click
+    country: UZ
+    domains: [click.uz]
+    category: payments
+  - name: Payme
+    country: UZ
+    domains: [payme.uz, paycom.uz]
+    category: payments
+  - name: Uzum
+    country: UZ
+    domains: [uzum.uz, uzumbank.uz]
+    category: payments
+  - name: Beeline Uzbekistan
+    country: UZ
+    domains: [beemarket.uz]
+    category: other
+  - name: UZ government services
+    country: UZ
+    domains: [adolatmarkazi.uz, gov.uz, egov.uz, my.gov.uz, id.egov.uz]
+    category: government
+  - name: WWW.UZ rating
+    country: UZ
+    domains: [www.uz]
+    category: analytics

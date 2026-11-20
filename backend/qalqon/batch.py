@@ -17,6 +17,7 @@ from pathlib import Path
 import yaml
 
 from .config import SCANS_DIR
+from .enrich import enrich_facts
 from .scanner.crawler import crawl
 from .urls import TargetNotAllowed, check_target, host_of, normalize_url
 
@@ -35,13 +36,17 @@ async def _scan_one(entry: dict, out_root: Path, max_pages: int, sem: asyncio.Se
         except Exception as exc:  # one broken site must not stop the batch
             row["error"] = f"{type(exc).__name__}: {str(exc).splitlines()[0][:150]}"
             return row
+    enrich_facts(facts)
     out_dir = out_root / host_of(url).replace(".", "-")
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "facts.json").write_text(json.dumps(facts, ensure_ascii=False, indent=2), encoding="utf-8")
     third = [r for r in facts["requests"] if r["third_party"]]
     landing_hosts = sorted({r["host"] for r in third if r["phase"] == "landing"})
     row.update(
-        ok=facts["stats"]["pages"] > 0 and any(p["status"] for p in facts["pages"]),
+        blocked=facts.get("blocked"),
+        flows={country: len(hosts) for country, hosts in facts.get("flows", {}).items()},
+        entities=sorted({r["entity"] for r in third if r.get("entity")}),
+        ok=facts["stats"]["pages"] > 0 and any(p["status"] for p in facts["pages"]) and not facts.get("blocked"),
         pages=facts["stats"]["pages"],
         page_status=[p["status"] for p in facts["pages"]],
         third_party_hosts=facts["stats"]["third_party_hosts"],
@@ -75,13 +80,14 @@ def main(argv: list[str] | None = None) -> int:
     out_root, rows = asyncio.run(run(entries, args.max_pages, args.parallel))
     for row in rows:
         if not row.get("ok"):
-            print(f"[FAIL] {row['sector']:14s} {row['url']}  {row.get('error') or row.get('page_status')}")
+            reason = row.get("error") or (f"blocked: {row['blocked']}" if row.get("blocked") else row.get("page_status"))
+            print(f"[FAIL] {row['sector']:14s} {row['url']}  {reason}")
             continue
         print(
             f"[ok]   {row['sector']:14s} {row['url']:28s} pages={row['pages']} 3p-hosts={row['third_party_hosts']:3d} "
             f"cookies={row['cookies']:3d} (3p {row['third_party_cookies']})"
         )
-        print(f"       landing 3p: {', '.join(row['landing_third_party_hosts'][:12])}")
+        print(f"       flows: {row['flows']}  owners: {', '.join(row['entities'])}")
     print(f"\nsaved: {out_root}")
     return 0
 

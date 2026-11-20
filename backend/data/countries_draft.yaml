@@ -1,0 +1,14 @@
+# DRAFT list of countries with adequate personal-data protection (CMR No. 415 of 29.07.2026, in force 03.08.2026).
+# NOT VERIFIED: built from a secondary source (pactum.uz) while Role 2 prepares rules/countries.yaml (task R-10).
+# lex-rag returned no_answer for this list (the resolution is probably not in its index) — Role 2 must read it on lex.uz.
+# The code uses rules/countries.yaml if it exists, otherwise this draft.
+source: "Secondary: https://pactum.uz/solutions/personalnye-dannye-uzbekistan (summary of CMR No. 415)"
+url: null
+effective_from: "2026-08-03"
+verified: false
+total_in_resolution: 49   # we know only part of them
+adequate: [RU, GB, KR, JP,
+           AT, BE, BG, HR, CY, CZ, DK, EE, FI, FR, DE, GR, HU, IE, IT, LV, LT, LU, MT, NL, PL, PT, RO, SK, SI, ES, SE]
+conditional:
+  US: "only companies participating in the EU-US Data Privacy Framework"
+not_listed_confirmed: [KZ, AE, TR, CN]   # explicitly named as NOT on the list by the secondary source

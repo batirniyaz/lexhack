@@ -3,7 +3,7 @@
 > **Working name:** Qalqon ("shield")
 > **Hackathon:** LexHackathon 2026, TSUL, Tashkent, 20–22 November
 > **Track:** 1 — "Huquqiy xizmatlarni ko'rsatish" (legal services)
-> **Passport version:** 0.7 · 20.11.2026, 19:45
+> **Passport version:** 0.8 · 20.11.2026, 20:00
 > **Document owner:** Role 1 (Tech/AI lead). Others send changes in the formats from §11.
 
 ---
@@ -438,6 +438,8 @@ Until the status is `CONFIRMED`, we **don't state** these facts in the pitch.
 | V-15 | Does checking websites for vulnerabilities require a license or permit? | NOT VERIFIED | 2 |
 | V-16 | A Telegram bot as the recipient of leads: is the recipient's country determined by where the servers are or by the company's jurisdiction (UAE)? | NOT VERIFIED | 2 |
 | V-17 | lex.uz terms of use: personal use only; copying for profit only with written permission. What may a commercial service do (quotes with a link?), and can we get official access from the Ministry of Justice? | NOT VERIFIED (this is what the lex-rag README says) | 2 |
+| V-18 | Art. 27¹ part 2: are **visitors of a telecom operator's website** "users of its telecom services" whose data must stay in Uzbekistan? Decides whether trackers on a telecom site are 🔴 or 🟡 | NOT VERIFIED | 2 |
+| V-19 | EU-US DPF participation of Google LLC, Meta Platforms, Microsoft, Amazon, Cloudflare (`dpf: true` in `backend/data/entities.yaml`) | NOT VERIFIED — check https://www.dataprivacyframework.gov/list | 2 |
 
 ---
 
@@ -463,6 +465,7 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 | D-014 | 20.11 | "Qalqon" ("shield" in Uzbek) is a **working name** only; the final name is chosen by the team later | Placeholder so files and code have a stable name |
 | D-015 | 20.11 | Adopted from `research/architecture-proposal.md`: scan in a separate process (Playwright vs `uvicorn --reload` on Windows), "collect once, evaluate many" (`rescore`), score per triggered rule, SSRF guard, demo site in bad + fixed versions with a golden test. Kept SSE instead of polling (D-012) | Robust demo, instant re-evaluation when rules change |
 | D-016 | 20.11 | Scanner navigation: `goto(wait_until="commit")` + fixed observation window, never `load`/`networkidle` | Verified on lex.uz: a hanging third-party script blocks `load` forever |
+| D-018 | 20.11 | If the scanner lands on a bot-protection page (captcha, Cloudflare challenge) its requests are marked `challenge` and never produce findings; a site that never passes is reported as "closed to the check", not as compliant or non-compliant | Verified: one delivery site sometimes returns a Yandex SmartCaptcha page — its Yandex requests would have been a false finding |
 | D-017 | 20.11 | **No "Demo Market".** The demo uses real sites, one per sector (`backend/data/reference_sites.yaml`): passive scan only, pre-scanned and cached, one live scan on stage. In anything public they are anonymized ("Marketplace A", "Telecom F"); D-003 still applies. Active mode (canaries) is not shown on real sites (D-009) | Real findings are more convincing and save build time; anonymity avoids naming companies at a Ministry event |
 
 ---
@@ -519,3 +522,4 @@ Assistants don't challenge these decisions. Only the team can change them, with 
   - abbreviations ZRU, CMR, PP and TSUL added to the glossary (§17).
 - **0.6** — 20.11 20:00 — decisions D-014 (working name), D-015 (adopted parts of the research architecture proposal), D-016 (navigation strategy). Backend skeleton + virtualenv ready (ARCHITECTURE.md step 0). Open question for the team: the scope extension in `research/scope-extension-proposal.md` (product check for builders) — not decided yet.
 - **0.7** — 20.11 19:45 — D-017: real reference sites instead of Demo Market. Batch scan of 8 sectors done; lex-rag API verified. **Task for Role 3:** confirm/replace the candidate sites per sector in `backend/data/reference_sites.yaml` (missing: clinic/medical, insurance, real estate) — send proposals in `research/`.
+- **0.8** — 20.11 20:00 — enrichment done (server country, network, owning company, category; ARCHITECTURE.md step 2). D-018 (bot-protection pages never produce findings). New facts to verify V-18, V-19. **Note for Role 3:** the food-delivery candidate now only says "restaurants moved to Yandex Eats" (1 page) — pick another delivery site. **Note for Role 2:** `backend/data/countries_draft.yaml` is a draft of CMR No. 415 from a secondary source; lex-rag has no answer for the list, so it must be read on lex.uz (R-10); `dpf` flags in `backend/data/entities.yaml` must be checked on dataprivacyframework.gov.
