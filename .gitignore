@@ -33,3 +33,6 @@ Thumbs.db
 
 # Personal Claude instructions (per developer)
 CLAUDE.local.md
+
+# Local design skill (copied from ui-ux-pro-max-cli 2.15.0, only this one skill)
+.claude/skills/ui-ux-pro-max/

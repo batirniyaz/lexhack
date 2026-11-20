@@ -1,13 +1,13 @@
-# Qalqon — what does a website really do with personal data?
+# Probo — what does a website really do with personal data?
 
-> Working name (D-014). LexHackathon 2026, track 1 "Huquqiy xizmatlarni ko'rsatish" (legal services).
+> Product name Probo (D-022; the Python package is still called `qalqon`). LexHackathon 2026, track 1 "Huquqiy xizmatlarni ko'rsatish" (legal services).
 
-Qalqon opens a website the way a normal visitor does, records where personal data actually goes — which servers,
+Probo opens a website the way a normal visitor does, records where personal data actually goes — which servers,
 which countries, which companies — reads the site's own privacy policy, and checks both against the law of
 Uzbekistan (ZRU-547 "On personal data", incl. the 2026 version of art. 27¹ on localization).
 The result is a report with **signs of violation** 🔴🟡⚪, each with evidence and the article of law, and a score 0–100.
 
-**What makes it different:** lawyers read documents, scanners read traffic. Qalqon compares the two:
+**What makes it different:** lawyers read documents, scanners read traffic. Probo compares the two:
 *"the policy says «data is not shared with third parties» — but Meta (US) and Google (US) receive visitor identifiers
 on the first visit, before any consent."*
 
@@ -84,6 +84,18 @@ cp ../.env.example ../.env                                      # then fill in A
 ```
 
 Outputs go to `scans/<scan_id>/` (git-ignored): `facts.json`, `report.json`, `scan.har` (evidence), `events.jsonl`.
+
+### Web app (frontend)
+
+```bash
+cd frontend
+npm install
+npm run dev          # http://localhost:5173, proxies /api to the backend on :8000
+npm run build && npx vite preview   # production build on http://localhost:4173
+```
+
+Screens: Home · Live scan (SSE) · Report (Overview, Findings, Data flows, Policy) · History. Uzbek (Latin) / Russian,
+presentation mode hides site names and brand aliases. Design notes: `frontend/DESIGN.md`; product spec: `PRODUCT.md`.
 
 ### API
 

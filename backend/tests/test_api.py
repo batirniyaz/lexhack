@@ -26,3 +26,10 @@ def test_anonymize_hides_domains_everywhere():
     result = anonymize(report, ["example.uz"], "Marketplace A")
     text = str(result)
     assert "example.uz" not in text and "marketplace-a" in text and result["label"] == "Marketplace A"
+
+
+def test_anonymize_hides_brand_aliases_in_quotes():
+    report = {"quote": "Uzum Market maʼlumotlarni uchinchi shaxslarga bermaydi. UZUM Bank ham."}
+    result = anonymize(report, ["uzum.uz"], "Marketplace A", ["Uzum Market", "Uzum Bank", "Uzum"])
+    assert "uzum" not in result["quote"].lower()
+    assert result["quote"].startswith("Marketplace A")

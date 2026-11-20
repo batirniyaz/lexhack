@@ -20,7 +20,7 @@ from sse_starlette.sse import EventSourceResponse
 from . import __version__
 from .config import SCANS_DIR, settings
 from .jobs import ScanJob, jobs
-from .presentation import anonymize, label_for, replay_events
+from .presentation import aliases_for, anonymize, label_for, replay_events
 from .scan import new_scan_id
 from .urls import TargetNotAllowed, check_target, normalize_url
 
@@ -141,12 +141,14 @@ def scan_result(scan_id: str, anon: bool = False, facts: bool = False) -> dict:
     if facts:
         raw = _read_json(scan_dir / "facts.json") or {}
         result["facts"] = {k: raw.get(k) for k in ("site", "site_domains", "pages", "hosts", "flows", "forms",
-                                                    "documents", "cookies", "backends", "stats", "enrichment")}
+                                                    "documents", "cookies", "backends", "stats", "enrichment",
+                                                    "policy", "uploads", "permissions", "session_replay", "blocked")}
         for doc in result["facts"].get("documents") or []:
             doc.pop("text", None)  # large; served separately later if needed
     if anon:
         domains = (_read_json(scan_dir / "facts.json") or {}).get("site_domains") or []
-        result = anonymize(result, domains, label_for(report.get("site") or ""))
+        site = report.get("site") or ""
+        result = anonymize(result, domains, label_for(site), aliases_for(site))
     return result
 
 

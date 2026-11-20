@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Project **Qalqon**: a scanner that checks websites against Uzbekistan's personal data law. LexHackathon 2026, track 1. A team of 3.
+Project **Probo** (earlier working name Qalqon; the Python package is still `qalqon`): a scanner that checks websites against Uzbekistan's personal data law. LexHackathon 2026, track 1. A team of 3.
 
 ## Before any work
 1. Read `PASSPORT.md` in full. It is the single source of truth for the team and all AI assistants.

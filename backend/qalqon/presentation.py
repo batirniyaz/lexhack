@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterator
@@ -14,27 +15,35 @@ from .urls import host_of, registrable_domain
 
 
 @lru_cache(maxsize=1)
-def _labels() -> dict[str, str]:
+def _sites() -> dict[str, dict]:
     path = DATA_DIR / "reference_sites.yaml"
     if not path.exists():
         return {}
     sites = (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("sites", [])
-    return {registrable_domain(host_of(s["url"])): s["label"] for s in sites if s.get("label")}
+    return {registrable_domain(host_of(s["url"])): s for s in sites if s.get("label")}
 
 
 def label_for(site_url: str) -> str:
-    return _labels().get(registrable_domain(host_of(site_url)), "Site")
+    return _sites().get(registrable_domain(host_of(site_url)), {}).get("label", "Site")
 
 
-def anonymize(obj: Any, domains: list[str], label: str) -> Any:
-    """Replace every occurrence of the site's domains with a neutral label, recursively."""
+def aliases_for(site_url: str) -> list[str]:
+    """Brand names of a reference site — they appear inside policy quotes and must be hidden too."""
+    return list(_sites().get(registrable_domain(host_of(site_url)), {}).get("aliases", []))
+
+
+def anonymize(obj: Any, domains: list[str], label: str, aliases: list[str] | None = None) -> Any:
+    """Replace the site's domains (with a slug) and brand aliases (with the label) everywhere, recursively."""
     tag = label.lower().replace(" ", "-")
-    replacements = sorted(set(domains), key=len, reverse=True)
+    domain_list = sorted(set(domains), key=len, reverse=True)
+    alias_patterns = [re.compile(re.escape(a), re.IGNORECASE) for a in sorted(set(aliases or []), key=len, reverse=True)]
 
     def fix(value: Any) -> Any:
         if isinstance(value, str):
-            for domain in replacements:
+            for domain in domain_list:
                 value = value.replace(domain, tag)
+            for pattern in alias_patterns:
+                value = pattern.sub(label, value)
             return value
         if isinstance(value, list):
             return [fix(v) for v in value]
