@@ -25,4 +25,4 @@ def detector(name: str):
 
 
 # Import modules so their detectors register themselves.
-from . import documents, forms, locality, security, trackers  # noqa: E402,F401
+from . import documents, ecommerce, forms, locality, security, trackers  # noqa: E402,F401

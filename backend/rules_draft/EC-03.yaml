@@ -1,0 +1,26 @@
+id: EC-03
+title:
+  en: "The online store has no Uzbek-language version"
+  ru: "У интернет-магазина нет версии на узбекском языке"
+  uz: "Internet-doʻkonning oʻzbek tilidagi versiyasi yoʻq"
+level: risk
+detector: state_language_version
+# Pilot beyond personal data (D-027). Counts the page language, hreflang alternates, a language switch to Uzbek,
+# and Uzbek text on the scanned pages (Latin or Cyrillic). Any one of them is enough to pass.
+legal_basis:
+  - act: "«Isteʼmolchilarning huquqlarini himoya qilish toʻgʻrisida»gi Qonun"
+    act_ru: "Закон «О защите прав потребителей»"
+    act_id: CONSUMER
+    article: "5, part 5 (information about the seller and trading rules); 6, part 5 (information about goods) — in the state language"
+    articles: ["5:5", "6:5"]
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/docs/-4704"
+    edition_date: null
+sanction: null
+fix:
+  en: "Add an Uzbek-language version of the store (product information, seller details and terms of sale); other languages may stay in addition."
+  ru: "Добавьте версию магазина на узбекском языке (информация о товарах, продавце и условиях продажи); другие языки можно оставить дополнительно."
+  uz: "Doʻkonning oʻzbek tilidagi versiyasini qoʻshing (tovarlar, sotuvchi va savdo shartlari haqidagi maʼlumot); boshqa tillar qoʻshimcha ravishda qolishi mumkin."
+verified: false
+author: "Role 1 draft (norms found via lex-rag 21.11, to be confirmed by Role 2)"

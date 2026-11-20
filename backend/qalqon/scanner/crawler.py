@@ -13,7 +13,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Optional
-from urllib.parse import urldefrag, urlparse
+from urllib.parse import urldefrag, urlparse, urlsplit
 
 from playwright.async_api import BrowserContext, Page, Request, Response, async_playwright
 
@@ -247,6 +247,14 @@ async def _discover(context: BrowserContext, start_url: str, site_domains: set[s
     return found
 
 
+_CONTACT_PATH = re.compile(r"contact|kontakt|aloqa|about|o-nas|biz-haqimizda|haqimizda|rekvizit|реквизит|контакт", re.I)
+
+
+def _is_landing_or_contact(url: str) -> bool:
+    path = urlsplit(url).path.strip("/")
+    return path in ("", "uz", "ru", "oz", "en", "uz/", "ru/") or bool(_CONTACT_PATH.search(path))
+
+
 async def _collect(page: Page, info: dict) -> None:
     """Read everything we need from the DOM of the current page into `info`."""
     info["final_url"] = page.url
@@ -264,6 +272,12 @@ async def _collect(page: Page, info: dict) -> None:
             item for script in data["inline_scripts"] for item in find_backends(script, f"inline script on {page.url}")
         ]
         info["webvisor"] = any(has_webvisor(script) for script in data["inline_scripts"])
+        info["lang"] = data.get("lang") or None
+        info["alternates"] = data.get("alternates") or []
+        info["lang_links"] = data.get("lang_links") or []
+        # Visible text only where seller details usually are: the landing page and contact / about pages.
+        if _is_landing_or_contact(page.url):
+            info["text"] = data.get("text") or ""
     info["challenge"] = _challenge(info["final_url"], info["title"])
     kind = None if info["challenge"] else document_kind(info["final_url"], info["title"] or "")
     if kind:

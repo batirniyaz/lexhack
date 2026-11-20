@@ -96,7 +96,8 @@ function capitalize(text: string): string {
 
 /** "ZRU-547 «…»", "22 (truthful…) — NOT VERIFIED" -> "ZRU-547, 22-modda" / "ЗРУ-547, ст. 22" (English notes dropped). */
 export function lawRef(act: string, article: string | null, lang: 'uz' | 'ru'): string {
-  const code = act.split(' ')[0]
+  // "ZRU-547 «…»" → "ZRU-547"; acts without a short code keep their title (e-commerce pilot laws).
+  const code = /^(ZRU|ЗРУ|CMR|VMQ|ПКМ)[-\s]/i.test(act) ? act.split(' ')[0] : act
   if (!article) return code
   const clean = article.replace(/\s*—\s*NOT VERIFIED.*$/i, '').replace(/\s*\([^)]*\)/g, '').trim()
   const main = clean.split(/[;]/)[0]
@@ -143,7 +144,7 @@ function FindingItem({ finding, open }: { finding: Finding; open: boolean }) {
               <h4>{t.law}</h4>
               {law.map((b, i) => (
                 <div key={i} style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: 14, marginBottom: 6 }}>{lawRef(b.act, b.article, lang)}</div>
+                  <div style={{ fontSize: 14, marginBottom: 6 }}>{lawRef((lang === 'ru' && b.act_ru) || b.act, b.article, lang)}</div>
                   {b.quote_uz && <blockquote className="q-quote">{b.quote_uz}</blockquote>}
                   {b.quote_uz && <div className="q-quote-meta">{t.official}</div>}
                   {lang === 'ru' && b.quote_ru && <blockquote className="q-quote" style={{ marginTop: 8 }}>{b.quote_ru}</blockquote>}

@@ -1,0 +1,25 @@
+id: EC-02
+title:
+  en: "No public offer or terms of sale with return conditions"
+  ru: "Нет публичной оферты или условий продажи с порядком возврата"
+  uz: "Ommaviy oferta yoki qaytarish tartibi koʻrsatilgan savdo shartlari yoʻq"
+level: risk
+detector: offer_and_returns
+# Pilot beyond personal data (D-027). "Offer exists but says nothing about returns" is downgraded one level.
+legal_basis:
+  - act: "«Elektron tijorat toʻgʻrisida»gi Qonun"
+    act_ru: "Закон «Об электронной коммерции»"
+    act_id: ECOM
+    article: "16 (offer content), 26–27 (return of goods and money)"
+    articles: ["16:3", "26", "27"]
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/docs/-6213382"
+    edition_date: null
+sanction: null
+fix:
+  en: "Publish a public offer (terms of sale) linked from every page, with delivery, payment and return terms: where and how to return goods, refund time and who pays."
+  ru: "Опубликуйте публичную оферту (условия продажи) со ссылкой на каждой странице: доставка, оплата и возврат — куда и как вернуть товар, сроки возврата денег и кто несёт расходы."
+  uz: "Har bir sahifadan havola bilan ommaviy oferta (savdo shartlari) joylang: yetkazib berish, toʻlov va qaytarish — tovarni qayerga va qanday qaytarish, pulni qaytarish muddati va xarajatlarni kim qoplaydi."
+verified: false
+author: "Role 1 draft (norms found via lex-rag 21.11, to be confirmed by Role 2)"

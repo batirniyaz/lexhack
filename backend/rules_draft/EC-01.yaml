@@ -1,0 +1,34 @@
+id: EC-01
+title:
+  en: "The online store does not show who the seller is"
+  ru: "Интернет-магазин не показывает, кто продавец"
+  uz: "Internet-doʻkon sotuvchi kimligini koʻrsatmaydi"
+level: risk
+detector: seller_identity
+# Pilot beyond personal data (D-027). Applies only to sites that look like online stores (2+ store signals).
+legal_basis:
+  - act: "«Elektron tijorat toʻgʻrisida»gi Qonun"
+    act_ru: "Закон «Об электронной коммерции»"
+    act_id: ECOM
+    article: "16, part 3 (the offer names the seller, postal and e-mail address, phone)"
+    articles: ["16:3"]
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/docs/-6213382"
+    edition_date: null
+  - act: "«Isteʼmolchilarning huquqlarini himoya qilish toʻgʻrisida»gi Qonun"
+    act_ru: "Закон «О защите прав потребителей»"
+    act_id: CONSUMER
+    article: "5 (information about the seller)"
+    articles: ["5"]
+    quote_uz: null
+    quote_ru: null
+    url: "https://lex.uz/docs/-4704"
+    edition_date: null
+sanction: null
+fix:
+  en: "Show the seller's full legal name, taxpayer number (STIR), postal address, phone and e-mail in the footer and in the public offer."
+  ru: "Укажите в подвале сайта и в публичной оферте полное наименование продавца, ИНН (STIR), почтовый адрес, телефон и e-mail."
+  uz: "Sayt pastki qismida va ommaviy ofertada sotuvchining toʻliq nomi, STIR, pochta manzili, telefon va e-mailini koʻrsating."
+verified: false
+author: "Role 1 draft (norms found via lex-rag 21.11, to be confirmed by Role 2)"

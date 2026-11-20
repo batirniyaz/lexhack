@@ -1,7 +1,145 @@
 {
- "generated_at": "2026-11-20T22:52:25+00:00",
+ "generated_at": "2026-11-20T23:07:41+00:00",
  "note": "Verbatim text from lex.uz via lex-rag; quotes checked by code against the retrieved text. Not verified by a lawyer.",
  "quotes": {
+  "CONSUMER:5": {
+   "act": "CONSUMER",
+   "article": "5",
+   "heading": "5-modda. Ishlab chiqaruvchi (ijrochi, sotuvchi), savdo va xizmat koʻrsatish qoidalari toʻgʻrisidagi maʼlumot",
+   "parts": [
+    {
+     "part": "1-qism",
+     "text": "Ishlab chiqaruvchi oʻz korxonasining nomi va joylashgan (yuridik) manzili haqida isteʼmolchini xabardor qilishi shart."
+    },
+    {
+     "part": "2-qism",
+     "text": "Sotuvchi (ijrochi) oʻz tashkilotining firma nomi, uning joylashgan (yuridik) manzili va ish tartibini isteʼmolchilarga maʼlum qilishi shart."
+    },
+    {
+     "part": "3-qism",
+     "text": "savdo va xizmat koʻrsatish muvaqqat binolar, yarmarkalar, koʻchma doʻkonchalar orqali amalga oshirilgan"
+    }
+   ],
+   "lang": "uz-Latn",
+   "url": "https://lex.uz/docs/-4704",
+   "edition_date": "2026-02-02",
+   "doc_status": "amalda",
+   "doc_title": "Isteʼmolchilarning huquqlarini himoya qilish toʻgʻrisida",
+   "source": "lex-rag",
+   "index_version": "lex-idx-2026-11-06+v667192",
+   "verified_by_lawyer": false
+  },
+  "CONSUMER:5:5": {
+   "act": "CONSUMER",
+   "article": "5:5",
+   "heading": "5-modda",
+   "parts": [
+    {
+     "part": "5-qism",
+     "text": "Ishlab chiqaruvchi (ijrochi, sotuvchi) haqidagi, savdo va xizmat koʻrsatish qoidalari toʻgʻrisidagi maʼlumot isteʼmolchiga davlat tilida taqdim etiladi. Mazkur maʼlumot qoʻshimcha ravishda boshqa tillarda ham taqdim etilishi mumkin."
+    }
+   ],
+   "lang": "uz-Latn",
+   "url": "https://lex.uz/docs/-4704",
+   "edition_date": "2026-02-02",
+   "doc_status": "amalda",
+   "doc_title": "Isteʼmolchilarning huquqlarini himoya qilish toʻgʻrisida",
+   "source": "lex-rag",
+   "index_version": "lex-idx-2026-11-06+v667192",
+   "verified_by_lawyer": false
+  },
+  "CONSUMER:6:5": {
+   "act": "CONSUMER",
+   "article": "6:5",
+   "heading": "6-modda",
+   "parts": [
+    {
+     "part": "5-qism",
+     "text": "Tovar (ish, xizmat) toʻgʻrisidagi maʼlumot isteʼmolchiga davlat tilida taqdim etiladi. Mazkur maʼlumot qoʻshimcha ravishda boshqa tillarda ham taqdim etilishi mumkin."
+    }
+   ],
+   "lang": "uz-Latn",
+   "url": "https://lex.uz/docs/-4704",
+   "edition_date": "2026-02-02",
+   "doc_status": "amalda",
+   "doc_title": "Isteʼmolchilarning huquqlarini himoya qilish toʻgʻrisida",
+   "source": "lex-rag",
+   "index_version": "lex-idx-2026-11-06+v667192",
+   "verified_by_lawyer": false
+  },
+  "ECOM:16:3": {
+   "act": "ECOM",
+   "article": "16:3",
+   "heading": "16-modda",
+   "parts": [
+    {
+     "part": "3-qism",
+     "text": "Elektron tijoratda oferta:\nofertani yuborgan shaxsning nomini (oʻzini oʻzi band qilgan shaxslarning familiyasini, ismini, otasining ismini);\nofertani yuborgan shaxsning pochta va elektron manzilini, telefon raqamini;\nqonunchilikda nazarda tutilgan hollarda, litsenziyaning yoki ruxsat etish xususiyatiga ega hujjatning mavjudligi toʻgʻrisidagi maʼlumotlarni (litsenziyaning yoki ruxsat etish xususiyatiga ega hujjatning raqamini, amal qilish muddatini, faoliyatning ayrim turlarini litsenziyalashni yoki ruxsat etish xususiyatiga ega hujjatni berishni amalga oshiruvchi maxsus vakolatli organning nomini);\nshartnomani tuzish tartibini, shuningdek akseptni yuborish va chaqirib olish tartibini;\nshartnoma shartlarini kelishib olish chogʻida unga oʻzgartish va qoʻshimchalar kiritish imkoniyati hamda tartibini;\ntovarlarni (ishlarni, xizmatlarni) yetkazib berish va ularga haq toʻlash shartlarini, shuningdek ular uchun taklif etilayotgan narxlarni (tariflarni);\nhamma foydalanishi mumkin boʻlgan axborot resursida joylashtirilgan elektron hujjatga havola qilish yoʻli bilan shartnomaga kiritiladigan shartlarga doir koʻrsatmalarni oʻz ichiga olishi kerak."
+    }
+   ],
+   "lang": "uz-Latn",
+   "url": "https://lex.uz/docs/-6213382",
+   "edition_date": "2026-07-25",
+   "doc_status": "amalda",
+   "doc_title": "Elektron tijorat toʻgʻrisida",
+   "source": "lex-rag",
+   "index_version": "lex-idx-2026-11-06+v667192",
+   "verified_by_lawyer": false
+  },
+  "ECOM:26": {
+   "act": "ECOM",
+   "article": "26",
+   "heading": "26-modda. Elektron tijoratda nuqsonli tovarni almashtirib berish va (yoki) tovarning nuqsonlarini bartaraf etish",
+   "parts": [
+    {
+     "part": "1-qism",
+     "text": "Shartnoma bekor qilinganda sotuvchi xaridorga tovarni qaytarib berish amalga oshiriladigan joy toʻgʻrisida xabar berishi kerak."
+    },
+    {
+     "part": "3-qism",
+     "text": "Tovar namunaga va (yoki) tavsifga muvofiq boʻlmagan hollarda, xaridor uni almashtirishni yoki pul summasini qaytarishni talab qilish huquqiga ega."
+    },
+    {
+     "part": "4-qism",
+     "text": "Xaridorning aybisiz yetkazilgan shikastlantirishlar, shuningdek tovarni koʻzdan kechirish va uni tekshirib koʻrish maqsadida oʻrovini ochish sababli tovar qiymatining pasayishi xaridorni shartnomani bekor qilish huquqidan mahrum etmaydi."
+    }
+   ],
+   "lang": "uz-Latn",
+   "url": "https://lex.uz/docs/-6213382",
+   "edition_date": "2026-07-25",
+   "doc_status": "amalda",
+   "doc_title": "Elektron tijorat toʻgʻrisida",
+   "source": "lex-rag",
+   "index_version": "lex-idx-2026-11-06+v667192",
+   "verified_by_lawyer": false
+  },
+  "ECOM:27": {
+   "act": "ECOM",
+   "article": "27",
+   "heading": "27-modda. Elektron tijoratda toʻlangan mablagʻlarni xaridorga qaytarishning oʻziga xos xususiyatlari",
+   "parts": [
+    {
+     "part": "1-qism",
+     "text": "xaridor tomonidan toʻlangan pul summasini unga qaytarish tovar uchun haq toʻlash qanday shaklda amalga oshirilgan boʻlsa, xuddi shunday shaklda amalga oshiriladi."
+    },
+    {
+     "part": "2-qism",
+     "text": "Shartnomaga muvofiq xaridor tomonidan toʻlangan pul summasini qaytarish bilan bogʻliq xarajatlar sotuvchining zimmasiga yuklatiladi."
+    },
+    {
+     "part": "3-qism",
+     "text": "sotuvchi xaridorga shartnomada belgilangan muddatlardan ortiq har bir kechiktirilgan kun uchun qaytarilishi lozim boʻlgan pul summasining bir foizi miqdorida neustoyka (penya) toʻlaydi."
+    }
+   ],
+   "lang": "uz-Latn",
+   "url": "https://lex.uz/docs/-6213382",
+   "edition_date": "2026-07-25",
+   "doc_status": "amalda",
+   "doc_title": "Elektron tijorat toʻgʻrisida",
+   "source": "lex-rag",
+   "index_version": "lex-idx-2026-11-06+v667192",
+   "verified_by_lawyer": false
+  },
   "ZRU-547:13": {
    "act": "ZRU-547",
    "article": "13",

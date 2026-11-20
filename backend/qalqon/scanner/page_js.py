@@ -120,6 +120,17 @@ PAGE_JS = r"""
     forms,
     legal_links: legalLinks,
     inline_scripts: inline,
+    // E-commerce pilot (D-027): page language, language versions, visible text (seller details sit in the footer).
+    lang: (document.documentElement.getAttribute('lang') || '').slice(0, 20),
+    alternates: Array.from(document.querySelectorAll('link[rel=alternate][hreflang]'))
+      .map((l) => [l.getAttribute('hreflang') || '', l.href]).slice(0, 20),
+    lang_links: Array.from(document.querySelectorAll('a[href]'))
+      .map((a) => [a.href, textOf(a).slice(0, 40), a.getAttribute('hreflang') || ''])
+      .filter(([href, text, hl]) => hl
+        || /^(uz|oz|ўз|уз|ru|рус|en|eng|o.zbek|ўзбек|узбек|русск|english)\b/i.test(text)
+        || /[\/=](uz|oz|ru|en|uz-latn|uz-cyrl)(\/|$|[?&#])/i.test(href))
+      .slice(0, 30),
+    text: (document.body ? document.body.innerText : '').slice(0, 20000),
   };
 }
 """

@@ -28,6 +28,11 @@ QUOTES_FILE = DATA_DIR / "law_quotes.json"
 ACTS = {
     "ZRU-547": {"doc_id": "lex:4396419",
                 "question": "Shaxsga doir maʼlumotlar toʻgʻrisidagi Qonunning {article}-moddasida nima belgilangan?"},
+    # E-commerce pilot (D-027); law numbers are not shown by lex-rag, so the rules use the official titles.
+    "ECOM": {"doc_id": "lex:6213382",
+             "question": "Elektron tijorat toʻgʻrisidagi Qonunning {article}-moddasida nima belgilangan?"},
+    "CONSUMER": {"doc_id": "lex:4704",
+                 "question": "Isteʼmolchilarning huquqlarini himoya qilish toʻgʻrisidagi Qonunning {article}-moddasida nima belgilangan?"},
 }
 
 
@@ -45,16 +50,23 @@ def _part_order(citation: dict) -> int:
 
 
 def fetch_article(act: str, article: str, *, use_cache: bool = True) -> Optional[dict]:
+    """article is "21" (the first parts of the article) or "5:5" (only part 5 of article 5)."""
     spec = ACTS[act]
-    data = query(spec["question"].format(article=article), use_cache=use_cache)
+    number, _, part = article.partition(":")
+    question = spec["question"].format(article=number)
+    if part:
+        question = question.replace(f"{number}-moddasida", f"{number}-moddasining {part}-qismida")
+    data = query(question, use_cache=use_cache)
     citations = [c for c in verified_citations(data)
-                 if c.get("doc_id") == spec["doc_id"] and _article_key(c.get("article", "")) == article]
+                 if c.get("doc_id") == spec["doc_id"] and _article_key(c.get("article", "")) == number]
+    if part:
+        citations = [c for c in citations if _part_order(c) == int(part)]
     if not citations:
         return None
     citations.sort(key=_part_order)
     first = citations[0]
     heading = (first.get("chunk_text") or "").split("\n", 1)[0].strip()
-    if not normalize(heading).startswith(normalize(article.replace("¹", ""))[:2]):
+    if not normalize(heading).startswith(normalize(number.replace("¹", ""))[:2]):
         heading = ""
     seen, parts = set(), []
     for c in citations[:3]:
@@ -64,13 +76,21 @@ def fetch_article(act: str, article: str, *, use_cache: bool = True) -> Optional
         text = c["quote"]
         chunk = c.get("chunk_text") or ""
         start = chunk.find(text)
-        if text.rstrip().endswith(":") and start >= 0:
+        if part and start >= 0:
+            # One specific part was asked for: show the whole part as lex.uz has it (the quote is inside it).
+            lines = chunk.strip().split("\n")
+            if lines and normalize(lines[0]).startswith(f"{number}-modda"):
+                lines = lines[1:]  # drop the article heading line
+            text = "\n".join(lines).strip()
+        elif text.rstrip().endswith(":") and start >= 0:
             # A part that introduces a list ("…shart:"): keep the list items from the same lex.uz chunk.
             text = chunk[start:].strip()
-            if len(text) > 1500:  # very long list: cut at a line end, never mid-word
-                cut = text.rfind("\n", 0, 1500)
-                text = text[:cut if cut > 0 else 1500].rstrip() + "\n…"
+        if len(text) > 1500:  # very long list: cut at a line end, never mid-word
+            cut = text.rfind("\n", 0, 1500)
+            text = text[:cut if cut > 0 else 1500].rstrip() + "\n…"
         parts.append({"part": c.get("part"), "text": text})
+    if part:
+        heading = heading or f"{number}-modda"
     system = data.get("system") or {}
     return {
         "act": act,
