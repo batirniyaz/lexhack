@@ -3,7 +3,7 @@
 > **Product name:** Probo (D-022). Earlier working name: Qalqon; the Python package is still `qalqon`.
 > **Hackathon:** LexHackathon 2026, TSUL, Tashkent, 20–22 November
 > **Track:** 1 — "Huquqiy xizmatlarni ko'rsatish" (legal services)
-> **Passport version:** 0.11 · 21.11.2026, 02:30
+> **Passport version:** 0.11 · 21.11.2026, 00:20
 > **Document owner:** Role 1 (Tech/AI lead). Others send changes in the formats from §11.
 
 ---
@@ -530,4 +530,4 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 - **0.8** — 20.11 20:00 — enrichment done (server country, network, owning company, category; ARCHITECTURE.md step 2). D-018 (bot-protection pages never produce findings). New facts to verify V-18, V-19. **Note for Role 3:** the food-delivery candidate now only says "restaurants moved to Yandex Eats" (1 page) — pick another delivery site. **Note for Role 2:** `backend/data/countries_draft.yaml` is a draft of CMR No. 415 from a secondary source; lex-rag has no answer for the list, so it must be read on lex.uz (R-10); `dpf` flags in `backend/data/entities.yaml` must be checked on dataprivacyframework.gov.
 - **0.9** — 20.11 20:15 — rules engine works end to end (ARCHITECTURE.md step 3). D-019 (precision over recall). **For Role 2:** 13 draft rules are in `backend/rules_draft/*.yaml` (schema §11.2, plus `title.en` / `fix.en`). Copy any of them to `/rules/<same ID>.yaml`, verify and correct it there — your file overrides the draft automatically, no code change needed. Most urgent: PD-CNS-01 (consent, art. 21 text), PD-TRK-01, PD-REC-01 (Webvisor found on 5 of 8 sites), countries list (R-10).
 - **0.10** — 20.11 21:00 — LLM policy analysis + "policy vs behaviour" works on real sites (ARCHITECTURE.md step 5). D-020, D-021. Batch of 8: average score 84.6; trackers before consent on 7/8, Webvisor on 5/8, policy silent about services it uses on 3/8. **For Role 2:** the policy elements we check are listed in `backend/qalqon/llm/policy.py` (`ELEMENTS`) — please confirm against art. 22 ZRU-547 and Minjust order No. 20-mx which are mandatory. **For Role 3 (pitch):** take numbers only from `GET /api/stats` (anonymized).
-- **0.11** — 21.11 02:30 — product renamed to Probo (D-022); frontend P0 done (D-023, `PRODUCT.md`, `frontend/DESIGN.md`). **For Role 3:** check the Uzbek and Russian UI texts in `frontend/src/i18n.tsx` and add brand spellings to `aliases` in `backend/data/reference_sites.yaml` so presentation mode hides them.
+- **0.11** — 21.11 00:20 — product renamed to Probo (D-022); frontend P0 done (D-023, `PRODUCT.md`, `frontend/DESIGN.md`). **For Role 3:** check the Uzbek and Russian UI texts in `frontend/src/i18n.tsx` and add brand spellings to `aliases` in `backend/data/reference_sites.yaml` so presentation mode hides them.
