@@ -16,6 +16,7 @@ const LEVEL_BADGE: Record<Level, 'error' | 'warning' | 'neutral'> = {
   violation: 'error', risk: 'warning', recommendation: 'neutral',
 }
 const LEVEL_ORDER: Level[] = ['violation', 'risk', 'recommendation']
+const COVERAGE_BADGE = { named: 'success', company: 'info', kind: 'neutral', none: 'warning' } as const
 
 function useLevelLabel() {
   const { t } = useSettings()
@@ -281,7 +282,23 @@ export function PolicyView({ report, facts }: { report: Report; facts?: Facts })
           })}
         </section>
       )}
-      {undisclosed && undisclosed.length > 0 && (
+      {report.policy_coverage && report.policy_coverage.length > 0 ? (
+        <section>
+          <h3 style={{ fontSize: 16, margin: '0 0 6px' }}>{t.cov_title}</h3>
+          <p className="q-muted" style={{ margin: '0 0 12px', fontSize: 14 }}>{t.cov_text}</p>
+          <ul className="q-checklist">
+            {report.policy_coverage.map((c) => (
+              <li key={c.entity}>
+                <Badge variant={COVERAGE_BADGE[c.level]} label={t[`cov_${c.level}`]} />
+                <div>
+                  <div>{c.entity} <span className="q-muted">· {countryName(c.country, lang)} · {c.categories.map((k) => CATEGORY[lang][k] ?? k).join(', ')}</span></div>
+                  <div className="q-mono q-muted" style={{ fontSize: 12.5 }}>{c.hosts.join(', ')}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : undisclosed && undisclosed.length > 0 && (
         <section>
           <h3 style={{ fontSize: 16, margin: '0 0 10px' }}>{t.undisclosed}</h3>
           <p style={{ margin: 0 }}>{undisclosed.map((u) => `${u.entity} (${countryName(u.country, lang)})`).join(', ')}</p>

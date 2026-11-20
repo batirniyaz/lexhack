@@ -92,3 +92,22 @@ def test_identifier_only_login_form_is_not_a_consent_finding():
 def test_blocked_site_has_no_findings():
     report = evaluate(_facts(blocked="captcha"))
     assert report["status"] == "blocked" and report["findings"] == [] and report["score"] is None
+
+
+def test_policy_coverage_levels():
+    """F-17: product named / only company / only the kind (in a clause about services) / not named."""
+    from qalqon.detectors.documents import policy_coverage
+    text = ("Biz Yandex.Metrika hisoblagichidan foydalanamiz. Meta kompaniyasi ham. "
+            "Reklama joylashtirish shartlari; veb-tahlil va analitik xizmatlar provayderlari cookie oladi.")
+    facts = {
+        "policy": {"status": "ok", "documents": [{"url": "https://s.uz/p"}]},
+        "documents": [{"url": "https://s.uz/p", "text": text}],
+        "hosts": [
+            {"host": "mc.yandex.ru", "third_party": True, "entity": "Yandex", "country": "RU", "category": "analytics"},
+            {"host": "connect.facebook.net", "third_party": True, "entity": "Meta", "country": "US", "category": "advertising"},
+            {"host": "www.google-analytics.com", "third_party": True, "entity": "Google", "country": "US", "category": "analytics"},
+            {"host": "ads.tiktok.com", "third_party": True, "entity": "TikTok / ByteDance", "country": "CN", "category": "advertising"},
+        ],
+    }
+    levels = {row["entity"]: row["level"] for row in policy_coverage(facts)}
+    assert levels == {"Yandex": "named", "Meta": "company", "Google": "kind", "TikTok / ByteDance": "none"}

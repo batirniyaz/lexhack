@@ -40,6 +40,78 @@ ENTITY_ALIASES = {
 }
 
 
+# Policy coverage per service in 4 levels (F-17, after WhoGetsMyData): the product is named / only the company /
+# only the kind of service / nothing. The finding logic is unchanged: a service counts as undisclosed when neither
+# its product nor its company is named (ENTITY_ALIASES = products + companies); the levels add detail for the lawyer.
+PRODUCTS = {
+    "Google": ["google analytics", "google tag manager", "gtag", "doubleclick", "google ads", "adsense", "firebase"],
+    "Meta": ["facebook pixel", "meta pixel", "pixel"],
+    "Yandex": ["yandex.metrika", "yandex metrika", "yandex metrica", "metrika", "metrica", "яндекс.метрика",
+               "яндекс метрика", "метрик", "webvisor", "вебвизор"],
+    "Microsoft": ["clarity", "bing"],
+    "VK / Mail.ru Group": ["mytarget", "vk pixel", "top.mail.ru"],
+}
+COMPANIES = {
+    "Google": ["google"], "Meta": ["meta", "facebook", "instagram"], "Yandex": ["yandex", "яндекс"],
+    "Microsoft": ["microsoft"], "VK / Mail.ru Group": ["vk.com", "vkontakte", "вконтакте", "mail.ru"],
+}
+KIND_WORDS = {
+    "analytics": ["analitik", "аналитич", "analytic", "statistik", "статистик", "statistic"],
+    "advertising": ["reklama", "реклам", "advertis"],
+    "marketing": ["marketing", "маркетинг"],
+    "session_replay": ["seans", "сеанс", "session record", "запись действий"],
+    "social": ["ijtimoiy tarmoq", "социальн", "social network"],
+    "ab_testing": ["a/b", "тестирован", "experiment"],
+    "ai": ["sunʼiy intellekt", "sun'iy intellekt", "искусственн", "artificial intelligence"],
+}
+COVERAGE_LEVELS = ("named", "company", "kind", "none")
+
+
+# A kind word counts only next to words about services or recipients: "reklama joylashtirish" (placing ads on the
+# platform) or "reklama aksiyasi" (a promo campaign) must not count as "advertising services receive data"
+# (both seen in real policies on 21.11).
+# Generic "third parties / partners" is not enough: "advertising SMS, including from third parties" (seen 21.11)
+# is about mailings, not about advertising services that receive visitor data.
+RECIPIENT_CONTEXT = ["xizmat", "servis", "сервис", "service", "provayder", "провайдер", "provider", "cookie", "куки",
+                     "kuki", "hisoblagich", "счетчик", "счётчик", "counter", "pixel", "piksel", "пиксел"]
+# Clause boundaries: ";", line breaks, sentence ends, numbered items like "5.4.6.".
+_CLAUSE = re.compile(r"[;\n]|(?<=[.!?])\s+(?=\S)|\b\d+(?:\.\d+)+\.?\s")
+
+
+def _mentions_any(text: str, words: list[str]) -> bool:
+    """A kind word (stem) in the same clause as a word about services or recipients."""
+    for clause in _CLAUSE.split(text):
+        if any(word in clause for word in words) and any(context in clause for context in RECIPIENT_CONTEXT):
+            return True
+    return False
+
+
+def policy_coverage(facts: dict) -> list[dict] | None:
+    """For each tracking or AI service the site uses: how the policy names it. None if there is no analysed policy."""
+    policy = _policy(facts)
+    if policy is None:
+        return None
+    text = _policy_text(facts, policy)
+    if not text:
+        return None
+    rows = []
+    for name, row in _by_entity(_tracking_hosts(facts)).items():
+        products = PRODUCTS.get(name) or ENTITY_ALIASES.get(name) or []
+        companies = COMPANIES.get(name) or [name.lower()]
+        if products and _mentions(text, products):
+            level = "named"
+        elif _mentions(text, companies):
+            level = "company"
+        elif any(_mentions_any(text, KIND_WORDS.get(cat, [])) for cat in row["categories"]):
+            level = "kind"
+        else:
+            level = "none"
+        rows.append({"entity": name, "country": row["country"], "categories": sorted(row["categories"]),
+                     "level": level, "hosts": row["hosts"][:5]})
+    rows.sort(key=lambda r: (COVERAGE_LEVELS.index(r["level"]) * -1, r["entity"]))
+    return rows
+
+
 def _mentions(text: str, aliases: list[str]) -> bool:
     """Whole-word match, so 'meta' does not hit 'metamaʼlumot' and 'aws' does not hit 'laws'."""
     return any(re.search(rf"(?<!\w){re.escape(alias)}(?!\w)", text) for alias in aliases)
@@ -63,8 +135,11 @@ def _by_entity(hosts: list[dict]) -> dict[str, dict]:
     result: dict[str, dict] = {}
     for host in hosts:
         key = host.get("entity") or host["host"]
-        row = result.setdefault(key, {"entity": key, "country": host.get("country"), "hosts": [], "on_landing": False})
+        row = result.setdefault(key, {"entity": key, "country": host.get("country"), "hosts": [], "on_landing": False,
+                                      "categories": set()})
         row["hosts"].append(host["host"])
+        if host.get("category"):
+            row["categories"].add(host["category"])
         row["on_landing"] = row["on_landing"] or host.get("on_landing", False)
     return result
 

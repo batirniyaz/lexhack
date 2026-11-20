@@ -63,6 +63,15 @@ export interface Report {
   stats: Stats
   label?: string
   scope?: Scope
+  policy_coverage?: Coverage[] | null
+}
+/** How the policy names each tracking or AI service (F-17): product named / only company / only kind / not named. */
+export interface Coverage {
+  entity: string
+  country: string | null
+  categories: string[]
+  level: 'named' | 'company' | 'kind' | 'none'
+  hosts: string[]
 }
 /** What was checked, when, from where, with which rules and model (backend/qalqon/evidence.py). */
 export interface Scope {

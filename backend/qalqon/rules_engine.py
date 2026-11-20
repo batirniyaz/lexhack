@@ -16,6 +16,7 @@ from .evidence import scope
 from .legal.citations import attach_quotes
 from .config import BACKEND_DIR, RULES_DIR
 from .detectors import DETECTORS
+from .detectors.documents import policy_coverage
 from .legal_lists import country_status, list_info
 
 DRAFT_RULES_DIR = BACKEND_DIR / "rules_draft"
@@ -116,7 +117,8 @@ def evaluate(facts: dict) -> dict:
     penalty = sum(PENALTY.get(f["level"], 0) for f in findings if f["counts_for_score"])
     levels = {level: sum(1 for f in findings if f["level"] == level) for level in PENALTY}
     return {**base, "status": "ok", "score": max(0, 100 - penalty), "levels": levels,
-            "findings": findings, "not_evaluated": not_evaluated, "flows": _flows_status(facts)}
+            "findings": findings, "not_evaluated": not_evaluated, "flows": _flows_status(facts),
+            "policy_coverage": policy_coverage(facts)}
 
 
 LEVEL_ICON = {"violation": "🔴", "risk": "🟡", "recommendation": "⚪"}
