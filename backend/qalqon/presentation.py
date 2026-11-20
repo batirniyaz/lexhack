@@ -57,6 +57,20 @@ def anonymize(obj: Any, domains: list[str], label: str, aliases: list[str] | Non
     return result
 
 
+def anonymize_other_references(obj: Any, site_url: str) -> Any:
+    """Hide every OTHER reference site too: a policy of one site can name another one ("affiliates … including
+    Kapitalbank"), which would identify both. Each is replaced by its own label."""
+    own = registrable_domain(host_of(site_url))
+    label = obj.get("label") if isinstance(obj, dict) else None
+    for domain, site in _sites().items():
+        if domain == own:
+            continue
+        obj = anonymize(obj, [domain, domain.replace(".", "-")], site["label"], site.get("aliases", []))
+    if isinstance(obj, dict) and label is not None:
+        obj["label"] = label
+    return obj
+
+
 def replay_events(scan_dir: Path) -> Iterator[dict]:
     """Rebuild a live feed from saved results (demo fallback when the network is down)."""
     events_file = scan_dir / "events.jsonl"

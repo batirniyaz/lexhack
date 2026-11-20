@@ -116,7 +116,8 @@ def test_public_mode_never_shows_real_site_names(tmp_path, monkeypatch):
     report = {"scan_id": scan_id, "site": "https://uzum.uz", "scanned_at": "2026-11-20T10:00:00+00:00",
               "status": "ok", "score": 79, "levels": {}, "stats": {}, "flows": [], "not_evaluated": [],
               "findings": [{"rule_id": "PD-MIS-01", "level": "violation", "title": {"en": "x"},
-                            "evidence": [{"quote": "Uzum Market does not share data", "url": "https://uzum.uz/privacy"}]}]}
+                            "evidence": [{"quote": "Uzum Market shares data only with Kapitalbank (kapitalbank.uz)",
+                                          "url": "https://uzum.uz/privacy"}]}]}
     (d / "report.json").write_text(_json.dumps(report), encoding="utf-8")
     (d / "facts.json").write_text(_json.dumps({"site": "https://uzum.uz", "site_domains": ["uzum.uz", "www.uzum.uz"]}),
                                   encoding="utf-8")
@@ -137,9 +138,10 @@ def test_public_mode_never_shows_real_site_names(tmp_path, monkeypatch):
 
     token = client.post(f"/api/scans/{scan_id}/share", headers=owner).json()["token"]
     shared = client.get(f"/api/shared/{token}")
-    assert shared.status_code == 200 and "uzum" not in shared.text.lower()
+    assert shared.status_code == 200 and "uzum" not in shared.text.lower() and "kapitalbank" not in shared.text.lower()
     sample = client.get("/api/sample")
     assert sample.status_code == 200 and "uzum" not in sample.text.lower()
+    assert "kapitalbank" not in sample.text.lower() and "Bank E" in sample.text  # other reference sites hidden too
 
     started = client.post("/api/scans", json={"url": "http://8.8.8.8"}).json()
     own = tmp_path / started["scan_id"]  # the job is stubbed: write its result by hand

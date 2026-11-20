@@ -24,7 +24,7 @@ from .config import REPO_ROOT, SCANS_DIR, settings
 from . import guard
 from .guard import check_scan_allowed, is_owner, issue_scan_token, require_owner, require_view
 from .jobs import ScanJob, jobs
-from .presentation import aliases_for, anonymize, label_for, replay_events
+from .presentation import aliases_for, anonymize, anonymize_other_references, label_for, replay_events
 from .scan import new_scan_id
 from .urls import TargetNotAllowed, check_target, host_of, normalize_url, registrable_domain
 
@@ -271,6 +271,7 @@ def _scan_result(scan_id: str, anon: bool = False, facts: bool = False) -> dict:
         # Scan ids and file names carry the domain as a slug ("uzum-uz"): hide those too.
         domains = domains + [d.replace(".", "-") for d in domains]
         result = anonymize(result, domains, label_for(site), aliases_for(site))
+        result = anonymize_other_references(result, site)
     # Set after anonymizing: the frontend needs it for the site-history link (in presentation mode use full screen,
     # so the address bar with the domain is not visible).
     result["domain"] = registrable_domain(host_of(site))
