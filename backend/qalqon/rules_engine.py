@@ -42,8 +42,25 @@ def _load_dir(directory: Path, source: str) -> dict[str, dict]:
     return rules
 
 
+def _merge_rule(draft: dict, team: dict) -> dict:
+    """Role 2's rule wins field by field. Fields it leaves out (articles for citations, localized sanctions) are
+    kept from the draft, so a team rule never silently loses features the draft had."""
+    merged = {**draft, **team}
+    team_basis, draft_basis = team.get("legal_basis"), draft.get("legal_basis") or []
+    if team_basis:
+        out = []
+        for i, entry in enumerate(team_basis):
+            same = next((d for d in draft_basis if d.get("act_id") and d.get("act_id") == entry.get("act_id")), None)
+            same = same or next((d for d in draft_basis if (d.get("act") or "").split(" ")[0] == (entry.get("act") or "").split(" ")[0]), None)
+            same = same or (draft_basis[i] if i < len(draft_basis) else {})
+            out.append({**{k: v for k, v in same.items() if k in ("articles", "act_id", "act_ru")}, **entry})
+        merged["legal_basis"] = out
+    return merged
+
+
 def load_rules() -> list[dict]:
-    merged = {**_load_dir(DRAFT_RULES_DIR, "rules_draft"), **_load_dir(RULES_DIR, "rules")}
+    drafts, team = _load_dir(DRAFT_RULES_DIR, "rules_draft"), _load_dir(RULES_DIR, "rules")
+    merged = {**drafts, **{rid: _merge_rule(drafts.get(rid, {}), rule) for rid, rule in team.items()}}
     return sorted(merged.values(), key=lambda r: (LEVEL_ORDER.get(r.get("level"), 9), r["id"]))
 
 

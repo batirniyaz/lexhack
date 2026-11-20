@@ -10,7 +10,7 @@ params:
 legal_basis:
   - act: "ZRU-547"
     article: "21 (giving and withdrawing consent)"
-    articles: ["21"]   # article numbers for verbatim citations (qalqon.legal.citations)
+    articles: ["18", "21"]   # article numbers for verbatim citations (qalqon.legal.citations)
     quote_uz: null
     quote_ru: null
     url: "https://lex.uz/ru/docs/4396428"

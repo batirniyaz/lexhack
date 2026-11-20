@@ -1,14 +1,14 @@
 id: PD-CNS-01
 title:
-  en: "A form collects personal data without consent"
-  ru: "Форма собирает персональные данные без согласия"
-  uz: "Shakl shaxsga doir maʼlumotlarni roziliksiz yigʻmoqda"
-level: violation
+  en: "A form collects personal data without visible consent or notice"
+  ru: "Форма собирает персональные данные без видимого согласия или уведомления"
+  uz: "Shakl shaxsga doir maʼlumotlarni koʻrinadigan rozilik yoki xabarnomasiz yigʻmoqda"
+level: risk   # R-01 (art. 18, model procedure item 9): a form without a checkbox can be lawful (request before a contract, accepted offer)
 detector: form_consent
 legal_basis:
   - act: "ZRU-547"
     article: "21 (giving and withdrawing consent)"
-    articles: ["21"]   # article numbers for verbatim citations (qalqon.legal.citations)
+    articles: ["18", "21"]   # article numbers for verbatim citations (qalqon.legal.citations)
     quote_uz: null
     quote_ru: null
     url: "https://lex.uz/ru/docs/4396428"

@@ -133,3 +133,14 @@ def test_sanctions_follow_r02():
     assert "50 BHM (22 000 000" in rules["PD-CNS-01"]["sanction_uz"]
     assert rules["PD-TRK-01"].get("sanction") is None  # V-08 open: no fine shown
     assert rules["PD-LOC-02"]["sanction_ru"].startswith("Неопределённость")
+
+
+def test_team_rule_keeps_draft_citations_and_sanctions():
+    from qalqon.rules_engine import _merge_rule
+    draft = {"id": "PD-X", "level": "violation", "sanction_uz": "x",
+             "legal_basis": [{"act": "ZRU-547", "article": "21", "articles": ["21"]}]}
+    team = {"id": "PD-X", "level": "risk", "verified": True,
+            "legal_basis": [{"act": "ZRU-547 «Shaxsga doir…»", "article": "21", "quote_uz": "…"}]}
+    merged = _merge_rule(draft, team)
+    assert merged["level"] == "risk" and merged["verified"] is True and merged["sanction_uz"] == "x"
+    assert merged["legal_basis"][0]["articles"] == ["21"] and merged["legal_basis"][0]["quote_uz"] == "…"

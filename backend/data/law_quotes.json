@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-20T23:07:41+00:00",
+ "generated_at": "2026-11-20T23:17:59+00:00",
  "note": "Verbatim text from lex.uz via lex-rag; quotes checked by code against the retrieved text. Not verified by a lawyer.",
  "quotes": {
   "CONSUMER:5": {
@@ -140,6 +140,33 @@
    "index_version": "lex-idx-2026-11-06+v667192",
    "verified_by_lawyer": false
   },
+  "ZRU-547:12": {
+   "act": "ZRU-547",
+   "article": "12",
+   "heading": "12-modda. Shaxsga doir maʼlumotlardan foydalanish",
+   "parts": [
+    {
+     "part": "1-qism",
+     "text": "Mulkdorning, operatorning va uchinchi shaxsning faoliyati maqsadlarini amalga oshirishga qaratilgan shaxsga doir maʼlumotlar bilan harakatlar shaxsga doir maʼlumotlardan foydalanishdir."
+    },
+    {
+     "part": "2-qism",
+     "text": "faqat ushbu shaxsga doir maʼlumotlarni yigʻish boʻyicha ilgari bildirilgan maqsadlar uchun amalga oshiriladi."
+    },
+    {
+     "part": "3-qism",
+     "text": "faqat ularning oʻz kasbiy, xizmat yoki mehnat majburiyatlariga muvofiq amalga oshirilishi kerak."
+    }
+   ],
+   "lang": "uz-Latn",
+   "url": "https://lex.uz/docs/-4396419",
+   "edition_date": "2026-09-12",
+   "doc_status": "amalda",
+   "doc_title": "Shaxsga doir maʼlumotlar toʻgʻrisida",
+   "source": "lex-rag",
+   "index_version": "lex-idx-2026-11-06+v667192",
+   "verified_by_lawyer": false
+  },
   "ZRU-547:13": {
    "act": "ZRU-547",
    "article": "13",
@@ -183,6 +210,33 @@
     {
      "part": "3-qism",
      "text": "Shaxsga doir maʼlumotlarning bir xilda himoya qilinishini taʼminlamaydigan chet davlatlar hududiga shaxsga doir maʼlumotlarni transchegaraviy uzatish quyidagi hollarda amalga oshirilishi mumkin:\nsubyektning oʻz shaxsga doir maʼlumotlarini transchegaraviy uzatish boʻyicha roziligi mavjud boʻlganda;\nOʻzbekiston Respublikasining konstitutsiyaviy tuzumini himoya qilish, jamoat tartibini saqlash, fuqarolarning huquqlari va erkinliklarini, aholining sogʻligʻi va maʼnaviyatini muhofaza qilish zarur boʻlganda;\nOʻzbekiston Respublikasining xalqaro shartnomalarida nazarda tutilgan hollarda."
+    }
+   ],
+   "lang": "uz-Latn",
+   "url": "https://lex.uz/docs/-4396419",
+   "edition_date": "2026-09-12",
+   "doc_status": "amalda",
+   "doc_title": "Shaxsga doir maʼlumotlar toʻgʻrisida",
+   "source": "lex-rag",
+   "index_version": "lex-idx-2026-11-06+v667192",
+   "verified_by_lawyer": false
+  },
+  "ZRU-547:18": {
+   "act": "ZRU-547",
+   "article": "18",
+   "heading": "18-modda. Shaxsga doir maʼlumotlarga ishlov berish shartlari",
+   "parts": [
+    {
+     "part": "1-qism",
+     "text": "Shaxsga doir maʼlumotlarga ishlov berish ushbu Qonunning asosiy prinsiplariga muvofiq amalga oshirilishi kerak."
+    },
+    {
+     "part": "2-qism",
+     "text": "agar bu maʼlumotlar hamma foydalanishi mumkin boʻlgan manbalardan olingan boʻlsa."
+    },
+    {
+     "part": "3-qism",
+     "text": "bu maʼlumotlarga ishlov berishga rozilik olish mumkin boʻlgan paytga qadar subyektning roziligisiz yoʻl qoʻyiladi."
     }
    ],
    "lang": "uz-Latn",
@@ -264,6 +318,33 @@
     {
      "part": "5-qism",
      "text": "Shaxsga doir maʼlumotlarga ishlov berishga taalluqli axborotni taqdim etishni rad qilish toʻgʻrisidagi xabarnoma soʻrov bergan subyektga oʻn kun ichida yozma shaklda yuboriladi."
+    }
+   ],
+   "lang": "uz-Latn",
+   "url": "https://lex.uz/docs/-4396419",
+   "edition_date": "2026-09-12",
+   "doc_status": "amalda",
+   "doc_title": "Shaxsga doir maʼlumotlar toʻgʻrisida",
+   "source": "lex-rag",
+   "index_version": "lex-idx-2026-11-06+v667192",
+   "verified_by_lawyer": false
+  },
+  "ZRU-547:23": {
+   "act": "ZRU-547",
+   "article": "23",
+   "heading": "23-modda. Shaxsga doir maʼlumotlarga ishlov berish chogʻidagi harakatlar toʻgʻrisida xabardor qilish",
+   "parts": [
+    {
+     "part": "1-qism",
+     "text": "shaxsga doir maʼlumotlar bazasiga kiritilayotganda shaxsga doir maʼlumotlarga ishlov berish maqsadlari, ushbu Qonunning 30-moddasida belgilangan oʻz huquqlari haqida yozma shaklda xabardor qilinishi kerak."
+    },
+    {
+     "part": "2-qism",
+     "text": "Shaxsga doir maʼlumotlar uchinchi shaxsga berilgan taqdirda, mulkdor va (yoki) operator bu haqda subyektni uch kun ichida yozma shaklda xabardor qiladi."
+    },
+    {
+     "part": "3-qism",
+     "text": "Subyektni yozma shaklda xabardor qilish quyidagi hollarda amalga oshirilmaydi:\ndavlat organlari oʻz vakolatlarini amalga oshirayotganda;\nshaxsga doir maʼlumotlar tarixiy, statistik, sotsiologik yoki ilmiy maqsadlarda ishlov berish uchun berilganda;\nshaxsga doir maʼlumotlar hamma foydalanishi mumkin boʻlgan manbalardan yigʻilganda."
     }
    ],
    "lang": "uz-Latn",
@@ -374,26 +455,9 @@
    "source": "lex-rag",
    "index_version": "lex-idx-2026-11-06+v667192",
    "verified_by_lawyer": false
-  },
-  "ZRU-547:5": {
-   "act": "ZRU-547",
-   "article": "5",
-   "heading": "5-modda. Ushbu Qonunning asosiy prinsiplari",
-   "parts": [
-    {
-     "part": "1-qism",
-     "text": "shaxs, jamiyat va davlatning xavfsizligi."
-    }
-   ],
-   "lang": "uz-Latn",
-   "url": "https://lex.uz/docs/-4396419",
-   "edition_date": "2026-09-12",
-   "doc_status": "amalda",
-   "doc_title": "Shaxsga doir maʼlumotlar toʻgʻrisida",
-   "source": "lex-rag",
-   "index_version": "lex-idx-2026-11-06+v667192",
-   "verified_by_lawyer": false
   }
  },
- "missing": []
+ "missing": [
+  "ZRU-547:10"
+ ]
 }
