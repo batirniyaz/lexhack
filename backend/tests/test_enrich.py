@@ -39,3 +39,11 @@ def test_page_key_dedup():
     assert _key("https://Kapitalbank.uz/") == _key("https://kapitalbank.uz")
     assert _key("https://a.uz/x/#top") == _key("https://a.uz/x")
     assert _key("https://a.uz/x?b=1") != _key("https://a.uz/x")
+
+
+def test_website_address_field_is_not_personal_data():
+    """'Sayt manzili' (website address) is not a postal address (false PD-CNS-01 on our own site, 21.11)."""
+    from qalqon.scanner.analysis import classify_field
+    assert classify_field({"label": "Sayt manzili", "type": "url"}) is None
+    assert classify_field({"label": "Sayt manzili", "type": "text"}) is None
+    assert classify_field({"label": "Yashash manzili", "type": "text"}) == "address"

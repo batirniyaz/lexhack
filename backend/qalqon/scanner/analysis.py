@@ -24,11 +24,18 @@ PD_CATEGORIES = {"name", "phone", "email", "passport", "pinfl", "birth_date", "a
 SENSITIVE_CATEGORIES = {"passport", "pinfl", "card", "photo"}
 
 
+_SITE_ADDRESS = re.compile(r"sayt manzil|veb[- ]?sayt|web[- ]?site|website|адрес сайта|веб[- ]?сайт|\burl\b|havola|ссылк|link", re.I)
+
+
 def classify_field(field: dict) -> Optional[str]:
     ftype = field.get("type", "")
     if ftype in ("checkbox", "radio", "range", "color"):
         return None
     if ftype == "search" or _SEARCH.search(f"{field.get('name', '')} {field.get('id', '')} {field.get('placeholder', '')}"):
+        return None
+    # A website address is not personal data. "Sayt manzili" (manzil = address) was read as a postal address and
+    # raised PD-CNS-01 on a plain URL field (seen on our own site, 21.11).
+    if ftype == "url" or _SITE_ADDRESS.search(" ".join(str(field.get(k) or "") for k in ("name", "id", "placeholder", "label"))):
         return None
     if ftype == "password":
         return "password"
