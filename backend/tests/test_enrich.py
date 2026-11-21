@@ -47,3 +47,14 @@ def test_website_address_field_is_not_personal_data():
     assert classify_field({"label": "Sayt manzili", "type": "url"}) is None
     assert classify_field({"label": "Sayt manzili", "type": "text"}) is None
     assert classify_field({"label": "Yashash manzili", "type": "text"}) == "address"
+
+
+def test_csp_blocked_request_is_not_a_data_flow():
+    """A request blocked by the site's own CSP never left the browser: it is not a tracker contact (our site, 21.11)."""
+    from qalqon.enrich import enrich_facts
+    facts = {"site": "https://s.uz", "site_domains": ["s.uz"], "requests": [
+        {"url": "https://static.cloudflareinsights.com/beacon.min.js", "host": "static.cloudflareinsights.com",
+         "method": "GET", "type": "script", "page": "https://s.uz", "phase": "landing", "third_party": True,
+         "status": None, "ip": None, "failed": "csp"}], "forms": [], "backends": [], "pages": [], "dns": {}}
+    enrich_facts(facts)
+    assert all(h["host"] != "static.cloudflareinsights.com" for h in facts["hosts"])

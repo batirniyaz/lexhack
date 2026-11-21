@@ -43,6 +43,10 @@ def enrich_facts(facts: dict) -> dict:
 
     summary: dict[str, dict] = {}
     for record in facts["requests"]:
+        # A request the browser blocked itself (the site's Content-Security-Policy) never left the browser: no data
+        # reached that host. Counting it made a CSP-blocked analytics beacon look like a tracker (our own site, 21.11).
+        if "csp" in str(record.get("failed") or "").lower():
+            continue
         host = record["host"]
         row = summary.setdefault(host, {
             "host": host,

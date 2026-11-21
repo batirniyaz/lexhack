@@ -65,8 +65,8 @@ def _mask(value: str) -> str:
 def url_pii(facts: dict, params: dict):
     evidence, seen = [], set()
     for request in facts.get("requests", []):
-        if not request["third_party"]:
-            continue
+        if not request["third_party"] or "csp" in str(request.get("failed") or "").lower():
+            continue  # a CSP-blocked request never left the browser
         for kind, pattern in (("email", _EMAIL), ("phone", _UZ_PHONE)):
             match = pattern.search(request["url"])
             if match and (request["host"], kind) not in seen:
