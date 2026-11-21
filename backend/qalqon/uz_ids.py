@@ -59,6 +59,38 @@ def is_card(value: str, hinted: bool) -> bool:
     return hinted or digits.startswith(UZ_CARD_PREFIXES)
 
 
+# --- Redaction before text leaves for the LLM (F-48; research/legal-our-risks.md, conclusion 5) -------------------
+# Policy texts are public, but they may name a responsible person's e-mail or phone. The LLM provider is in the US and
+# not on the DPF list, so personal data is replaced with placeholders before the call. Person names are NOT redacted
+# (no reliable detector); that limit is stated in our privacy notice work list.
+_RX_EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+_RX_PHONE = re.compile(r"(?:\+?998[  \-()]*)?\(?\b(?:33|50|55|61|62|65|66|67|69|70|71|72|73|74|75|76|77|78|79|88|90|91|"
+                       r"93|94|95|97|98|99)\)?(?:[  \-]*\d){7}(?!\d)")
+_RX_PINFL = re.compile(r"\b[3-6]\d{13}\b")
+_RX_PASSPORT = re.compile(r"\b[A-Z]{2}\d{7}\b")
+_RX_CARD = re.compile(r"\b(?:\d[ \-]?){15}\d\b")
+
+
+def redact(text: str) -> tuple[str, dict]:
+    """Replace e-mails, Uzbek phones, PINFL, passport and card numbers with placeholders. Returns (text, counts)."""
+    counts = {}
+
+    def sub(pattern: re.Pattern, label: str, value: str, check=None) -> str:
+        def repl(match: re.Match) -> str:
+            if check and not check(match.group(0)):
+                return match.group(0)
+            counts[label] = counts.get(label, 0) + 1
+            return f"[{label}]"
+        return pattern.sub(repl, value)
+
+    text = sub(_RX_EMAIL, "EMAIL", text)
+    text = sub(_RX_CARD, "CARD", text, lambda v: luhn_ok(re.sub(r"[ \-]", "", v)))
+    text = sub(_RX_PINFL, "PINFL", text, is_pinfl)
+    text = sub(_RX_PASSPORT, "PASSPORT", text)
+    text = sub(_RX_PHONE, "PHONE", text)
+    return text, counts
+
+
 def mask(value: str) -> str:
     return value[:3] + "***" + value[-2:] if len(value) > 6 else "***"
 

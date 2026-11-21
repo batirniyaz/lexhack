@@ -276,7 +276,7 @@ export const api = {
   },
   result: (scanId: string, anon: boolean) =>
     getJson<ScanResult>(`/api/scans/${scanId}?facts=1${anon ? '&anon=1' : ''}`, scanId),
-  health: () => getJson<{ public_mode: boolean; owner: boolean }>('/api/health'),
+  health: () => getJson<{ public_mode: boolean; owner: boolean; contact?: string | null }>('/api/health'),
   sample: () => getJson<{ token: string; result: ScanResult }>('/api/sample'),
   verify: async (seal: unknown): Promise<VerifyResult> => {
     const response = await fetch('/api/verify', {

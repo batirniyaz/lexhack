@@ -9,6 +9,8 @@ import { History } from './pages/History'
 import { SitePage } from './pages/SitePage'
 import { SharedPage } from './pages/SharedPage'
 import { VerifyPage } from './pages/VerifyPage'
+import { PrivacyPage } from './pages/PrivacyPage'
+import { Footer } from './components/Footer'
 
 export default function App() {
   return (
@@ -24,9 +26,11 @@ export default function App() {
               <Route path="/sites/:domain" element={<SitePage />} />
               <Route path="/r/:token" element={<SharedPage />} />
               <Route path="/verify" element={<VerifyPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="*" element={<Home />} />
             </Routes>
           </main>
+          <Footer />
         </BrowserRouter>
       </SettingsProvider>
     </Theme>

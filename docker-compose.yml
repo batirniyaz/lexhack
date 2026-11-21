@@ -24,3 +24,6 @@ services:
     volumes:
       - ./scans:/app/scans          # scan results, share links and the LLM cache survive rebuilds
     shm_size: "1gb"                 # Chromium crashes with Docker's default 64 MB /dev/shm
+    logging:                        # access logs hold visitors' IP addresses: keep them bounded (our privacy policy)
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}

@@ -6,6 +6,7 @@ Run from backend/:  .venv/Scripts/python -m uvicorn qalqon.api:app --port 8000
 from __future__ import annotations
 
 import asyncio
+import os
 import json
 import secrets
 from collections import Counter
@@ -31,6 +32,28 @@ from .scan import new_scan_id
 from .urls import TargetNotAllowed, check_target, host_of, normalize_url, registrable_domain
 
 app = FastAPI(title="Probo", version=__version__)
+
+# Our own site must pass our own check (R-08 risk 10): security headers on every response. The CSP also keeps
+# third-party scripts (e.g. an analytics beacon added by a proxy) from running. /docs uses a CDN, so it is exempt.
+SECURITY_HEADERS = {
+    "Strict-Transport-Security": "max-age=31536000",
+    "Content-Security-Policy": ("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+                                "img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; "
+                                "base-uri 'self'; form-action 'self'"),
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+}
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    if not request.url.path.startswith(("/docs", "/redoc", "/openapi.json")):
+        for name, value in SECURITY_HEADERS.items():
+            response.headers.setdefault(name, value)
+    return response
 SHARES_FILE = SCANS_DIR / ".shares.json"
 app.add_middleware(
     CORSMiddleware,
@@ -66,6 +89,7 @@ def health(request: Request) -> dict:
         "llm_configured": bool(settings.anthropic_api_key),
         "lexrag_configured": bool(settings.lexrag_url),
         "public_mode": guard.PUBLIC,
+        "contact": os.environ.get("PROBO_CONTACT") or None,  # shown in our privacy policy (art. 22)
         "owner": is_owner(request),
     }
 

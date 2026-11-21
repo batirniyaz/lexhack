@@ -9,6 +9,7 @@ from __future__ import annotations
 import re
 from typing import Optional
 
+from ..uz_ids import redact
 from .client import LLMError, configured, structured_call
 
 PROMPT_VERSION = "policy-v2"
@@ -147,7 +148,14 @@ def analyze_policy(facts: dict) -> dict:
         facts["policy"] = {"status": "skipped", "reason": "ANTHROPIC_API_KEY is not set"}
         return facts["policy"]
 
-    combined = "\n\n".join(f"=== DOCUMENT {i + 1}: {d['kind']} — {d['url']} ===\n{d['text']}" for i, d in enumerate(docs))
+    # F-48: personal data never leaves for the LLM (provider in the US, not on the DPF list). Quotes are then checked
+    # against the same redacted text the model saw.
+    redacted = [redact(d["text"]) for d in docs]
+    removed: dict[str, int] = {}
+    for _, counts in redacted:
+        for label, n in counts.items():
+            removed[label] = removed.get(label, 0) + n
+    combined = "\n\n".join(f"=== DOCUMENT {i + 1}: {d['kind']} — {d['url']} ===\n{redacted[i][0]}" for i, d in enumerate(docs))
     user = f"Site: {facts.get('site')}\n\n{combined}"
     try:
         result = structured_call(SYSTEM, user, SCHEMA, PROMPT_VERSION)
@@ -180,6 +188,7 @@ def analyze_policy(facts: dict) -> dict:
         "elements": elements,
         "claims": claims,
         "dropped_unverified_quotes": dropped,
+        "redacted_before_llm": removed,
         "model": result.model,
         "cached": result.cached,
         "usage": result.usage,

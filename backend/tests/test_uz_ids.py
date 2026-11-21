@@ -51,3 +51,37 @@ def test_ai_services_are_in_the_catalog():
     assert identify("api.openai.com")["category"] == "ai"
     assert identify("generativelanguage.googleapis.com")["category"] == "ai"
     assert identify("fonts.googleapis.com")["category"] == "fonts"
+
+
+def test_redaction_before_llm_keeps_numbers_that_are_not_personal_data():
+    """F-48: e-mails, phones, PINFL, passport and card numbers never reach the LLM; prices, dates, STIR stay."""
+    from qalqon.uz_ids import redact
+    text = ("Murojaat: dpo@shop.uz, +998 71 123-45-67, 78 888 9 888. PINFL 31503901234567, pasport AA1234567. "
+            "Narx 1 800 000 soʻm, 05.11.2026, STIR 301234567.")
+    out, counts = redact(text)
+    assert "dpo@shop.uz" not in out and "31503901234567" not in out and "AA1234567" not in out
+    assert counts["PHONE"] == 2 and counts["EMAIL"] == 1
+    assert "1 800 000" in out and "05.11.2026" in out and "301234567" in out
+
+
+def test_policy_prompt_is_redacted(monkeypatch):
+    from qalqon.llm import policy
+    sent = {}
+
+    class Result:
+        data = {"language": "uz", "is_personal_data_policy": True, "elements": {}, "claims": []}
+        model = "test"
+        cached = False
+        usage = {}
+
+    def fake_call(system, user, schema, version):
+        sent["user"] = user
+        return Result()
+
+    monkeypatch.setattr(policy, "structured_call", fake_call)
+    monkeypatch.setattr(policy, "configured", lambda: True)
+    facts = {"site": "https://s.uz", "documents": [{"kind": "privacy", "url": "https://s.uz/p", "visited": True,
+                                                   "text": "Maxfiylik siyosati. Masʼul shaxs: ali@s.uz, +998 90 123 45 67. " * 60}]}
+    result = policy.analyze_policy(facts)
+    assert "ali@s.uz" not in sent["user"] and "[EMAIL]" in sent["user"]
+    assert result.get("redacted_before_llm", {}).get("EMAIL", 0) >= 1
