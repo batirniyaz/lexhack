@@ -573,7 +573,7 @@ export function ReportView({ report, facts, displaySite, scanId, domain, readonl
         </div>
         <ScoreScale report={report} />
       </div>
-      {anyUnverified && <div style={{ marginBottom: 20 }}><Banner status="info" title={t.not_verified} /></div>}
+      <div style={{ marginBottom: 20 }}><Banner status="info" title={anyUnverified ? t.not_verified : t.signs_note} /></div>
       {printing ? (
         <div className="q-print-all">
           {TAB_ORDER.map((key) => (
