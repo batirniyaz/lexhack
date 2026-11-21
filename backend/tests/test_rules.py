@@ -144,3 +144,10 @@ def test_team_rule_keeps_draft_citations_and_sanctions():
     merged = _merge_rule(draft, team)
     assert merged["level"] == "risk" and merged["verified"] is True and merged["sanction_uz"] == "x"
     assert merged["legal_basis"][0]["articles"] == ["21"] and merged["legal_basis"][0]["quote_uz"] == "…"
+
+
+def test_team_rule_without_detector_takes_it_from_the_draft():
+    from qalqon.rules_engine import load_rules
+    rules = {r["id"]: r for r in load_rules()}
+    for rid in ("EC-01", "EC-02", "EC-03"):
+        assert rules[rid]["detector"], rid  # rules/EC-*.yaml carry no detector; the draft supplies it

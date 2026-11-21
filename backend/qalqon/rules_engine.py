@@ -36,7 +36,8 @@ def _load_dir(directory: Path, source: str) -> dict[str, dict]:
         if path.name in NON_RULE_FILES:
             continue
         rule = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-        if "id" in rule and "detector" in rule:
+        # Team rules may leave out `detector` / `params`: they come from the draft with the same id (_merge_rule).
+        if "id" in rule and ("detector" in rule or source == "rules"):
             rule["_source"] = f"{source}/{path.name}"
             rules[rule["id"]] = rule
     return rules
@@ -61,6 +62,9 @@ def _merge_rule(draft: dict, team: dict) -> dict:
 def load_rules() -> list[dict]:
     drafts, team = _load_dir(DRAFT_RULES_DIR, "rules_draft"), _load_dir(RULES_DIR, "rules")
     merged = {**drafts, **{rid: _merge_rule(drafts.get(rid, {}), rule) for rid, rule in team.items()}}
+    # A team rule without a detector and without a draft cannot run; it is reported as not evaluated by evaluate().
+    for rule in merged.values():
+        rule.setdefault("detector", None)
     return sorted(merged.values(), key=lambda r: (LEVEL_ORDER.get(r.get("level"), 9), r["id"]))
 
 
