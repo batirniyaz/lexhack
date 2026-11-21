@@ -40,6 +40,7 @@ SKIP_EXTENSIONS = (
 )
 POST_DATA_LIMIT = 4000
 MAX_DEPTH = 2
+BLOCK_STATUSES = {401, 403, 429, 498, 503}   # landing answers that mean "not served to us"
 MAX_LINKS_PER_PAGE = 300
 MIN_LINKS = 5            # fewer links than this after the observation window -> wait and read again (SPA)
 SITEMAP_LIMIT = 20       # non-priority sitemap URLs to queue
@@ -469,6 +470,15 @@ async def crawl(
                     recorder.current_page = info["final_url"]
                     await page.wait_for_timeout(observe_ms)
                     await _collect(page, info)
+                # Anti-bot or error answer without a challenge page: HTTP 403/429/498/503 and almost no text
+                # (wildberries.uz answered 498 with 28 characters on 21.11). Findings on it would be false (D-018).
+                status = info.get("status") or 0
+                if status in BLOCK_STATUSES and len((info.get("text") or "").strip()) < 300:
+                    blocked = f"http-{status}"
+                    info["challenge"] = blocked
+                    pages.append(info)
+                    emit({"type": "blocked", "kind": blocked})
+                    break
                 # The landing page may redirect to another registrable domain (example.uz -> example.com).
                 landing_domain = registrable_domain(host_of(info["final_url"]))
                 if landing_domain and landing_domain not in site_domains:
