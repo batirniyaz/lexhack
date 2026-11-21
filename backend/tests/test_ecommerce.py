@@ -20,15 +20,24 @@ def test_not_a_store_is_not_judged():
     assert seller_identity(facts, {}) == [] and offer_and_returns(facts, {}) == [] and state_language_version(facts, {}) == []
 
 
+OFFER = [{"kind": "offer", "url": "https://shop.uz/oferta", "text": "Ommaviy oferta. Tovarni qaytarish 10 kun."}]
+
+
 def test_seller_details_found_in_footer():
     text = STORE_TEXT + ' © "SHOP UZ" MChJ, STIR 301234567, manzil: Toshkent sh., Chilonzor tumani, +998 71 123 45 67'
-    assert seller_identity(_facts(text), {}) == []
+    assert seller_identity(_facts(text, docs=OFFER), {}) == []
+    school = STORE_TEXT + ' "NAJOT TAʼLIM MARKAZI" direktori. Tel: 78 888 9 888. Manzil: Chilonzor tumani'
+    assert seller_identity(_facts(school, docs=OFFER), {}) == []   # quoted name + grouped phone (real case 21.11)
+
+
+def test_seller_check_needs_the_offer_text():
+    assert seller_identity(_facts(STORE_TEXT), {}) is None  # offer not read: cannot say the details are missing
 
 
 def test_missing_seller_name_is_a_finding_missing_address_only_is_downgraded():
-    finding = seller_identity(_facts(STORE_TEXT + " +998 90 123 45 67"), {})
+    finding = seller_identity(_facts(STORE_TEXT + " +998 90 123 45 67", docs=OFFER), {})
     assert "legal_name" in finding[0]["data"]["missing"] and finding[0]["data"]["downgrade"] is False
-    only_address = seller_identity(_facts(STORE_TEXT + " SHOP MChJ, +998 90 123 45 67"), {})
+    only_address = seller_identity(_facts(STORE_TEXT + " SHOP MChJ, +998 90 123 45 67", docs=OFFER), {})
     assert only_address[0]["data"]["missing"] == ["address"] and only_address[0]["data"]["downgrade"] is True
 
 
@@ -38,6 +47,10 @@ def test_offer_not_opened_means_cannot_evaluate_returns():
     assert offer_and_returns(with_returns, {}) == []
     no_offer = _facts(STORE_TEXT, docs=[])
     assert offer_and_returns(no_offer, {})[0]["data"]["offer_found"] is False
+    services = _facts(STORE_TEXT, docs=[{"kind": "offer", "url": "u", "text": "Aloqa xizmatlari ko'rsatish shartlari"}])
+    assert offer_and_returns(services, {}) == []  # an offer for services is not judged on returns of goods
+    goods = _facts(STORE_TEXT, docs=[{"kind": "offer", "url": "u", "text": "tovar tovar tovar yetkazib berish"}])
+    assert offer_and_returns(goods, {})[0]["data"]["downgrade"] is True
 
 
 def test_uzbek_version_signals():

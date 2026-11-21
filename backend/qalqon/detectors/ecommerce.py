@@ -21,8 +21,16 @@ _PRICE = re.compile(r"\d[\d\s.,]*\s?(?:so['ʻ’`]?m\b|сум\b|uzs\b)", re.I)
 _LEGAL_FORM = re.compile(
     r"\b(?:mchj|m\.ch\.j|mas['ʻ’`]?uliyati cheklangan|aj|aksiyadorlik jamiyati|xk|qk|yatt|ooo|ооо|оао|ао|ип|чп|"
     r"мчж|ақ|хк|ятт|llc|jsc|ltd)\b", re.I)
+# An organisation's name in quotes, e.g. "NAJOT TAʼLIM MARKAZI", «UZUM MARKET» — many sellers (schools, NTM) carry no
+# MChJ-style legal form next to the name (false finding on 21.11 without this).
+_QUOTED_ORG = re.compile(r"[«\"“„]\s*[A-ZА-ЯЁЎҚҒҲ][A-ZА-ЯЁЎҚҒҲ0-9ʻʼ'’`.\- ]{2,60}[»\"”]")
 _STIR = re.compile(r"(?:stir|inn|инн|стир|soliq to['ʻ’`]?lovchi)[^0-9]{0,25}(\d{9})\b", re.I)
-_PHONE = re.compile(r"(?:\+?998|\b0)[\s\-()]*\d{2}[\s\-()]*\d{3}[\s\-]*\d{2}[\s\-]*\d{2}\b")
+# Uzbek phone numbers in any grouping: "+998 71 123 45 67", "78 888 9 888", "(90) 1234567". Operator / city codes only,
+# so prices and dates do not match.
+_PHONE = re.compile(r"(?:\+?998[  \-()]*)?\(?\b(?:33|50|55|61|62|65|66|67|69|70|71|72|73|74|75|76|77|78|79|88|90|91|"
+                    r"93|94|95|97|98|99)\)?(?:[  \-]*\d){7}(?!\d)")  # no line breaks inside a number
+_GOODS = re.compile(r"tovar|товар|\bgoods\b", re.I)
+_CONTACT = re.compile(r"contact|kontakt|aloqa|about|o-nas|biz-haqimizda|haqimizda|rekvizit|реквизит|контакт", re.I)
 _EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 # An address, not just the word "address": "manzil:", a street, a district or a city mark ("pochta manzillari" in a
 # policy is not an address; seen on 21.11).
@@ -72,9 +80,13 @@ def seller_identity(facts: dict, params: dict):
         return []
     if not any(p.get("text") for p in _pages(facts)):
         return None  # the landing page text was not collected (older scan or blocked)
+    # The law wants these details in the offer (art. 16). Without the offer text, "not shown" would only mean "not on
+    # the pages we opened" — a thin support page on 21.11 (OLX) proved that — so: cannot evaluate.
+    if not any(d.get("kind") in ("offer", "terms") and d.get("text") for d in facts.get("documents", [])):
+        return None
     text = _texts(facts)
     found = {
-        "legal_name": bool(_LEGAL_FORM.search(text)),
+        "legal_name": bool(_LEGAL_FORM.search(text) or _QUOTED_ORG.search(text)),
         "stir": bool(_STIR.search(text)),
         "phone": bool(_PHONE.search(text)),
         "email": bool(_EMAIL.search(text)),
@@ -104,6 +116,10 @@ def offer_and_returns(facts: dict, params: dict):
     if not texts:
         return None  # the offer exists but was not opened: we can't say what it contains
     if any(_RETURNS.search(t) for t in texts):
+        return []
+    # Art. 26–27 are about goods. An offer for services (telecom, courses) without the word "goods" is not judged:
+    # a telecom /oferta page was flagged on 21.11 although returns of goods do not apply to it.
+    if sum(len(_GOODS.findall(t)) for t in texts) < 3:
         return []
     return [{"summary": "The offer / terms of sale say nothing about returning goods or money",
              "data": {"documents": [d["url"] for d in docs][:5], "offer_found": True, "downgrade": True}}]
