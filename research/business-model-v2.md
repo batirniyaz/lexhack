@@ -4,6 +4,9 @@
 - Date/time: 21.11 03:40
 - Based on passport version: 0.13 (decision D-026)
 - Confidence: **high** for the structure (team decision); **low** for the prices (hypotheses to test in R-06 interviews)
+- **Update 21.11 10:40 (D-031, D-032):** accounts, registration and the token wallet are **not built for the hackathon**;
+  they return only if the project continues. The categories below map to the difficulty groups in
+  `checks-by-difficulty.md`: I = Easy, II = Medium (includes Easy), III = Hard-A, IV = Hard-B. Prices: Role 3 sets them per group.
 - Replaces: `business-model.md` (v1) §5 "Price formula" and §6 "Worked examples" as the **public** pricing.
   v1 stays valid for: global and local comparables (§1–§2), cost inputs (§7), the trust model (§4), channels (§10).
   The v1 formula "price = 4 × our cost" is kept **inside the team only**, as a floor check (section 6 below).

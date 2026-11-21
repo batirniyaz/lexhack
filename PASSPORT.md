@@ -3,7 +3,7 @@
 > **Product name:** Probo (D-022). Earlier working name: Qalqon; the Python package is still `qalqon`.
 > **Hackathon:** LexHackathon 2026, TSUL, Tashkent, 20–22 November
 > **Track:** 1 — "Huquqiy xizmatlarni ko'rsatish" (legal services)
-> **Passport version:** 0.14 · 21.11.2026, 04:30
+> **Passport version:** 0.15 · 21.11.2026, 10:40
 > **Document owner:** Role 1 (Tech/AI lead). Others send changes in the formats from §11.
 
 ---
@@ -327,8 +327,8 @@ Statuses: `MVP` (built before the checkpoint) · `Final` (by 22.11) · `Roadmap`
 | F-33 | Uzbek identifiers in URLs and forms: PINFL, passport series, +998 phones, card numbers (Luhn) | Fewer false findings, local knowledge | S | MVP (21.11) |
 | F-34 | Law citations from lex.uz via lex-rag in every finding (verbatim article text, link, edition date; code checks the quote) | Legal criterion; D-013 actually used | S | MVP (21.11) |
 | F-35 | E-commerce transparency pilot (D-027): seller identity, offer and return terms, Uzbek version | First step beyond personal data, narrow and verifiable | M | MVP/Final (21.11) |
-| F-36 | Registration + one free Express audit with a partial report | Funnel of business model v2 | M | Final (screens to agree) |
-| F-37 | Token wallet per audit category, volume discount, monitoring spends tokens | Business model v2 (D-026) | M | Final (demo top-up) |
+| F-36 | Registration + one free Express audit with a partial report | Funnel of business model v2 | M | Roadmap (D-032: only if the project continues) |
+| F-37 | Token wallet per audit category, volume discount, monitoring spends tokens | Business model v2 (D-026) | M | Roadmap (D-032) |
 | F-38 | Payme / Click payments | Real revenue | M | Roadmap |
 | F-18, F-22–F-26, F-28–F-31 | Research proposals not taken now (consent phases, review queue, scanner IPs, WEC export, B2G grace-period mode, two vantage points, register lookup, document kit, web perimeter) | See `research/*-v2.md` for each reason | — | Roadmap / Rejected |
 
@@ -490,6 +490,8 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 | D-028 | 21.11 | `rules/countries.yaml` (R-10, verbatim CMR 415) replaces the draft list; the list is closed (`complete: true`), so a country not on it is "not listed" | Research R-10 |
 | D-029 | 21.11 | Adopted from R-01 / R-02 (`research/legal-norms.md`, `research/legal-liability.md`): PD-CNS-01 → 🟡 (art. 18, model procedure item 9); article map per R-01 §1 for citations; fine lines T1–T3 (Adm. Code art. 46², BCA 440,000 UZS from 01.09.2026, PF-115) with the note that fines are personal and companies risk blocking; no fine shown for PD-TRK-01 (V-08 open), policy, security and e-commerce rules. Deferred to after the checkpoint: `legal_grounds` policy element (Q-L12, needs an LLM re-run) | The team's verbatim legal research; precision first |
 | D-030 | 21.11 | Team rules in `/rules` merge field by field with the drafts (`rules_engine._merge_rule`), so Role 2 can override only level, quotes or `verified` without losing citations and sanction lines | Role 2 starts writing `/rules` now |
+| D-031 | 21.11 | Everything Probo finds is listed in `research/checks-by-difficulty.md`: 30 checks (19 built, 11 roadmap), sorted by difficulty into Easy (11), Medium (8), Hard (11: Hard-A with client permission, Hard-B expert work). Role 3 sets prices per group | One source for pricing; difficulty ≠ importance, both shown |
+| D-032 | 21.11 | No accounts, registration or token wallet in the hackathon product (F-36, F-37 → Roadmap, only if the project continues). The pricing model of D-026 stays for the pitch | Team decision: focus on the scanner |
 | D-019 | 20.11 | **Precision over recall on real sites:** a detector reports only what it can show with clear evidence; doubtful cases are left out or worded as "check whether…". Every new detector is checked against real scan evidence before it ships | We scan real, named companies (D-017); one false finding in front of the jury costs more than a missed one |
 | D-018 | 20.11 | If the scanner lands on a bot-protection page (captcha, Cloudflare challenge) its requests are marked `challenge` and never produce findings; a site that never passes is reported as "closed to the check", not as compliant or non-compliant | Verified: one delivery site sometimes returns a Yandex SmartCaptcha page — its Yandex requests would have been a false finding |
 | D-017 | 20.11 | **No "Demo Market".** The demo uses real sites, one per sector (`backend/data/reference_sites.yaml`): passive scan only, pre-scanned and cached, one live scan on stage. In anything public they are anonymized ("Marketplace A", "Telecom F"); D-003 still applies. Active mode (canaries) is not shown on real sites (D-009) | Real findings are more convincing and save build time; anonymity avoids naming companies at a Ministry event |
@@ -555,3 +557,4 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 - **0.12** — 21.11 01:10 — dark mode fixed, Probo icon, P1 without login (forms/evidence tabs, site history with diff, share links, PDF), public demo deployed (D-024, `deploy/README.md`).
 - **0.13** — 21.11 04:30 — research review: D-025 (accepted / rejected, `research/README-v2.md`), D-026 (business model v2), D-027 (e-commerce pilot), D-028 (closed country list); facts V-02, V-03, V-10, V-12, V-13, V-16, V-18, V-19 updated from `research/legal-27-1-2026.md` and `research/market.md`; §8 and §13 positioning; public demo hides real site names (D-003 fix). **For the team:** the task list before 14:00 is in `research/README-v2.md`.
 - **0.14** — 21.11 04:30 — built: F-34 law citations (lex-rag, 18 articles verbatim), F-19 evidence seal + /verify, F-21 vantage in the report, F-32 AI services, F-33 Uzbek IDs, F-17 policy coverage, F-35 e-commerce pilot (EC-01…03), F-16 law change on saved scans, F-20 fine lines; D-029 (R-01/R-02 adopted), D-030 (field-level rule merge). Rule schema additions: `backend/rules_draft/_README.md`.
+- **0.15** — 21.11 10:40 — D-031 (all checks by difficulty: `research/checks-by-difficulty.md`, for pricing), D-032 (no accounts or tokens in the hackathon product). Team rules R-03 in `/rules` are live (field-level merge, D-030); pilot precision fixes after a check on 8 real sites.

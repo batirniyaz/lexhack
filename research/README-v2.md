@@ -33,6 +33,7 @@
 | `scope-extension-proposal.md` | `scope-extension-proposal-v2.md` | Only the e-commerce pilot goes beyond personal data |
 | `architecture-proposal.md` | `architecture-proposal-v2.md` | What was adopted on 20.11 |
 | `legal-27-1-2026.md` | `legal-27-1-2026-v2.md` | `rules/countries.yaml` in use; closed list read by code |
+| — | `checks-by-difficulty.md` | **All 30 checks, easiest first, in 3 groups (Easy / Medium / Hard) — the base for prices** |
 
 ## What Role 1 builds on 21.11 (code freeze for the checkpoint ~11:30)
 
