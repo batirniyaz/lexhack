@@ -81,6 +81,7 @@ export interface LawVersionSummary {
 export interface LawChange {
   previous: LawVersionSummary
   current: LawVersionSummary
+  next?: (LawVersionSummary & { changes: LawChange['changes'] }) | null
   changes: { rule_id: string; before: Level | null; after: Level | null; title: Localized | null }[]
   note: string
 }

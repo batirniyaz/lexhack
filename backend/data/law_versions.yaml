@@ -33,3 +33,23 @@ versions:
       uz: "27.03.2026 dan: faqat biometrik, genetik va aloqa abonentlari maʼlumotlari Oʻzbekistonda saqlanishi shart; qolganlari shartlar bilan chet elda (OʻRQ-1125, VMQ 415)"
     in_force: {from: "2026-03-27", to: null}
     current: true
+  - id: "2026-12-12"
+    future: true
+    label:
+      en: "From 12.12.2026: the e-commerce offer must state how goods and money are returned (ZRU-1173)"
+      ru: "С 12.12.2026: оферта в электронной коммерции должна содержать порядок возврата товаров и денег (ЗРУ-1173)"
+      uz: "12.12.2026 dan: elektron tijoratdagi oferta tovar va pulni qaytarish tartibini oʻz ichiga olishi shart (OʻRQ-1173)"
+    in_force: {from: "2026-12-12", to: null}
+    basis:
+      act: "«Elektron tijorat toʻgʻrisida»gi Qonun (OʻRQ-792), edition in force from 12.12.2026 (OʻRQ-1173 of 10.09.2026)"
+      act_ru: "Закон «Об электронной коммерции» (ЗРУ-792), редакция с 12.12.2026 (ЗРУ-1173 от 10.09.2026)"
+      article: "16, part 3, new paragraph 8"
+      quote_uz: "tovarlarni (ishlarni, xizmatlarni) qaytarish va (yoki) toʻlangan mablagʻlarni xaridorga qaytarib berish tartibi va shartlarini;"
+      quote_ru: "порядок и условия возврата товаров (работ, услуг) и (или) возврата уплаченных денежных средств покупателю;"
+      url: "https://lex.uz/docs/-6213382?ONDATE=12.12.2026%2001"
+      url_ru: "https://lex.uz/ru/docs/6213428?ONDATE=12.12.2026%2001"
+      edition_date: "2026-12-12"
+    # Source: research/legal-ecommerce.md (verbatim, live lex.uz future edition, 21.11.2026); rules/EC-02.yaml.
+    overrides:
+      EC-02:
+        params: {returns_required: true}

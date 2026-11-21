@@ -196,3 +196,4 @@ body { font-family: var(--font-family-body); }
 @media (max-width: 640px) { .q-checklist.q-cov li { grid-template-columns: 1fr; gap: 4px; } }
 .q-footer { max-width: 1072px; margin: 64px auto 0; padding: 20px 24px 32px; border-top: 1px solid var(--q-rule); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--q-muted); }
 @media print { .q-footer { display: none; } }
+.q-lc-next { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--q-rule); }

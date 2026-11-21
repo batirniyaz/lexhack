@@ -375,6 +375,21 @@ function LawChangeCard({ change }: { change: LawChange }) {
           ))}
         </ul>
       )}
+      {change.next && change.next.changes.length > 0 && (
+        <div className="q-lc-next">
+          <div style={{ fontWeight: 600 }}>{t.lc_next(date(change.next.in_force.from))}</div>
+          <div className="q-muted" style={{ fontSize: 14 }}>{label(change.next.label)}</div>
+          <ul className="q-lc-changes" style={{ marginTop: 8 }}>
+            {change.next.changes.map((c) => (
+              <li key={c.rule_id}>
+                <span className="q-mono q-muted">{c.rule_id}</span>{' '}
+                <span>{c.title ? label(c.title) : ''}</span>{': '}
+                <b>{c.before ? levelLabel(c.before) : t.lc_none}</b> → <b>{c.after ? levelLabel(c.after) : t.lc_none}</b>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {quote && (
         <details className="q-lc-quote">
           <summary>{t.lc_old_text}</summary>
@@ -524,7 +539,7 @@ export function ReportView({ report, facts, displaySite, scanId, domain, readonl
         return (
           <div style={{ display: 'grid', gap: 40 }}>
             {mismatch && <SaysDoes finding={mismatch} facts={facts} />}
-            {report.law_change && report.law_change.changes.length > 0 && <LawChangeCard change={report.law_change} />}
+            {report.law_change && (report.law_change.changes.length > 0 || (report.law_change.next?.changes.length ?? 0) > 0) && <LawChangeCard change={report.law_change} />}
             {!printing && (
               <section>
                 <h2 style={{ fontSize: 18, margin: '0 0 6px' }}>{t.top_findings}</h2>

@@ -30,6 +30,8 @@ _STIR = re.compile(r"(?:stir|inn|инн|стир|soliq to['ʻ’`]?lovchi)[^0-9]
 _PHONE = re.compile(r"(?:\+?998[  \-()]*)?\(?\b(?:33|50|55|61|62|65|66|67|69|70|71|72|73|74|75|76|77|78|79|88|90|91|"
                     r"93|94|95|97|98|99)\)?(?:[  \-]*\d){7}(?!\d)")  # no line breaks inside a number
 _GOODS = re.compile(r"tovar|товар|\bgoods\b", re.I)
+_PAID = re.compile(r"to['ʻ’`]?lov|оплат|payment|narx|цен[аы]|price|haq to['ʻ’`]?la|тариф|tarif", re.I)
+_FREE = re.compile(r"bepul|безвозмезд|бесплатн|free of charge", re.I)
 _CONTACT = re.compile(r"contact|kontakt|aloqa|about|o-nas|biz-haqimizda|haqimizda|rekvizit|реквизит|контакт", re.I)
 _EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 # An address, not just the word "address": "manzil:", a street, a district or a city mark ("pochta manzillari" in a
@@ -117,9 +119,20 @@ def offer_and_returns(facts: dict, params: dict):
         return None  # the offer exists but was not opened: we can't say what it contains
     if any(_RETURNS.search(t) for t in texts):
         return []
+    goods = sum(len(_GOODS.findall(t)) for t in texts) >= 3
+    if params.get("returns_required"):
+        # Edition from 12.12.2026 (ZRU-1173, art. 16 part 3 new para 8): the offer itself must state how goods, works,
+        # services or money are returned. Judged only for sales: goods, or a paid offer — a free platform agreement
+        # (a telecom "use the platform free of charge" text, 21.11) is not a sale.
+        paid = any(len(_PAID.findall(t)) >= 3 and not _FREE.search(t[:4000]) for t in texts)
+        if not (goods or paid):
+            return []
+        return [{"summary": "The offer says nothing about returning goods or money — a direct requirement of the offer "
+                            "from 12.12.2026 (art. 16 part 3, as amended by ZRU-1173)",
+                 "data": {"documents": [d["url"] for d in docs][:5], "offer_found": True, "future_rule": True}}]
     # Art. 26–27 are about goods. An offer for services (telecom, courses) without the word "goods" is not judged:
     # a telecom /oferta page was flagged on 21.11 although returns of goods do not apply to it.
-    if sum(len(_GOODS.findall(t)) for t in texts) < 3:
+    if not goods:
         return []
     return [{"summary": "The offer / terms of sale say nothing about returning goods or money",
              "data": {"documents": [d["url"] for d in docs][:5], "offer_found": True, "downgrade": True}}]

@@ -3,7 +3,7 @@
 > **Product name:** Probo (D-022). Earlier working name: Qalqon; the Python package is still `qalqon`.
 > **Hackathon:** LexHackathon 2026, TSUL, Tashkent, 20–22 November
 > **Track:** 1 — "Huquqiy xizmatlarni ko'rsatish" (legal services)
-> **Passport version:** 0.16 · 21.11.2026, 11:10
+> **Passport version:** 0.17 · 21.11.2026, 11:40
 > **Document owner:** Role 1 (Tech/AI lead). Others send changes in the formats from §11.
 
 ---
@@ -330,6 +330,10 @@ Statuses: `MVP` (built before the checkpoint) · `Final` (by 22.11) · `Roadmap`
 | F-36 | Registration + one free Express audit with a partial report | Funnel of business model v2 | M | Roadmap (D-032: only if the project continues) |
 | F-37 | Token wallet per audit category, volume discount, monitoring spends tokens | Business model v2 (D-026) | M | Roadmap (D-032) |
 | F-38 | Payme / Click payments | Real revenue | M | Roadmap |
+| F-47 | Security details (SEC-01/02, PD-DB-01), response headers, cloud backends and the HAR only for the owner; visitors see that the finding exists | ZRU-764 art. 24 (R-08) | S | Done 21.11 |
+| F-48 | E-mails, phones, PINFL, passport and card numbers removed from policy texts before the LLM; quotes checked against the redacted text. Person names are not redacted yet | Anthropic not on the DPF list (R-08) | S | Done 21.11 |
+| F-51 | "The law will change on 12.12.2026": saved scans re-checked under the next edition of ZRU-792 art. 16 (return terms in the offer), paid or goods offers only | Second law-change demo (legal-ecommerce.md) | S | Done 21.11 |
+| F-52 | Probo passes its own scan: security headers + CSP, privacy notice `/privacy`, no own cookies or trackers, bounded logs | R-08 risk 10 | S | Done 21.11 (contact line waits for PROBO_CONTACT; Cloudflare Web Analytics to be switched off in the dashboard) |
 | F-18, F-22–F-26, F-28–F-31 | Research proposals not taken now (consent phases, review queue, scanner IPs, WEC export, B2G grace-period mode, two vantage points, register lookup, document kit, web perimeter) | See `research/*-v2.md` for each reason | — | Roadmap / Rejected |
 
 ---
@@ -560,3 +564,4 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 - **0.14** — 21.11 04:30 — built: F-34 law citations (lex-rag, 18 articles verbatim), F-19 evidence seal + /verify, F-21 vantage in the report, F-32 AI services, F-33 Uzbek IDs, F-17 policy coverage, F-35 e-commerce pilot (EC-01…03), F-16 law change on saved scans, F-20 fine lines; D-029 (R-01/R-02 adopted), D-030 (field-level rule merge). Rule schema additions: `backend/rules_draft/_README.md`.
 - **0.15** — 21.11 10:40 — D-031 (all checks by difficulty: `research/checks-by-difficulty.md`, for pricing), D-032 (no accounts or tokens in the hackathon product). Team rules R-03 in `/rules` are live (field-level merge, D-030); pilot precision fixes after a check on 8 real sites.
 - **0.16** — 21.11 11:10 — facts V-04…V-09, V-11, V-15, V-17 from R-01/R-02/R-08; D-008 reason corrected; §13 "Is scanning legal?" answer replaced (we do keep public-page artefacts for a limited time); D-033.
+- **0.17** — 21.11 11:40 — F-47, F-48, F-51, F-52 done (R-08 and e-commerce research); 63 tests.

@@ -10,7 +10,7 @@ def _facts(text: str, *, lang: str = "uz", docs=None, payments: bool = True) -> 
         "pages": [{"final_url": "https://shop.uz/", "status": 200, "text": text, "lang": lang,
                    "alternates": [], "lang_links": []}],
         "documents": docs if docs is not None else [{"kind": "offer", "url": "https://shop.uz/oferta", "text": ""}],
-        "hosts": [{"host": "checkout.paycom.uz", "third_party": True, "category": "payments"}] if payments else [],
+        "hosts": [{"host": "checkout.paycom.uz", "third_party": True, "category": "payments", "on_landing": False}] if payments else [],
     }
 
 
@@ -60,3 +60,25 @@ def test_uzbek_version_signals():
     with_switch["pages"][0]["lang_links"] = [["https://shop.uz/uz/", "Oʻzbekcha", ""]]
     assert state_language_version(with_switch, {}) == []
     assert state_language_version(_facts(STORE_TEXT, lang=""), {}) is not None  # Uzbek words alone: may pass or not
+
+
+def test_future_rule_12_12_2026_for_paid_offers_only():
+    """F-51: from 12.12.2026 a paid offer without return terms becomes a finding; a free platform agreement does not."""
+    paid = "Ommaviy oferta. Xizmat narxi va toʻlov tartibi. Toʻlov karta orqali. Tarif narxi. Toʻlov muddati."
+    free = "Platformadan bepul foydalanish kelishuvi. Toʻlov yoʻq. Narx yoʻq. Toʻlov. Tarif."
+    store_paid = _facts(STORE_TEXT, docs=[{"kind": "offer", "url": "u", "text": paid}])
+    store_free = _facts(STORE_TEXT, docs=[{"kind": "offer", "url": "u", "text": free}])
+    assert offer_and_returns(store_paid, {}) == []                       # today: services, not judged
+    future = offer_and_returns(store_paid, {"returns_required": True})
+    assert future and future[0]["data"]["future_rule"] is True
+    assert offer_and_returns(store_free, {"returns_required": True}) == []  # free agreement is not a sale
+
+
+def test_law_change_has_the_upcoming_edition():
+    from qalqon.rules_engine import evaluate
+    facts = _facts(STORE_TEXT, docs=[{"kind": "offer", "url": "u",
+                                      "text": "Ommaviy oferta. Narx va toʻlov. Toʻlov karta orqali. Tarif narxi. Toʻlov."}])
+    facts.update({"site": "https://shop.uz", "scanned_at": "2026-11-21T00:00:00+00:00", "stats": {}})
+    upcoming = evaluate(facts)["law_change"]["next"]
+    assert upcoming["in_force"]["from"] == "2026-12-12"
+    assert any(c["rule_id"] == "EC-02" and c["after"] == "risk" for c in upcoming["changes"])
