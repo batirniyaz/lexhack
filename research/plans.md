@@ -61,23 +61,25 @@
 
 ### 1. The customer's problems we solve (the sales story)
 
-Each problem is written the way a business owner says it, followed by what Probo gives. The law facts come from `legal-norms.md` (R-01) and `PASSPORT.md` §2.
+Probo is a **legal compliance check** of a website or app: does the service, as it actually works, meet what the law requires? Each problem is written the way a business owner says it, followed by what Probo gives. It covers several laws at once: ZRU-547 (personal data), ZRU-792 (e-commerce), Law 221-I (consumer rights) and the Law on the state language. Law facts: `legal-norms.md` (R-01), `legal-ecommerce.md`, `PASSPORT.md` §2.
 
 | # | What the customer says | Why it happens | What Probo gives |
 |---|---|---|---|
-| 1 | **"We don't know who receives our customers' data."** | Website forms send names and phone numbers to Telegram bots, CRMs and other services, often abroad. Analytics, ad pixels and chat widgets collect visitor data too. Marketers and developers add them, and nobody keeps a list | The full list of every company that receives data from the site, with its country, after each audit |
-| 2 | **"We don't know if our site follows the law."** | Every business that takes applications, orders, bookings or registrations online processes personal data under ZRU-547. The rules changed in 2026 (ZRU-1125 amended art. 27¹; CMR No. 415 approved the list of countries data may go to) | A report: what is wrong, the exact article, how to fix it. A free re-check whenever the law changes |
-| 3 | **"Checking is expensive, and it's out of date in a week."** | A check needs a lawyer plus a developer: a consultation costs 300,000 UZS an hour ([pactum.uz/ceny](https://pactum.uz/ceny)), a privacy policy from 5,000,000 UZS ([pactum.uz/services](https://pactum.uz/services)). And the site keeps changing: new pixels, forms, widgets | 3 audits a month from 99,000 UZS, so changes are caught within about 10 days |
-| 4 | **"Our lawyer and our developer don't understand each other."** | The lawyer reads documents; the developer reads code. Neither sees the whole picture | One report for both: technical evidence for the developer, the article of the law for the lawyer, fix steps for both |
-| 5 | **"We need to show we handle data properly."** | When a partner, an investor or an inspector asks how customer data is handled, the company has nothing to show | A signed report (PDF and share link) with the date, what was checked and what was found |
+| 1 | **"We don't know if our site or app meets the law."** | Every business that takes applications, orders, bookings or registrations online is a personal-data operator under ZRU-547. The law sets many requirements at once: a privacy policy with set content (arts. 22–23), consent before collecting data, notices on forms, extra rules for health, children's and biometric data, rules on storage and transfer. Online stores also need seller details, a public offer, return terms and an Uzbek version. Nobody checks all of this together | One report on all requirements: what is missing, the exact article, how to fix it |
+| 2 | **"The law changes and we can't keep up."** | The rules keep changing: in 2026 ZRU-1125 amended art. 27¹ of ZRU-547 and CMR No. 415 approved a list of countries; from 12.12.2026 ZRU-1173 makes return terms a required part of an e-commerce offer (`legal-ecommerce.md`) | A free re-check of the last report whenever a relevant law changes |
+| 3 | **"Our documents look fine, but does the site actually work that way?"** | Lawyers check documents. The site is built and changed by marketers and developers, so the policy and the real site drift apart | Probo compares what the policy promises with what the service actually does |
+| 4 | **"A legal check is expensive and out of date in a week."** | It needs a lawyer plus a developer: a consultation costs 300,000 UZS an hour ([pactum.uz/ceny](https://pactum.uz/ceny)), a privacy policy from 5,000,000 UZS ([pactum.uz/services](https://pactum.uz/services)). Then the site changes again | 3 audits a month from 99,000 UZS |
+| 5 | **"We need to show that we comply."** | When a partner, an investor or an inspector asks, the company has nothing to show | A signed report (PDF and share link) with the date, what was checked and the result |
 
 **How the same problems sound per client type (for sales conversations):**
 
-- **Online shop or service:** "Our order forms send customer phones to a Telegram bot and a CRM — is that allowed? Which trackers load before the customer agrees?" → Tezkor or To'liq.
-- **Clinic:** "We collect patients' health data through appointment forms — where does it go?" Health data is a special category under ZRU-547 (`interviews.md`, `legal-norms.md`). → To'liq.
-- **Private school or training center:** "Parents register children on our site — is our consent text right?" Children's data has its own rules (`interviews.md`). → To'liq.
-- **Lender, insurer, e-commerce platform:** "Our forms ask for passport, PINFL and card data, and we have a personal account — is anything leaking?" → Faol.
-- **Bank or payment service:** "We have 25 domains and a mobile app, and need proof every month that nothing changed." → Ekspert + credits.
+- **Online shop:** "Do we have everything the law requires: public offer, seller details, return terms, an Uzbek version, consent on the order form?" → Tezkor or To'liq.
+- **Clinic:** "Our appointment form asks about health. Do we have the consent and notice the law requires for this special data?" → To'liq.
+- **Private school or training center:** "Parents register their children on our site. Is our consent text right?" → To'liq.
+- **Lender, insurer, e-commerce platform:** "Our forms ask for passport and PINFL, and clients have a personal account. Does all of it meet the law, including the account area?" → Faol.
+- **Bank or payment service:** "We have 25 sites and a mobile app, and need monthly proof that each one complies." → Ekspert + credits.
+
+**Positioning rule:** Probo is legal tech, not a cybersecurity product. In sales and in the pitch, talk about legal requirements, compliance and evidence, not about leaks, attacks or vulnerabilities (`cyber-differentiation.md`, D-008).
 
 ### 2. What each plan includes
 
