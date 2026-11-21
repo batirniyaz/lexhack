@@ -24,7 +24,7 @@ export function SharedPage() {
   return (
     <div className="q-page">
       <p className="q-muted q-noprint" style={{ margin: '24px 0 0' }}>{t.shared_note}</p>
-      <ReportView report={report} facts={data.facts} displaySite={displaySite} scanId={data.scan_id ?? undefined} readonly />
+      <ReportView report={report} facts={data.facts} displaySite={displaySite} scanId={data.scan_id ?? undefined} readonly owner={!data.security_hidden} />
     </div>
   )
 }

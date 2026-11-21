@@ -76,7 +76,7 @@ export function ScanPage() {
   const displaySite = anon ? (result?.label ?? report.label ?? t.site_word) : siteDomain(report.site)
   return (
     <div className="q-page">
-      <ReportView report={report} facts={result?.facts} displaySite={displaySite} scanId={scanId} domain={result?.domain ?? undefined} seal={result?.seal} />
+      <ReportView report={report} facts={result?.facts} displaySite={displaySite} scanId={scanId} domain={result?.domain ?? undefined} seal={result?.seal} owner={result?.viewer_is_owner !== false} />
       {anon && (
         <div style={{ marginTop: 40 }}>
           <Button variant="ghost" size="sm" label={t.replay} onClick={() => navigate(`/scan/${scanId}?replay=1`)} />

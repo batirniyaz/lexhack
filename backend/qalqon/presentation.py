@@ -113,3 +113,32 @@ def replay_events(scan_dir: Path) -> Iterator[dict]:
     yield {"type": "done", "scan_id": report.get("scan_id"), "status": report["status"], "score": report["score"],
            "levels": report.get("levels"), "stats": facts.get("stats")}
     yield {"type": "end", "status": "done", "replay": True}
+
+
+# --- Security details only for the site owner (F-47; ZRU-764 art. 24, research/legal-our-risks.md) ---------------
+# Information about weaknesses of a site may be disclosed only with the owner's permission. Visitors of the public
+# demo, shared links and the home-page sample see that such a finding exists, but not its details.
+SECURITY_RULES = {"SEC-01", "SEC-02", "PD-DB-01"}
+HIDDEN_EVIDENCE = {"summary": "Details are shown only to the site owner (Law on cybersecurity, art. 24).",
+                   "data": {"hidden": True}}
+
+
+def hide_security(result: dict) -> dict:
+    """Remove security details from a scan result (report + facts) for a viewer who is not the owner."""
+    for finding in (result.get("report") or {}).get("findings", []):
+        if finding.get("rule_id") in SECURITY_RULES:
+            finding["evidence"] = [dict(HIDDEN_EVIDENCE)]
+            finding["security_hidden"] = True
+    facts = result.get("facts")
+    if isinstance(facts, dict):
+        facts["backends"] = []                      # cloud databases / storage seen in page code
+        for page in facts.get("pages") or []:
+            page["headers"] = {}                    # which security headers are missing
+    result["security_hidden"] = True
+    return result
+
+
+def hide_security_event(event: dict) -> dict:
+    if event.get("type") == "finding" and event.get("rule_id") in SECURITY_RULES:
+        return {**event, "evidence": [HIDDEN_EVIDENCE["summary"]]}
+    return event

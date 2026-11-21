@@ -135,7 +135,7 @@ function FindingItem({ finding, open }: { finding: Finding; open: boolean }) {
           <div>
             <h4>{t.evidence}</h4>
             <ul className="q-evidence">
-              {finding.evidence.map((e, i) => <li key={i}>{e.summary}</li>)}
+              {finding.evidence.map((e, i) => <li key={i}>{(e.data as { hidden?: boolean } | undefined)?.hidden ? t.security_hidden : e.summary}</li>)}
             </ul>
             {finding.downgraded && <p className="q-muted" style={{ fontSize: 13 }}>{t.downgraded}</p>}
           </div>
@@ -422,7 +422,7 @@ function SealView({ report, seal, scanId }: { report: Report; seal?: Seal | null
   )
 }
 
-function EvidenceView({ facts, scanId, report, seal }: { facts?: Facts; scanId?: string; report: Report; seal?: Seal | null }) {
+function EvidenceView({ facts, scanId, report, seal, owner = true }: { facts?: Facts; scanId?: string; report: Report; seal?: Seal | null; owner?: boolean }) {
   const { t } = useSettings()
   if (!facts) return null
   const pages: PageRow[] = facts.pages.map((p) => ({ url: p.final_url, status: String(p.status ?? '—'), title: p.title ?? '' }))
@@ -433,7 +433,8 @@ function EvidenceView({ facts, scanId, report, seal }: { facts?: Facts; scanId?:
   return (
     <div style={{ display: 'grid', gap: 36 }}>
       <SealView report={report} seal={seal} scanId={scanId} />
-      {scanId && <div><Link href={`/api/scans/${scanId}/har?${authQuery(scanId)}`}>{t.ev_har}</Link></div>}
+      {scanId && owner && <div><Link href={`/api/scans/${scanId}/har?${authQuery(scanId)}`}>{t.ev_har}</Link></div>}
+      {!owner && <p className="q-muted" style={{ margin: 0, fontSize: 14 }}>{t.security_hidden}</p>}
       <section>
         <h3 style={{ fontSize: 16, margin: '0 0 10px' }}>{t.ev_pages}</h3>
         <Table<PageRow> data={pages} idKey="url" density="compact" columns={[
@@ -476,9 +477,10 @@ interface ReportViewProps {
   domain?: string
   readonly?: boolean
   seal?: Seal | null
+  owner?: boolean
 }
 
-export function ReportView({ report, facts, displaySite, scanId, domain, readonly = false, seal }: ReportViewProps) {
+export function ReportView({ report, facts, displaySite, scanId, domain, readonly = false, seal, owner = true }: ReportViewProps) {
   const { t } = useSettings()
   const navigate = useNavigate()
   const [tab, setTab] = useState<TabKey>('overview')
@@ -550,7 +552,7 @@ export function ReportView({ report, facts, displaySite, scanId, domain, readonl
       case 'forms':
         return <FormsView facts={facts} />
       case 'evidence':
-        return <EvidenceView facts={facts} scanId={printing ? undefined : scanId} report={report} seal={seal} />
+        return <EvidenceView facts={facts} scanId={printing ? undefined : scanId} report={report} seal={seal} owner={owner} />
     }
   }
 

@@ -25,7 +25,8 @@ from . import guard
 from .evidence import public_key_b64, key_id, verify as verify_seal
 from .guard import check_scan_allowed, is_owner, issue_scan_token, require_owner, require_view
 from .jobs import ScanJob, jobs
-from .presentation import aliases_for, anonymize, anonymize_other_references, label_for, replay_events
+from .presentation import (aliases_for, anonymize, anonymize_other_references, hide_security, hide_security_event,
+                           label_for, replay_events)
 from .scan import new_scan_id
 from .urls import TargetNotAllowed, check_target, host_of, normalize_url, registrable_domain
 
@@ -182,7 +183,7 @@ def shared_scan(token: str, request: Request, anon: bool = False) -> dict:
     result = _scan_result(scan_id, anon=anon or forced, facts=True)
     if forced:
         result["domain"] = None
-        return {**result, "scan_id": None}
+        return {**hide_security(result), "scan_id": None}
     return {**result, "scan_id": scan_id}
 
 
@@ -192,7 +193,7 @@ def sample() -> dict:
     anonymized, opened through a share link (so no scan id with a domain reaches the visitor)."""
     for row in reversed(_all_reports()):
         if row["status"] == "ok" and row["label"] != "Site" and any(f["rule_id"] == "PD-MIS-01" for f in row["_findings"]):
-            result = _scan_result(row["scan_id"], anon=True, facts=True)
+            result = hide_security(_scan_result(row["scan_id"], anon=True, facts=True))
             result["domain"] = None
             return {"token": _share(row["scan_id"])["token"], "result": result}
     raise HTTPException(404, "no sample yet")
@@ -202,6 +203,7 @@ def sample() -> dict:
 async def scan_events(scan_id: str, request: Request, replay: bool = False):
     """Live feed (SSE). For finished scans, or with ?replay=1, the saved results are replayed with a short delay."""
     require_view(request, scan_id)
+    owner = is_owner(request)
     job = jobs.jobs.get(scan_id)
     if job is None or replay:
         scan_dir = _scan_dir(scan_id)
@@ -210,6 +212,8 @@ async def scan_events(scan_id: str, request: Request, replay: bool = False):
 
         async def replayed():
             for event in replay_events(scan_dir):
+                if not owner:
+                    event = hide_security_event(event)
                 if await request.is_disconnected():
                     return
                 yield {"event": event["type"], "data": json.dumps(event, ensure_ascii=False)}
@@ -221,7 +225,7 @@ async def scan_events(scan_id: str, request: Request, replay: bool = False):
         sent = 0
         while True:
             while sent < len(job.events):
-                event = job.events[sent]
+                event = job.events[sent] if owner else hide_security_event(job.events[sent])
                 sent += 1
                 yield {"event": event["type"], "id": str(event["seq"]), "data": json.dumps(event, ensure_ascii=False)}
             if job.finished and sent >= len(job.events):
@@ -257,6 +261,7 @@ def verify(seal: dict) -> dict:
 @app.get("/api/scans/{scan_id:path}/har")
 def scan_har(scan_id: str, request: Request):
     require_view(request, scan_id)
+    require_owner(request)  # the HAR holds every response header: security details (F-47)
     path = _scan_dir(scan_id) / "scan.har"
     if not path.exists():
         raise HTTPException(404, "no HAR for this scan")
@@ -267,7 +272,10 @@ def scan_har(scan_id: str, request: Request):
 def scan_result(scan_id: str, request: Request, anon: bool = False, facts: bool = False) -> dict:
     """Report (+ optional facts). ?anon=1 hides the site's domain behind its sector label (presentation mode)."""
     require_view(request, scan_id)
-    return _scan_result(scan_id, anon=anon, facts=facts)
+    result = _scan_result(scan_id, anon=anon, facts=facts)
+    owner = is_owner(request)
+    result["viewer_is_owner"] = owner
+    return result if owner else hide_security(result)  # F-47: ZRU-764 art. 24
 
 
 def _scan_result(scan_id: str, anon: bool = False, facts: bool = False) -> dict:

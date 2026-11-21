@@ -160,3 +160,32 @@ def test_anonymize_hides_brand_aliases_in_quotes():
     result = anonymize(report, ["uzum.uz"], "Marketplace A", ["Uzum Market", "Uzum Bank", "Uzum"])
     assert "uzum" not in result["quote"].lower()
     assert result["quote"].startswith("Marketplace A")
+
+
+def test_security_details_only_for_the_owner(tmp_path, monkeypatch):
+    """F-47 (ZRU-764 art. 24): a visitor sees that a security finding exists, not its details; HAR is owner-only."""
+    import json as _json
+    import qalqon.api as api_module
+    from qalqon import guard
+    monkeypatch.setattr(api_module, "SCANS_DIR", tmp_path)
+    monkeypatch.setattr(guard, "TOKENS_FILE", tmp_path / ".scan_tokens.json")
+    monkeypatch.setattr(guard, "PUBLIC", True)
+    monkeypatch.setattr(guard, "OWNER_KEY", "owner-key")
+    d = tmp_path / "s-sec"
+    d.mkdir()
+    report = {"scan_id": "s-sec", "site": "https://shop.example.uz", "scanned_at": "2026-11-21T10:00:00+00:00",
+              "status": "ok", "score": 99, "levels": {}, "stats": {}, "flows": [], "not_evaluated": [],
+              "findings": [{"rule_id": "SEC-02", "level": "recommendation", "title": {"en": "headers"},
+                            "evidence": [{"summary": "Home page response lacks: HSTS", "data": {"missing": ["HSTS"]}}]}]}
+    (d / "report.json").write_text(_json.dumps(report), encoding="utf-8")
+    (d / "facts.json").write_text(_json.dumps({"site": report["site"], "site_domains": ["example.uz"],
+                                              "pages": [{"final_url": report["site"], "headers": {"server": "x"}}],
+                                              "backends": [{"kind": "supabase"}]}), encoding="utf-8")
+    (d / "scan.har").write_text("{}", encoding="utf-8")
+    token = guard.issue_scan_token("s-sec")
+    visitor = client.get("/api/scans/s-sec?facts=1", headers={"X-Scan-Token": token}).json()
+    assert visitor["report"]["findings"][0]["evidence"][0]["data"]["hidden"] is True
+    assert "HSTS" not in _json.dumps(visitor) and visitor["facts"]["backends"] == []
+    assert client.get("/api/scans/s-sec/har", headers={"X-Scan-Token": token}).status_code == 403
+    owner = client.get("/api/scans/s-sec?facts=1", headers={"X-Probo-Key": "owner-key"}).json()
+    assert "HSTS" in owner["report"]["findings"][0]["evidence"][0]["summary"] and owner["viewer_is_owner"] is True

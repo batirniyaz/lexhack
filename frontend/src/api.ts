@@ -180,6 +180,8 @@ export interface ScanResult {
   domain?: string | null
   scan_id?: string | null
   seal?: Seal | null
+  viewer_is_owner?: boolean
+  security_hidden?: boolean
 }
 export interface ScanListItem {
   scan_id: string
