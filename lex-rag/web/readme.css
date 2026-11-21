@@ -1,0 +1,76 @@
+/* Hallmark · shape: app screen · genre: editorial · theme: Almanac (deal manual, softened, as on the home page)
+ * nav: a top bar with the name and three links, and a contents list that stays beside the text · signature: the nine steps of a question set as one numbered sheet, each with its plain words and its term · states: full, the page holds no data that loads
+ * axes: mid/grotesk-sans/chromatic-magenta · posture: restrained · contrast: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V3 · weakest: V, the same sheets as the other pages so the site reads as one; the steps are what is new here */
+/* Hallmark · answered F25 · wide tables scroll inside their sheet, every row keeps its first column */
+
+.bar__in { max-width: 76rem; }
+.bar__links { display: flex; gap: var(--space-md); font-size: var(--text-sm); }
+.bar__links a { text-decoration: underline 1px var(--color-accent); text-underline-offset: 0.15em; }
+
+.paper { display: grid; grid-template-columns: 13rem minmax(0, 1fr); gap: var(--space-xl); width: 100%; max-width: 76rem; margin-inline: auto; padding: var(--space-xl) var(--space-lg) var(--space-2xl); }
+.toc { position: sticky; top: var(--space-lg); align-self: start; font-size: var(--text-sm); }
+.toc ol { display: flex; flex-direction: column; gap: var(--space-3xs); }
+.toc a { display: block; padding: var(--space-2xs) var(--space-xs); border-radius: var(--radius-row); color: var(--color-ink-2); transition: background-color var(--dur-micro) var(--ease-out); }
+.toc a:active { background: var(--color-paper-3); }
+
+.doc { min-width: 0; }
+.doc h1 { max-width: 20ch; font-size: var(--text-head); line-height: 1.02; letter-spacing: -0.03em; }
+.doc__lead { max-width: 60ch; margin-top: var(--space-md); font-size: var(--text-lg); line-height: 1.45; color: var(--color-ink); }
+.doc__rule { max-width: 60ch; margin-top: var(--space-sm); font-size: var(--text-lg); line-height: 1.45; font-weight: 600; color: var(--color-ink); }
+.doc__note { margin-top: var(--space-sm); font-size: var(--text-sm); color: var(--color-ink-2); }
+.facts-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-md); margin-top: var(--space-lg); }
+.facts-row dt { font-size: var(--text-xl); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; color: var(--color-ink); }
+.facts-row dd { font-size: var(--text-sm); color: var(--color-ink-2); }
+
+.doc .sheet { margin-top: var(--space-lg); padding: var(--space-lg); scroll-margin-top: var(--space-md); }
+.doc h2 { max-width: none; font-size: var(--text-2xl); letter-spacing: -0.02em; line-height: 1.15; }
+.doc h2 + p { margin-top: var(--space-xs); max-width: 68ch; }
+.doc h3 { max-width: none; font-size: var(--text-md); letter-spacing: -0.005em; line-height: 1.3; }
+.doc .sheet > h3 { margin-top: var(--space-lg); }
+.sheet__after { max-width: 68ch; margin-top: var(--space-sm); font-size: var(--text-sm); color: var(--color-ink-2); }
+.sheet__after a { text-decoration: underline 1px var(--color-accent); text-underline-offset: 0.15em; }
+.doc code { font-family: var(--font-outlier); font-size: 0.9em; }
+.doc strong { font-weight: 600; color: var(--color-ink); }
+
+/* the nine steps: a real sequence, so they carry numbers */
+.steps { margin-top: var(--space-md); counter-reset: step; }
+.steps li { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 11rem; column-gap: var(--space-lg); padding: var(--space-sm) 0 var(--space-sm) var(--space-xl); border-top: var(--rule-hair) solid var(--color-rule); counter-increment: step; }
+.steps li::before { content: counter(step); position: absolute; left: 0; top: var(--space-sm); font-family: var(--font-outlier); font-size: var(--text-lg); color: var(--color-accent); }
+.steps h3 { grid-column: 1; }
+.steps p:not(.term) { grid-column: 1; margin-top: var(--space-2xs); max-width: 60ch; }
+.term { grid-column: 2; grid-row: 1 / span 2; font-size: var(--text-sm); color: var(--color-muted); text-align: end; }
+
+/* tables */
+.scroll { overflow-x: auto; margin-top: var(--space-sm); }
+.doc table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.doc th { padding: var(--space-xs) var(--space-md) var(--space-xs) 0; border-bottom: var(--rule-hair) solid var(--color-rule-2); text-align: start; font-weight: 400; color: var(--color-muted); white-space: nowrap; }
+.doc td { padding: var(--space-xs) var(--space-md) var(--space-xs) 0; border-bottom: var(--rule-hair) solid var(--color-rule); vertical-align: top; }
+.doc th:last-child, .doc td:last-child { padding-inline-end: 0; }
+.doc tbody tr:last-child td { border-bottom: 0; }
+.doc th.num, .doc td.num { text-align: end; white-space: nowrap; font-family: var(--font-outlier); font-variant-numeric: tabular-nums; }
+.doc th.num { font-family: var(--font-body); }
+.doc td:first-child { color: var(--color-ink); }
+
+.plain { display: flex; flex-direction: column; gap: var(--space-xs); margin-top: var(--space-sm); max-width: 68ch; }
+.reasons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md) var(--space-xl); margin-top: var(--space-md); }
+.reasons dt { font-weight: 600; color: var(--color-ink); }
+.reasons dd { margin-top: var(--space-3xs); font-size: var(--text-sm); }
+
+@media (hover: hover) {
+  .toc a:hover { background: var(--color-paper-2); }
+  .bar__links a:hover, .sheet__after a:hover { text-decoration-thickness: 2px; }
+}
+@media (max-width: 60rem) {
+  .paper { display: block; padding: var(--space-lg) var(--space-md) var(--space-xl); }
+  .toc { position: static; margin-bottom: var(--space-lg); }
+  .toc ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .doc h1 { font-size: var(--text-3xl); }
+  .doc .sheet { padding: var(--space-md); }
+  .facts-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps li { grid-template-columns: minmax(0, 1fr); padding-inline-start: var(--space-lg); }
+  .term { grid-column: 1; grid-row: auto; margin-top: var(--space-2xs); text-align: start; }
+  .reasons { grid-template-columns: minmax(0, 1fr); }
+  .bar__links { gap: var(--space-sm); }
+  .bar__in .brand { display: none; }
+}

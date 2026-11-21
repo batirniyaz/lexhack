@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qonun savollari</title>
+<meta name="description" content="Oʻzbekiston qonunlari boʻyicha savollarga javob: javob yonida modda va uning matni.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23c2cbd4'/%3E%3Crect x='3' y='2' width='10' height='12' fill='%23eef1f4'/%3E%3Cpath d='M5 5h6M5 8h6M5 11h4' stroke='%23101820' stroke-width='1.1'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/onest-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=4">
+</head>
+<body>
+<header class="bar">
+  <div class="bar__in">
+    <a class="brand" href="./" data-t="brand">Qonun savollari</a>
+    <div class="lang" role="group" data-t-aria="langLabel" aria-label="Interfeys tili">
+      <button type="button" class="lang__key" data-lang="uz" aria-pressed="true">UZ</button>
+      <button type="button" class="lang__key" data-lang="ru" aria-pressed="false">RU</button>
+    </div>
+  </div>
+</header>
+
+<main class="room">
+  <h1 data-t="title">Oʻzbekiston qonunlari haqida soʻrang</h1>
+  <form class="ask" id="ask" autocomplete="off">
+    <label class="ask__label" for="q" data-t="label">Savolingiz</label>
+    <div class="ask__line">
+      <textarea class="input" id="q" name="q" rows="1" maxlength="500" enterkeyhint="send" aria-describedby="hint"></textarea>
+      <button class="key" id="send" type="submit" data-t="send">Soʻrash</button>
+    </div>
+    <p class="ask__hint" id="hint" role="status"></p>
+  </form>
+  <p class="holding" id="holding"></p>
+
+  <div class="thread" id="thread" aria-live="polite"></div>
+
+  <section class="sheet">
+    <h2 class="sheet__head" data-t="examples">Masalan</h2>
+    <ul class="examples" id="examples"></ul>
+  </section>
+  <noscript><p>Sahifa ishlashi uchun JavaScript kerak. Для работы страницы нужен JavaScript.</p></noscript>
+</main>
+
+<footer class="foot">
+  <div class="foot__in">
+    <p data-t="note">Oʻquv loyihasi, lex.uz bilan bogʻliq emas. Javob yuridik maslahat oʻrnini bosmaydi.</p>
+    <a class="foot__link" href="readme" data-t="about">Bu qanday ishlaydi</a>
+  </div>
+</footer>
+
+<template id="answer-tpl">
+  <article class="sheet entry">
+    <header class="entry__head">
+      <h2 class="entry__q"></h2>
+      <p class="entry__meta"><span class="entry__status"></span><span class="entry__time figure"></span></p>
+    </header>
+    <div class="entry__body entry__body--plain">
+      <div>
+        <p class="entry__text"></p>
+      </div>
+      <section class="basis" hidden>
+        <h3 class="basis__head"></h3>
+        <ol class="sources"></ol>
+      </section>
+    </div>
+  </article>
+</template>
+
+<template id="wait-tpl">
+  <article class="sheet entry" aria-busy="true">
+    <header class="entry__head">
+      <h2 class="entry__q"></h2>
+      <p class="entry__meta"><span class="entry__status wait__step"></span><span class="entry__time figure wait__time"></span></p>
+    </header>
+    <div class="skel skel--wide"></div>
+    <div class="skel skel--mid"></div>
+  </article>
+</template>
+
+<script src="app.js?v=3"></script>
+</body>
+</html>
