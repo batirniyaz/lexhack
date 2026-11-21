@@ -14,12 +14,11 @@ legal_basis:
     url: "https://lex.uz/ru/docs/4396428"
     edition_date: null
 sanction: "Administrative Code art. 46² part 1 — fine 7 BCA (3,080,000 UZS) for citizens, 50 BCA (22,000,000 UZS) for officials; after a penalty, within 1 year — Criminal Code art. 141² (100–150 BCA). BCA 440,000 UZS from 01.09.2026 (PF-115)."
-sanction_uz: "MJtK 46²-moddasi 1-qismi: fuqarolarga 7 BHM (3 080 000 soʻm), mansabdor shaxslarga 50 BHM (22 000 000 soʻm) jarima. Jazodan keyin bir yil ichida takrorlansa — JK 141²-moddasi."
-sanction_ru: "КоАО ст. 46² ч. 1: штраф гражданам 7 БРВ (3 080 000 сум), должностным лицам 50 БРВ (22 000 000 сум). Повторно в течение года после взыскания — УК ст. 141²."
-sanction_source: "R-02 research/legal-liability.md (21.11.2026), not a lawyer's opinion"
 fix:
   en: "Turn off session recording or mask every form field; mention it in the policy and ask for consent."
   ru: "Отключите запись сессий или маскируйте все поля форм; укажите это в политике и получите согласие."
   uz: "Seans yozuvini oʻchiring yoki barcha shakl maydonlarini yashiring; siyosatda koʻrsating va rozilik oling."
 verified: false
 author: "Role 1 draft"
+fine_bca_official_max: 50   # for the report's 'possible fine' figure (officials)
+fine_article: "MJtK / КоАО 46²-1"

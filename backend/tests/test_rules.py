@@ -151,3 +151,12 @@ def test_team_rule_without_detector_takes_it_from_the_draft():
     rules = {r["id"]: r for r in load_rules()}
     for rid in ("EC-01", "EC-02", "EC-03"):
         assert rules[rid]["detector"], rid  # rules/EC-*.yaml carry no detector; the draft supplies it
+
+
+def test_fine_summary_uses_bca_440000():
+    from qalqon.rules_engine import BCA_UZS, _fine_summary
+    assert BCA_UZS == 440_000
+    summary = _fine_summary([{"rule_id": "PD-REC-01", "fine_bca_official_max": 50, "fine_article": "46²-1"},
+                             {"rule_id": "EC-02", "fine_bca_official_max": 20, "fine_article": "164-1"}])
+    assert summary["bca"] == 50 and summary["uzs"] == 22_000_000 and summary["rule_id"] == "PD-REC-01"
+    assert _fine_summary([{"rule_id": "PD-POL-01"}]) is None  # no fine where the lawyer found no offence

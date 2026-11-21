@@ -20,3 +20,6 @@ fix:
   uz: "Yoki sayt xatti-harakatini oʻzgartiring, yoki siyosatni haqiqatga moslashtiring."
 verified: false
 author: "Role 1 draft"
+sanction_uz: "Qarama-qarshilik ortidagi xatti-harakatga bogʻliq: maʼlumotlarni uchinchi shaxslarga qonunga xilof uzatish — MJtK 46²-moddasi 1-qismi (fuqarolarga 7 BHM = 3 080 000 soʻm, mansabdor shaxslarga 50 BHM = 22 000 000 soʻm)."
+sanction_ru: "Зависит от поведения за противоречием: незаконная передача третьим лицам — КоАО ст. 46² ч. 1 (гражданам 7 БРВ = 3 080 000 сум, должностным лицам 50 БРВ = 22 000 000 сум)."
+sanction_source: "Role 2 rules (research/legal-liability.md, research/legal-ecommerce.md); BCA 440,000 UZS from 01.09.2026 (PF-115); interpretation, not a lawyer's opinion"

@@ -22,3 +22,6 @@ fix:
   uz: "Analitika va reklama skriptlarini faqat tashrif buyuruvchi rozilik bergandan keyin yuklang (rozilik banneri)."
 verified: false
 author: "Role 1 draft"
+sanction_uz: "Agar tashrif buyuruvchi identifikatorlari (IP, cookie) shaxsga doir maʼlumot deb topilsa: MJtK 46²-moddasi 1-qismi (7 / 50 BHM = 3 080 000 / 22 000 000 soʻm). Bu masala hali ochiq."
+sanction_ru: "Если идентификаторы посетителей (IP, cookie) признают персональными данными: КоАО ст. 46² ч. 1 (7 / 50 БРВ = 3 080 000 / 22 000 000 сум). Вопрос пока открыт."
+sanction_source: "Role 2 rules (research/legal-liability.md, research/legal-ecommerce.md); BCA 440,000 UZS from 01.09.2026 (PF-115); interpretation, not a lawyer's opinion"

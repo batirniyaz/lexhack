@@ -67,6 +67,7 @@ export interface Report {
   scope?: Scope
   policy_coverage?: Coverage[] | null
   law_change?: LawChange | null
+  fine_summary?: { bca: number; uzs: number; article: string | null; rule_id: string; bca_uzs: number; bca_source: string } | null
 }
 /** The same saved facts evaluated under the previous wording of the law (F-16). */
 export interface LawVersionSummary {

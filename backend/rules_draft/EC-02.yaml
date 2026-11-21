@@ -23,3 +23,8 @@ fix:
   uz: "Har bir sahifadan havola bilan ommaviy oferta (savdo shartlari) joylang: yetkazib berish, toʻlov va qaytarish — tovarni qayerga va qanday qaytarish, pulni qaytarish muddati va xarajatlarni kim qoplaydi."
 verified: false
 author: "Role 1 draft (norms from lex.uz 21.11, confirmed by Role 2 in rules/)"
+sanction_uz: "Ehtimoliy: MJtK 178-moddasi 6-qismi (3–7 / 7–10 BHM) yoki 164-moddasi 1-qismi (savdo qoidalarini buzish) — fuqarolarga 10 BHM (4 400 000 soʻm), mansabdor shaxslarga 20 BHM (8 800 000 soʻm)."
+sanction_ru: "Возможно: КоАО ст. 178 ч. 6 (3–7 / 7–10 БРВ) или ст. 164 ч. 1 (нарушение правил торговли) — гражданам 10 БРВ (4 400 000 сум), должностным лицам 20 БРВ (8 800 000 сум)."
+sanction_source: "Role 2 rules (research/legal-liability.md, research/legal-ecommerce.md); BCA 440,000 UZS from 01.09.2026 (PF-115); interpretation, not a lawyer's opinion"
+fine_bca_official_max: 20   # for the report's 'possible fine' figure (officials)
+fine_article: "MJtK / КоАО 164-1"

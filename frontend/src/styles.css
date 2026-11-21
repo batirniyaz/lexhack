@@ -197,3 +197,7 @@ body { font-family: var(--font-family-body); }
 .q-footer { max-width: 1072px; margin: 64px auto 0; padding: 20px 24px 32px; border-top: 1px solid var(--q-rule); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--q-muted); }
 @media print { .q-footer { display: none; } }
 .q-lc-next { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--q-rule); }
+
+/* Possible fine figure on the overview */
+.q-fine { display: grid; gap: 6px; padding: 16px 20px; border-radius: 12px; border: 1px solid var(--q-rule); border-inline-start: 4px solid var(--q-violation, #c7332f); background: var(--q-sheet); }
+.q-fine-figure { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }

@@ -539,6 +539,13 @@ export function ReportView({ report, facts, displaySite, scanId, domain, readonl
         return (
           <div style={{ display: 'grid', gap: 40 }}>
             {mismatch && <SaysDoes finding={mismatch} facts={facts} />}
+            {report.fine_summary && (
+              <section className="q-fine" aria-label={t.fine_title}>
+                <div className="q-fine-figure">{t.fine_figure(report.fine_summary.bca, report.fine_summary.uzs.toLocaleString('ru-RU').replace(/,/g, ' '))}</div>
+                <div style={{ fontSize: 14 }}>{t.fine_text(report.fine_summary.article ?? '')}</div>
+                <div className="q-muted" style={{ fontSize: 13 }}>{t.fine_note(report.fine_summary.bca_uzs.toLocaleString('ru-RU').replace(/,/g, ' '))}</div>
+              </section>
+            )}
             {report.law_change && (report.law_change.changes.length > 0 || (report.law_change.next?.changes.length ?? 0) > 0) && <LawChangeCard change={report.law_change} />}
             {!printing && (
               <section>

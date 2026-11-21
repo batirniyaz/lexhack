@@ -132,6 +132,8 @@ def evaluate(facts: dict, overrides: Optional[dict] = None, with_law_change: boo
             "evidence": evidence,
             "legal_basis": rule.get("legal_basis", []),
             "sanction": rule.get("sanction"),
+            "fine_bca_official_max": rule.get("fine_bca_official_max"),
+            "fine_article": rule.get("fine_article"),
             "sanction_local": ({"uz": rule.get("sanction_uz"), "ru": rule.get("sanction_ru"),
                                 "source": rule.get("sanction_source")} if rule.get("sanction_uz") else None),
             "fix": rule.get("fix", {}),
@@ -144,10 +146,25 @@ def evaluate(facts: dict, overrides: Optional[dict] = None, with_law_change: boo
     levels = {level: sum(1 for f in findings if f["level"] == level) for level in PENALTY}
     report = {**base, "status": "ok", "score": max(0, 100 - penalty), "levels": levels,
               "findings": findings, "not_evaluated": not_evaluated, "flows": _flows_status(facts),
-              "policy_coverage": policy_coverage(facts)}
+              "policy_coverage": policy_coverage(facts), "fine_summary": _fine_summary(findings)}
     if with_law_change:
         report["law_change"] = law_change(facts, report, evaluate)  # same facts under the previous law (F-16)
     return report
+
+
+# Base calculation amount: 440,000 UZS from 01.09.2026 (Presidential Decree PF-115 of 23.06.2026; research/legal-liability.md).
+BCA_UZS = 440_000
+
+
+def _fine_summary(findings: list[dict]) -> Optional[dict]:
+    """The largest possible fine for the responsible official among the findings (fines are personal, R-02)."""
+    with_fine = [f for f in findings if f.get("fine_bca_official_max")]
+    if not with_fine:
+        return None
+    top = max(with_fine, key=lambda f: f["fine_bca_official_max"])
+    return {"bca": top["fine_bca_official_max"], "uzs": top["fine_bca_official_max"] * BCA_UZS,
+            "article": top.get("fine_article"), "rule_id": top["rule_id"], "bca_uzs": BCA_UZS,
+            "bca_source": "PF-115, 01.09.2026"}
 
 
 def _apply_override(rule: dict, override: Optional[dict]) -> dict:
