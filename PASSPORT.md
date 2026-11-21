@@ -3,7 +3,7 @@
 > **Product name:** Probo (D-022). Earlier working name: Qalqon; the Python package is still `qalqon`.
 > **Hackathon:** LexHackathon 2026, TSUL, Tashkent, 20–22 November
 > **Track:** 1 — "Huquqiy xizmatlarni ko'rsatish" (legal services)
-> **Passport version:** 0.17 · 21.11.2026, 11:40
+> **Passport version:** 0.18 · 21.11.2026, 13:58
 > **Document owner:** Role 1 (Tech/AI lead). Others send changes in the formats from §11.
 
 ---
@@ -496,6 +496,7 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 | D-031 | 21.11 | Everything Probo finds is listed in `research/checks-by-difficulty.md`: 30 checks (19 built, 11 roadmap), sorted by difficulty into Easy (11), Medium (8), Hard (11: Hard-A with client permission, Hard-B expert work). Role 3 sets prices per group | One source for pricing; difficulty ≠ importance, both shown |
 | D-032 | 21.11 | No accounts, registration or token wallet in the hackathon product (F-36, F-37 → Roadmap, only if the project continues). The pricing model of D-026 stays for the pitch | Team decision: focus on the scanner |
 | D-033 | 21.11 | Legal research R-01, R-02, R-08 and e-commerce norms accepted as the team's legal basis: all law quotes checked against live lex.uz by script (345 quotes, 0 text errors). Server location for our policy (Q-L16): Tashkent, Uzbektelekom AS8193; scan artefacts on that machine; Cloudflare tunnel (US, DPF active). Open: F-47 (owner-only security details), F-48 (redact PD before the LLM; Anthropic not found on the DPF list), F-51 (EC-02 under the 12.12.2026 edition) | Correct answers for the legal mentor; risks named before the jury names them |
+| D-034 | 21.11 | Public pricing = plans v8 (`research/plans.md`): Tezkor 99,000 · To'liq 299,000 · Faol 590,000 · Ekspert 890,000 UZS a month, each with 3 audits a month, extra audits as credits; law-change re-checks free; documents and lawyer review only via a partner. Replaces the token wallet of D-026 for the pitch (no accounts or payments in the product, D-032) | Simpler to sell than tokens; Role 3's market and unit economics |
 | D-019 | 20.11 | **Precision over recall on real sites:** a detector reports only what it can show with clear evidence; doubtful cases are left out or worded as "check whether…". Every new detector is checked against real scan evidence before it ships | We scan real, named companies (D-017); one false finding in front of the jury costs more than a missed one |
 | D-018 | 20.11 | If the scanner lands on a bot-protection page (captcha, Cloudflare challenge) its requests are marked `challenge` and never produce findings; a site that never passes is reported as "closed to the check", not as compliant or non-compliant | Verified: one delivery site sometimes returns a Yandex SmartCaptcha page — its Yandex requests would have been a false finding |
 | D-017 | 20.11 | **No "Demo Market".** The demo uses real sites, one per sector (`backend/data/reference_sites.yaml`): passive scan only, pre-scanned and cached, one live scan on stage. In anything public they are anonymized ("Marketplace A", "Telecom F"); D-003 still applies. Active mode (canaries) is not shown on real sites (D-009) | Real findings are more convincing and save build time; anonymity avoids naming companies at a Ministry event |
@@ -564,3 +565,4 @@ Assistants don't challenge these decisions. Only the team can change them, with 
 - **0.15** — 21.11 10:40 — D-031 (all checks by difficulty: `research/checks-by-difficulty.md`, for pricing), D-032 (no accounts or tokens in the hackathon product). Team rules R-03 in `/rules` are live (field-level merge, D-030); pilot precision fixes after a check on 8 real sites.
 - **0.16** — 21.11 11:10 — facts V-04…V-09, V-11, V-15, V-17 from R-01/R-02/R-08; D-008 reason corrected; §13 "Is scanning legal?" answer replaced (we do keep public-page artefacts for a limited time); D-033.
 - **0.17** — 21.11 11:40 — F-47, F-48, F-51, F-52 done (R-08 and e-commerce research); 63 tests.
+- **0.18** — 21.11 13:58 — D-034: pricing plans v8 from `research/plans.md`.
