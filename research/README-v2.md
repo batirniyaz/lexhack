@@ -37,7 +37,7 @@
 
 ## What Role 1 builds on 21.11 (code freeze for the checkpoint ~11:30)
 
-1. Law citations from lex.uz via lex-rag in every finding.
+1. Law citations from lex.uz in every finding.
 2. Evidence block: scope (pages, time, vantage point), SHA-256 hashes, Ed25519 signature, verify page.
 3. AI services in the catalog; Uzbek ID detectors (PINFL, passport, phone, card); per-service policy coverage.
 4. E-commerce transparency pilot (3 checks, `EC-*` rules).
@@ -48,7 +48,7 @@
 
 | # | Task | Who | Why |
 |---|---|---|---|
-| 1 | Verbatim quotes (uz + ru, edition date) for the 14 rules in `backend/rules_draft/`, or confirm the ones Role 1 pulls from lex-rag (they will appear in reports marked "not verified by a lawyer") | Role 2 | Legal criterion; every finding cites the law |
+| 1 | Verbatim quotes (uz + ru, edition date) for the 14 rules in `backend/rules_draft/` | Role 2 | Legal criterion; every finding cites the law |
 | 2 | R-08: is a passive scan of a public site legal; our disclaimer; our own policy for accounts | Role 2 | The jury will ask "is your scanning legal?" |
 | 3 | V-05: fines for ZRU-547 violations (Administrative Code art. 46-2, Criminal Code art. 141-2), BCA value for 2026 | Role 2 | Fine ranges stay hidden until this is done |
 | 4 | The old (pre-ZRU-1125) wording of art. 27¹, verbatim, with source | Role 2 / research | Law-change demo |

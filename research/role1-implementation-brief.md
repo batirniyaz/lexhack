@@ -11,9 +11,9 @@
 ## Conclusions
 
 1. **Already right:** the LLM only ever sees the site URL and the **public** legal documents (`llm/policy.py`), every quote is checked by code, and contradictions are computed by code (D-010, D-021). No credentials exist in the system yet, so none can leak to the LLM today.
-2. **Planned in ARCHITECTURE.md but not built:** `legal/lexrag.py` (lex-rag quotes) and `legal/monitor.py` (lex.uz RSS + article hashes). `LEXRAG_URL` / `LEXRAG_API_KEY` are only read in `config.py` and reported by `/api/health`.
-3. **Missing, and asked for by the team:** (a) a **project profile** (what the site or app does) that drives **lex-rag queries**, and an **AI-assisted legal review** against the acts lex-rag returns; (b) **free re-checks when a new act appears**, using the stored scan, by sector; (c) **AI provider and SDK detection**, and whether personal data reaches them masked or in plain form; (d) **sector packs**; (e) a **credential and evidence firewall** before active mode exists; (f) **scope statement and report hash**.
-4. **Suggested order:** before the checkpoint only the cheap, demoable item W1 (AI providers). For the final: W2 lex-rag client, W3 project profile + legal review, W4 law-change re-check demo, W5 sector packs. After the hackathon: W6–W9.
+2. **Planned in ARCHITECTURE.md but not built:** `legal/search.py` (legal search quotes) and `legal/monitor.py` (lex.uz RSS + article hashes). `SEARCH_URL` / `SEARCH_API_KEY` are only read in `config.py` and reported by `/api/health`.
+3. **Missing, and asked for by the team:** (a) a **project profile** (what the site or app does) that drives **legal search queries**, and an **AI-assisted legal review** against the acts legal search returns; (b) **free re-checks when a new act appears**, using the stored scan, by sector; (c) **AI provider and SDK detection**, and whether personal data reaches them masked or in plain form; (d) **sector packs**; (e) a **credential and evidence firewall** before active mode exists; (f) **scope statement and report hash**.
+4. **Suggested order:** before the checkpoint only the cheap, demoable item W1 (AI providers). For the final: W2 legal search client, W3 project profile + legal review, W4 law-change re-check demo, W5 sector packs. After the hackathon: W6–W9.
 
 ## Data
 
@@ -22,7 +22,7 @@
 | # | Requirement (team) | In the code today | Gap |
 |---|---|---|---|
 | R1 | The LLM never receives credentials or private data | `llm/policy.py` sends `facts["site"]` + document texts only. `facts.json` stores raw `post_data` (truncated) and the HAR keeps request headers and post data (`record_har_content="omit"` drops only response bodies); the HAR is served by `GET /api/scans/{id}/har` to anyone with the id | No single "safe view" function that every prompt must go through; no redaction of HAR/`post_data` (needed before active mode, M4/M5) |
-| R2 | The agent understands the project, asks lex-rag for the right acts, and checks against them | Not built. Policy analysis is the only LLM step | W2, W3 |
+| R2 | The agent understands the project, asks legal search for the right acts, and checks against them | Not built. Policy analysis is the only LLM step | W2, W3 |
 | R3 | When lex.uz publishes a new act, clients in the affected sector are told, and their saved context is re-checked for free | `rescore.py` re-evaluates saved scans without crawling (the cheap part exists). No monitor, no sector, no notifications | W4, W5 |
 | R4 | Check AI APIs and SDKs: does personal data go to them, masked or not | `entities.yaml` has no AI providers; `analysis.py` backend patterns and `page_js.py` `INTERESTING` have none | W1 (passive), W7 (canary, active) |
 | R5 | The client picks a sector; the sector decides the legal pack and the services | No sector anywhere except labels in `reference_sites.yaml` | W5 |
@@ -72,23 +72,23 @@ Each item: goal → legal basis → design → files → done when → priority.
 
 ---
 
-#### W2 · `legal/lexrag.py` client — **P1, for the final**
+#### W2 · `legal/search.py` client — **P1, for the final**
 
-**Goal.** One small client every legal feature uses (D-013: lex-rag stays an external service).
+**Goal.** One small client every legal feature uses.
 
-**Design.** `backend/qalqon/legal/lexrag.py`:
-- `query(question: str, *, filters: dict | None = None) -> RagAnswer` → `POST {LEXRAG_URL}/v1/rag/query` with Bearer `LEXRAG_API_KEY` (verified working in ARCHITECTURE §4: art. 27¹ returned with citation and edition date in ~7 s). Map the response to `{answer, citations: [{act, article, url, edition_date, lang, text}]}`. Exact field names: from lex-rag's own API docs (Role 1 owns it).
-- Disk cache like `llm/client.py` (key = question + filters + lex-rag version); timeout and a clear `LegalError` like `LLMError`.
+**Design.** `backend/qalqon/legal/search.py`:
+- `query(question: str, *, filters: dict | None = None) -> RagAnswer` → `POST {SEARCH_URL}/v1/rag/query` with Bearer `SEARCH_API_KEY` (verified working in ARCHITECTURE §4: art. 27¹ returned with citation and edition date in ~7 s). Map the response to `{answer, citations: [{act, article, url, edition_date, lang, text}]}`. Exact field names: from legal search's own API docs (Role 1 owns it).
+- Disk cache like `llm/client.py` (key = question + filters + legal search version); timeout and a clear `LegalError` like `LLMError`.
 - **Privacy rule:** questions are generic legal questions. They never contain the client's name, domain, URLs or any field values.
-- First use: fill `legal_basis[].quote_uz / quote_ru / edition_date` for findings whose rule has `quote_*: null` (ARCHITECTURE §2.6 plan), marked "quote from lex-rag, not yet verified by lawyer".
+- First use: fill `legal_basis[].quote_uz / quote_ru / edition_date` for findings whose rule has `quote_*: null` (ARCHITECTURE §2.6 plan), marked "quote from legal search, not yet verified by lawyer".
 
-**Done when:** `python -m qalqon.legal.lexrag "ZRU-547 27-1 modda"` prints the article with link and edition date; with `LEXRAG_URL` empty everything else still works.
+**Done when:** `python -m qalqon.legal.search "ZRU-547 27-1 modda"` prints the article with link and edition date; with `SEARCH_URL` empty everything else still works.
 
 ---
 
-#### W3 · Project profile → lex-rag → AI-assisted legal review — **P1**
+#### W3 · Project profile → legal search → AI-assisted legal review — **P1**
 
-**Goal (team's idea).** The agent learns what the product is and does, asks lex-rag for the acts that apply, and checks the product against those acts carefully, without credentials ever reaching the model.
+**Goal (team's idea).** The agent learns what the product is and does, asks legal search for the acts that apply, and checks the product against those acts carefully, without credentials ever reaching the model.
 
 **Decision boundary (D-010).** Today only the rules engine decides violations. To keep D-010, the review produces **observations for the lawyer**, shown in a separate report block, **not scored**. A lawyer can turn an observation into a YAML rule. If the team wants the review to create scored findings, that needs a new decision-log entry.
 
@@ -108,10 +108,10 @@ Each item: goal → legal basis → design → files → done when → priority.
    - e-commerce → "electronic commerce buyer personal data obligations (ZRU-792)";
    - AI provider abroad → "cross-border transfer conditions art. 27¹ part 3".
    The LLM may add at most N (e.g. 3) extra questions; every question passes the privacy rule from W2.
-4. **Review, `legal/review.py`:** prompt = safe-view profile + the acts lex-rag returned. Answer schema: `[{act, article, quote, observation, evidence_refs[], status: "possible_gap" | "looks_ok" | "cannot_tell_from_outside", question_for_lawyer}]`. **Code drops every item whose quote is not found in the lex-rag text** (same technique as `policy.quote_found`). Disk-cached.
+4. **Review, `legal/review.py`:** prompt = safe-view profile + the acts legal search returned. Answer schema: `[{act, article, quote, observation, evidence_refs[], status: "possible_gap" | "looks_ok" | "cannot_tell_from_outside", question_for_lawyer}]`. **Code drops every item whose quote is not found in the legal search text** (same technique as `policy.quote_found`). Disk-cached.
 5. **Report:** new top-level `report["legal_review"]` (additive), shown under "AI-assisted legal review — not verified by a lawyer", never in the score.
 
-**Done when:** on a cached scan with a camera upload, the review lists art. 26 / 27¹ observations with verified quotes; a planted secret never reaches the prompt; with lex-rag down the scan still finishes.
+**Done when:** on a cached scan with a camera upload, the review lists art. 26 / 27¹ observations with verified quotes; a planted secret never reaches the prompt; with legal search down the scan still finishes.
 
 ---
 
@@ -122,7 +122,7 @@ Each item: goal → legal basis → design → files → done when → priority.
 **Design.**
 1. `legal/monitor.py` (planned in ARCHITECTURE §2.6): poll `https://lex.uz/ru/rss` hourly (title, link `/ru/docs/<id>`, act type, number, dates — passport §6); keep seen ids; daily article-hash diff of tracked acts (ZRU-547, CMR No. 415, CMR No. 71, Administrative Code, Criminal Code, ZRU-764, consumer protection law).
 2. **Relevance:** keywords from ZRU-547 vocabulary first (personal data, consent, biometric, cross-border, operator…), then an LLM yes/no with `sectors_affected[]` and `articles_changed[]`.
-3. **On a relevant act:** (a) rules citing a changed article → `verified: false` + lawyer alert (planned); (b) for every monitored site whose sector is affected: load its latest `facts.json` + `project_profile`, run W3's review with the **new act's text** from lex-rag, run `rescore` → a "law change notice" `{act, effective_date, affects: yes/no/maybe, observations, what_to_change}`.
+3. **On a relevant act:** (a) rules citing a changed article → `verified: false` + lawyer alert (planned); (b) for every monitored site whose sector is affected: load its latest `facts.json` + `project_profile`, run W3's review with the **new act's text** from legal search, run `rescore` → a "law change notice" `{act, effective_date, affects: yes/no/maybe, observations, what_to_change}`.
 4. **Cost:** no crawl; one cached LLM review (~$0.15) per affected site per act. This is why it can be free (pricing turn).
 5. **Demo for the final (F-16):** CLI `python -m qalqon.legal.recheck --act <lex.uz url> --scans ../scans/batch-…` prints the notice for each cached site. Showing the real 2026 change (ZRU-1125, new art. 27¹) on a stored scan tells the story: "the law changed, your status changed".
 
@@ -135,7 +135,7 @@ Each item: goal → legal basis → design → files → done when → priority.
 **Goal.** The client picks one or more sectors; the sector decides which rules and services apply (`service-catalog.md` §2).
 
 **Design.**
-- `backend/data/sectors.yaml` (draft) / `rules/sectors.yaml` (Role 2 overrides, same pattern as countries): per sector `rules: [...]`, `services_required: [M…]`, `services_recommended: [...]`, `lexrag_queries: [...]`.
+- `backend/data/sectors.yaml` (draft) / `rules/sectors.yaml` (Role 2 overrides, same pattern as countries): per sector `rules: [...]`, `services_required: [M…]`, `services_recommended: [...]`, `search_queries: [...]`.
 - Optional rule field `sectors: [bank, mfo, …]`; a rule without it applies to everyone (backward compatible). `rules_engine.evaluate(facts)` filters by `facts["sectors"]`.
 - `POST /api/scans {url, max_pages?, sectors?: [..]}` (additive); stored in `facts["sectors_declared"]`; W3's classifier writes `facts["sectors_detected"]`; a mismatch is shown, and the stricter pack applies.
 - Frontend: a sector picker under the URL field (UZ/RU/EN labels).
@@ -168,7 +168,7 @@ Each item: goal → legal basis → design → files → done when → priority.
 
 #### W9 · Scope, report hash, identifiable agent — **P2**
 
-- `report["scope"]`: pages scanned, hosts, mode, sectors, services, rules version, prompt versions, lex-rag version (additive).
+- `report["scope"]`: pages scanned, hosts, mode, sectors, services, rules version, prompt versions, legal search version (additive).
 - `report["sha256"]` of the canonical report + `GET /api/verify/{sha256}` → scope, date, rules version (QR in the PDF).
 - Active mode only: sign agent requests (RFC 9421 HTTP Message Signatures, as Cloudflare's Web Bot Auth does) with an engagement-id header; publish our IPs and key. Passive mode keeps the normal browser user agent (ARCHITECTURE §2.1) — question 3 below.
 
@@ -176,7 +176,7 @@ Each item: goal → legal basis → design → files → done when → priority.
 
 | What | Where | Why it matters for the new items |
 |---|---|---|
-| Verbatim-quote check | `llm/policy.py` `quote_found` | Reuse for lex-rag quotes in W3 |
+| Verbatim-quote check | `llm/policy.py` `quote_found` | Reuse for legal search quotes in W3 |
 | Disk cache by model + prompt version + input | `llm/client.py` | Makes W4 re-checks free and repeatable |
 | Re-evaluation without crawl | `rescore.py` | The base of W4 |
 | Backends found without storing secrets | `scanner/analysis.py` | Same rule for AI keys in W1 |
@@ -190,7 +190,7 @@ These map the work items to the feature bank. IDs continue from `service-catalog
 | ID | Feature | What it gives | Complexity | Who proposed | Status |
 |---|---|---|---|---|---|
 | P-F41 | AI provider and SDK detection (W1) + rule PD-AI-01 | New check that every jury member understands: "your site sends data to ChatGPT in the US" | S | Team idea (Role 3) | Proposal (MVP if time) |
-| P-F42 | Project profile + lex-rag queries + AI-assisted legal review (W3) | The agent checks the product against the acts that apply, with verified quotes | M | Team idea | Proposal (Final) |
+| P-F42 | Project profile + legal search queries + AI-assisted legal review (W3) | The agent checks the product against the acts that apply, with verified quotes | M | Team idea | Proposal (Final) |
 | P-F43 | Free law-change re-check by sector (W4) | Subscription value without extra crawl cost; F-16 demo | M | Team idea | Proposal (Final demo) |
 | P-F44 | Safe view / evidence firewall (W3 step 2, W6) | No credentials or personal data in prompts, HAR or share links | S | Team idea | Proposal (before active mode) |
 | P-F45 | Monitored sites with frequency (W8) | Frequency-based pricing; scheduler | M | Team idea | Proposal (Roadmap) |

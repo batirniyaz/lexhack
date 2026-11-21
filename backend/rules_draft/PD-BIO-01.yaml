@@ -8,7 +8,7 @@ detector: biometric_capture
 legal_basis:
   - act: "ZRU-547"
     article: "27¹, part 2 (ed. ZRU-1125 of 26.03.2026); art. 26"
-    articles: ["27¹", "26"]   # article numbers for verbatim citations (qalqon.legal.citations)
+    articles: ["27¹", "26"]   # article numbers the rule relies on
     quote_uz: "Quyidagi shaxsga doir maʼlumotlar Oʻzbekiston Respublikasi hududida saqlanishi shart: jismoniy shaxslarning biometrik maʼlumotlari; jismoniy shaxslarning genetik maʼlumotlari; …"
     quote_ru: "Обязательному хранению на территории Республики Узбекистан подлежат следующие персональные данные: биометрические данные физических лиц; генетические данные физических лиц; …"
     url: "https://lex.uz/docs/-4396419"

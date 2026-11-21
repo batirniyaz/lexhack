@@ -8,7 +8,7 @@ detector: https
 legal_basis:
   - act: "ZRU-547"
     article: "27 (guarantees of protection) — NOT VERIFIED"
-    articles: ["27"]   # article numbers for verbatim citations (qalqon.legal.citations)
+    articles: ["27"]   # article numbers the rule relies on
     quote_uz: null
     quote_ru: null
     url: "https://lex.uz/ru/docs/4396428"

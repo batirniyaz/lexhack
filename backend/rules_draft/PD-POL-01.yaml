@@ -8,7 +8,7 @@ detector: privacy_policy_present
 legal_basis:
   - act: "ZRU-547"
     article: "22 (information about processing); Minjust order No. 20-mx of 15.11.2023 (typical processing procedure) — NOT VERIFIED"
-    articles: ["22", "23"]   # article numbers for verbatim citations (qalqon.legal.citations)
+    articles: ["22", "23"]   # article numbers the rule relies on
     quote_uz: null
     quote_ru: null
     url: "https://lex.uz/ru/docs/4396428"

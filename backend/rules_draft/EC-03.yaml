@@ -23,4 +23,4 @@ fix:
   ru: "Добавьте версию магазина на узбекском языке (информация о товарах, продавце и условиях продажи); другие языки можно оставить дополнительно."
   uz: "Doʻkonning oʻzbek tilidagi versiyasini qoʻshing (tovarlar, sotuvchi va savdo shartlari haqidagi maʼlumot); boshqa tillar qoʻshimcha ravishda qolishi mumkin."
 verified: false
-author: "Role 1 draft (norms found via lex-rag 21.11, to be confirmed by Role 2)"
+author: "Role 1 draft (norms from lex.uz 21.11, confirmed by Role 2 in rules/)"

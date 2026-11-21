@@ -2,7 +2,7 @@
 
 Only for sites that look like online stores (two or more store signals). Precision first (D-019): when the text we
 need was not collected (blocked page, offer not opened), the detector says "cannot evaluate" (None) instead of
-guessing. Norms (via lex-rag, not yet verified by a lawyer): Law "On electronic commerce" art. 16 part 3 (the offer
+guessing. Norms (lex.uz; rules/EC-*.yaml by Role 2): Law "On electronic commerce" art. 16 part 3 (the offer
 names the seller, postal and e-mail address, phone; delivery and payment terms), art. 26–27 (returns); Law "On
 protection of consumers' rights" art. 5 part 5 and art. 6 part 5 (information in the state language).
 """

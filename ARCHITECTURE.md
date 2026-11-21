@@ -23,12 +23,12 @@
 │        │                                                                                │
 │  5. llm/         Claude: policy/offer parsing, "written vs does" check,                 │
 │        │         plain-language explanation of a finding (UZ/RU)                        │
-│  6. legal/       lex-rag API → quotes · lex.uz monitor (RSS + article hashes)           │
+│  6. legal/       law quotes in rules · lex.uz monitor (RSS + article hashes)            │
 │        ▼                                                                                │
 │  store (SQLite): scans, pages, requests, findings                                       │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
           ▲                                             ▲
-   demo-site/ (our "violator")                 lex-rag (external service, declared to the jury)
+   demo-site/ (our "violator")
 ```
 
 **Main principle:** code collects facts, rules decide, the LLM only reads texts and explains. The model never makes the decision about a violation (D-010).
@@ -95,15 +95,14 @@
 - `rules/countries.yaml` (Role 2, R-10) sets the list of "adequate" countries under CMR No. 415.
 
 ### 2.5 llm/ — texts only
-- `policy.py`: policy text → JSON with the fields `elements` (whether the policy names the operator, purposes, retention periods, data subject rights, cross-border transfer, a contact) and `claims` ("we store data in Uzbekistan", "we don't share with third parties", "we use Google Analytics"…). **Every item has a verbatim quote.** If the quote is not in the text, the code drops the item (a technique taken from lex-rag).
+- `policy.py`: policy text → JSON with the fields `elements` (whether the policy names the operator, purposes, retention periods, data subject rights, cross-border transfer, a contact) and `claims` ("we store data in Uzbekistan", "we don't share with third parties", "we use Google Analytics"…). **Every item has a verbatim quote.** If the quote is not in the text, the code drops the item.
 - `mismatch.py`: `claims` × facts → contradictions (PD-MIS-01). The code does the matching; the LLM only normalizes the wording of the promises.
 - `explain.py`: finding → 2–3 plain-language sentences in UZ and RU.
 - Models: `claude-sonnet-5-5` for documents, `claude-haiku-5-5` for mass scans and explanations. The key is `ANTHROPIC_API_KEY` in `.env`.
 
 ### 2.6 legal/ — laws
-- `lexrag.py`: a client for the lex-rag API (`POST /v1/rag/query`, Bearer). Using a rule's `legal_basis`, it fetches the current quote and link. The variables `LEXRAG_URL` and `LEXRAG_API_KEY` go in `.env`.
+- Law quotes live in the rules themselves (`legal_basis[].quote_uz / quote_ru`, verbatim from live lex.uz, Role 2).
 - `monitor.py` (after the checkpoint): the RSS feed `lex.uz/ru/rss` every hour + a daily check of article hashes of the tracked acts → an alert and `verified:false` on the affected rules.
-- **lex-rag was built before the hackathon,** so we declare it to the jury (clause 6.5). We don't copy its code into this repository; we call it as an external service.
 
 ### 2.7 API (FastAPI)
 
@@ -157,7 +156,7 @@ lexhack/
       detectors/  __init__.py (registry)  locality.py  trackers.py  forms.py  biometrics.py  backends.py  security.py
       rules_engine.py
       llm/      client.py  policy.py  mismatch.py  explain.py
-      legal/    lexrag.py  monitor.py
+      legal/    monitor.py
     data/       uz_asn.yaml  uz_services.yaml  (geo/ — outside git)
     tests/      fixtures/ (facts.json)  test_detectors.py  test_rules.py
     requirements.txt
@@ -171,7 +170,6 @@ lexhack/
 
 **Progress:** step 0 ✅ (venv, deps, health API) · step 1 ✅ 20.11 19:30 — `python -m qalqon.scan <url>` crawls with priority to contact/terms/login pages, records every request with server IP, cookies (landing vs later), storage keys, HAR; `--events` streams JSON lines; SSRF guard refuses private targets. Tested on lex.uz: 4 pages, 138 requests, 12 third-party hosts.
 · step 4 (batch) pulled forward ✅ 20.11 19:45 — `python -m qalqon.batch data/reference_sites.yaml` scanned 8 real sites in parallel, all reachable. **Known gap:** SPA sites yield only 1 page (links are rendered late or are router buttons) → add `sitemap.xml` + common paths (`/contact`, `/privacy`, `/oferta`…) and a wait for `a[href]` in step 2.
-· lex-rag integration verified: `POST {LEXRAG_URL}/v1/rag/query` returns the official Uzbek text of art. 27¹ with citation and edition date in ~7 s.
 · step 2 ✅ 20.11 20:00 — `qalqon/enrich/`: every request and a per-host table get `server_country` / `asn` / `org` / `is_cdn` (DB-IP Lite, offline; download: `.venv/Scripts/python -m qalqon.enrich.geo --download`) and `entity` / `company_country` / `dpf` / `category` (`backend/data/entities.yaml`, ~35 owners incl. Uzbek services). `facts.flows` = third-party hosts per country (for the map). Live `host` events are enriched too. Crawler: **bot-protection detection** (Yandex SmartCaptcha, Cloudflare challenge…) → requests marked `phase: challenge`, site marked `blocked` if it never passes (D-018); `sitemap.xml` + common public paths (skipped on SPA catch-all sites); late-link retry for SPAs; page de-duplication. Batch of 8 real sites: all pass, 5 pages each; e.g. the marketplace's privacy policy and personal-data policy were found automatically via sitemap. Country list for the rules: `backend/data/countries_draft.yaml` (NOT VERIFIED) until Role 2 delivers `rules/countries.yaml`.
 · step 3 ✅ 20.11 20:15 — page analysis (`scanner/page_js.py`, `scanner/analysis.py`): forms + field types (name/phone/email/passport/PINFL/card/photo), consent checkbox or consent sentence, legal documents (visited pages keep full text for the LLM step), camera/geolocation hooks, backends in client code (Firebase, Supabase, S3, Telegram Bot API, Apps Script, Bitrix24, amoCRM — no secrets stored), Yandex Webvisor. `qalqon/detectors/` (11 detectors) + `qalqon/rules_engine.py` + 13 draft rules in `backend/rules_draft/` (Role 2's `rules/<ID>.yaml` override them by id) → `report.json` with findings, score, per-country flow status. `python -m qalqon.rescore <scan or batch dir>` re-evaluates saved scans in seconds. Precision fixes after checking real evidence (D-019): bare "998…" digit runs are not phone numbers; one-field phone/email forms (SMS login, newsletter) are not consent findings unless the button submits an application. Real-site batch: scores 80–94, e.g. Webvisor on 5 of 8 sites, a course-application form without consent, Firebase in a payment site's client code.
 · API ✅ 20.11 20:25 — `qalqon/api.py` + `qalqon/jobs.py` + `qalqon/presentation.py`. Run: `cd backend && .venv/Scripts/python -m uvicorn qalqon.api:app --port 8000`. Endpoints for the frontend:
@@ -185,7 +183,7 @@ lexhack/
 · step 6 (frontend) ✅ 21.11 00:20 (end-to-end UI scan of a real site: 20 pages, report in 108 s, 0 console errors) — `frontend/`: React 19 + Vite 8 + TypeScript + Astryx core/theme-neutral 0.7.16, react-router 7, d3-geo + world-atlas map, self-hosted IBM Plex Sans/Mono + Literata. Screens: Home (URL input, anonymized sample says-vs-does, market facts from `/api/stats`), `/scan/*` live feed (stages, mono log, counters, live map) that turns into the report (score scale, tabs Overview / Findings / Data flows / Policy), `/history`. Map status palette validated with the dataviz validator. Presentation mode (`?anon=1`) now also hides brand aliases from `reference_sites.yaml` (a brand name appeared inside a policy quote). Visual review done on screenshots (1366 px and 390 px), 0 console errors.
 · P1 (no login) ✅ 21.11 00:50 — tabs Forms and Evidence, `/sites/:domain` (score trend, new/fixed/unchanged findings between the last two scans: `GET /api/sites/{domain}`), read-only share links (`POST /api/scans/{id}/share` → `/r/<token>`, `GET /api/shared/{token}`), PDF via a print mode that renders every section expanded, score delta in history, dark mode via `light-dark()` tokens.
 · Deployment ✅ 21.11 01:10 — `Dockerfile` (node build stage + python:3.11-slim with Playwright Chromium, libatomic1, DB-IP download), `docker-compose.yml` (127.0.0.1:8090, `./scans` volume, `shm_size: 1gb`, restart unless-stopped), FastAPI serves `frontend/dist` with SPA fallback, `qalqon/guard.py` rate limits + optional key. Live at https://probo.aicenterkk.tech; SSE verified through Cloudflare (events arrive in real time). Details: `deploy/README.md`.
-· 21.11 04:30 ✅ Research-driven features (D-025…D-030): `qalqon/legal/` (lex-rag client + verbatim citations → `data/law_quotes.json`), `qalqon/evidence.py` (report scope, SHA-256, Ed25519 seal, `/api/verify`, `/verify` page), `qalqon/uz_ids.py` (PINFL / passport / Uzcard-Humo in URLs), AI services in `entities.yaml`, policy coverage in 4 levels (`detectors/documents.py`), e-commerce pilot (`detectors/ecommerce.py`, rules EC-01…03; crawler keeps `lang`, `alternates`, `lang_links`, landing/contact `text`), law versions (`data/law_versions.yaml`, `qalqon/law_versions.py` → `report.law_change`), fine lines from R-02. Public demo: real site names only with the owner key (D-003). Checked on the 8 reference sites: no finding changed except by design (PD-CNS-01 → risk); 55 tests.
+· 21.11 04:30 ✅ Research-driven features (D-025…D-030): `qalqon/evidence.py` (report scope, SHA-256, Ed25519 seal, `/api/verify`, `/verify` page), `qalqon/uz_ids.py` (PINFL / passport / Uzcard-Humo in URLs), AI services in `entities.yaml`, policy coverage in 4 levels (`detectors/documents.py`), e-commerce pilot (`detectors/ecommerce.py`, rules EC-01…03; crawler keeps `lang`, `alternates`, `lang_links`, landing/contact `text`), law versions (`data/law_versions.yaml`, `qalqon/law_versions.py` → `report.law_change`), fine lines from R-02. Public demo: real site names only with the owner key (D-003). Checked on the 8 reference sites: no finding changed except by design (PD-CNS-01 → risk); 55 tests.
 · 21.11 05:00 ✅ Precision check of the e-commerce pilot on a fresh server batch (8 sites, Uzbek IP): two false findings found by reading the evidence and fixed — a phone written as "78 888 9 888" and a seller named only in quotes ("NAJOT TAʼLIM MARKAZI") were missed; a telecom offer was judged on returns of goods. Now EC-01 needs the offer text (else not evaluated), EC-02 judges returns only for offers about goods. Result on the 8 sites: 0 pilot findings, each checked by hand.
 
 Each step ends with a result we can check. After every step: commit → `git pull --rebase` → read the team's new research → push.
@@ -201,14 +199,14 @@ Each step ends with a result we can check. After every step: commit → `git pul
 | 6 | 11:30–13:00 | **frontend**: URL → live feed → report (no map) | The full scenario runs in the browser in ~1 min |
 | 7 | 13:00–14:00 | README, diagram, detector tests, a 10-minute rehearsal for each mentor | — |
 | — | **14:00** | **CHECKPOINT** | |
-| 8 | after | Flow map, canaries, lex-rag quotes, lex.uz monitor, PDF report, document generation | For the final |
+| 8 | after | Flow map, canaries, lex.uz monitor, PDF report, document generation | For the final |
 
 **What we cut if we fall behind (in this order):** map → PDF → DNS/crt.sh → batch scan. **Never cut:** the live scan, findings with law articles, PD-MIS-01.
 
 ## 5. Demo script (2 minutes)
 1. We enter the Demo Market address. Live feed: "Meta → USA, before consent", "form: phone and PINFL → api.telegram.org", "camera requested".
 2. Report: score 23/100. Finding 🔴 "The policy promises to store data only in Uzbekistan, but leads go to Telegram" — we show the quote from the policy next to the request.
-3. Click on the article: the quote of art. 27-1 from lex.uz (via lex-rag).
+3. Click on the article: the quote of art. 27-1 from lex.uz.
 4. A slide with batch-scan statistics: "X% of N popular sites send data abroad before consent" (anonymized).
 
 ## 6. Technical risks

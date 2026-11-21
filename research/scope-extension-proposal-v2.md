@@ -18,7 +18,7 @@
 
 | ID | Proposal | Decision | Reason |
 |---|---|---|---|
-| P-F3 | Legal engine on the lex.uz corpus | **Covered by lex-rag (D-013); now wired into reports** (21.11) | — |
+| P-F3 | Legal engine on the lex.uz corpus | **Not built:** law quotes come from Role 2's verified rules | — |
 | P-F4 | Product check for builders (questionnaire → norms) | **Roadmap, category IV (launch check M13)** | Needs Role 2's list of regulated activities; questionnaire answers can't be verified by code |
 | P-F5 | Combined report: law vs claims vs behaviour | **Done in the narrow form:** "policy says vs site does" + verbatim law citations | — |
 | P-F6 | Passive security checks (secrets in JS, PII in API responses, cookie flags, CORS) | **No** | D-008; PII in URLs is PD-LEAK-01 (now with Uzbek ID detectors) |

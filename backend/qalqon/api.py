@@ -87,7 +87,6 @@ def health(request: Request) -> dict:
         "status": "ok",
         "version": __version__,
         "llm_configured": bool(settings.anthropic_api_key),
-        "lexrag_configured": bool(settings.lexrag_url),
         "public_mode": guard.PUBLIC,
         "contact": os.environ.get("PROBO_CONTACT") or None,  # shown in our privacy policy (art. 22)
         "owner": is_owner(request),

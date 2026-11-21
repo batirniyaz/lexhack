@@ -5,8 +5,6 @@
 # information about the seller and the trading rules (Law 221-I art. 5 part 5), information about goods (art. 6).
 # Other languages are allowed only in addition. No norm says "a website must have an Uzbek version" in those words,
 # and the scanner sees only the pages it opened → risk with the wording "no Uzbek version found".
-# Citation keys "5:5" and "6:5" are kept as in the draft; lex-rag resolves both to the state-language sentences quoted
-# below. The language law has no act_id in backend/qalqon/legal/citations.py yet, so it is shown from quote_uz/quote_ru.
 id: EC-03
 level: risk
 legal_basis:

@@ -8,7 +8,7 @@ detector: session_replay
 legal_basis:
   - act: "ZRU-547"
     article: "21 (consent), 27¹ part 3 (transfer abroad) — NOT VERIFIED"
-    articles: ["28", "12"]   # article numbers for verbatim citations (qalqon.legal.citations)
+    articles: ["28", "12"]   # article numbers the rule relies on
     quote_uz: null
     quote_ru: null
     url: "https://lex.uz/ru/docs/4396428"

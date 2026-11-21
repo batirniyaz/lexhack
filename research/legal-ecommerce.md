@@ -82,7 +82,7 @@ Sanction texts (Administrative Code, live lex.uz):
 ## Questions for the team
 
 - **Q-L20 (Role 1).** Add `STATELANG` (lex:121051, «Davlat tili toʻgʻrisida») to `ACTS` in
-  `backend/qalqon/legal/citations.py`? It will cite through lex-rag like ECOM and CONSUMER. Until then EC-03 shows the
+  the citation list? It would cite like ECOM and CONSUMER. Until then EC-03 shows the
   YAML quote.
 - **Q-L21 (Role 1).** Do F-51 now (one more `law_versions.yaml` entry), or after the checkpoint?
 

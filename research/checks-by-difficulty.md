@@ -81,7 +81,7 @@ Max level: 🔴 violation, 🟡 risk, ⚪ recommendation (levels from `rules/` b
 
 ### 3. Included in every report, not priced separately
 
-Verbatim law text under each finding (lex.uz via lex-rag or Role 2's quotes) · possible consequences (Administrative
+Verbatim law text under each finding (Role 2's quotes from lex.uz) · possible consequences (Administrative
 Code art. 46², where R-02 supports it) · data-flow world map · "the law changed → the status changed" on saved scans ·
 evidence seal (scope, Uzbek vantage point, SHA-256, Ed25519 signature, `/verify`) · PDF and share link.
 

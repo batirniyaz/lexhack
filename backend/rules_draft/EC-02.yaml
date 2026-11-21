@@ -22,4 +22,4 @@ fix:
   ru: "Опубликуйте публичную оферту (условия продажи) со ссылкой на каждой странице: доставка, оплата и возврат — куда и как вернуть товар, сроки возврата денег и кто несёт расходы."
   uz: "Har bir sahifadan havola bilan ommaviy oferta (savdo shartlari) joylang: yetkazib berish, toʻlov va qaytarish — tovarni qayerga va qanday qaytarish, pulni qaytarish muddati va xarajatlarni kim qoplaydi."
 verified: false
-author: "Role 1 draft (norms found via lex-rag 21.11, to be confirmed by Role 2)"
+author: "Role 1 draft (norms from lex.uz 21.11, confirmed by Role 2 in rules/)"

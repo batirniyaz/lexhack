@@ -11,7 +11,7 @@ params:
 legal_basis:
   - act: "ZRU-547"
     article: "27¹, part 3 (ed. ZRU-1125 of 26.03.2026); art. 15 (cross-border transfer)"
-    articles: ["27¹", "15"]   # article numbers for verbatim citations (qalqon.legal.citations)
+    articles: ["27¹", "15"]   # article numbers the rule relies on
     quote_uz: null
     quote_ru: null
     url: "https://lex.uz/docs/-4396419"

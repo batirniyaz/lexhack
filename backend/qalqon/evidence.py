@@ -50,9 +50,9 @@ def sha256_file(path: Path) -> Optional[str]:
 
 @lru_cache(maxsize=1)
 def rules_version() -> str:
-    """Short hash over every file that decides findings: rules (draft + team), countries list, law quotes."""
+    """Short hash over every file that decides findings: rules (draft + team), countries list, law versions."""
     files = sorted((BACKEND_DIR / "rules_draft").glob("*.yaml")) + sorted(RULES_DIR.glob("*.yaml"))
-    files += [DATA_DIR / "law_quotes.json", DATA_DIR / "law_versions.yaml"]
+    files += [DATA_DIR / "law_versions.yaml"]
     digest = hashlib.sha256()
     for path in files:
         if path.exists():

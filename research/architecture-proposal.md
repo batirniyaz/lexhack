@@ -9,7 +9,7 @@
 > **Read first: conflicts with passport v0.4**
 > 1. **The team's architecture is the root `ARCHITECTURE.md`.** Use this file only as a list of suggestions.
 > 2. **Localization rules changed.** Sections 7–8 assume `allowed_countries: [UZ]`. That is outdated: art. 27-1 was rewritten by ZRU-1125 (passport §2). Mandatory storage in Uzbekistan now covers only biometric, genetic and telecom-user data; other data may go abroad under conditions. Allowed countries come from `rules/countries.yaml` (CMR No. 415, R-10).
-> 3. **Legal citations come from lex-rag** as an external service (D-013); rules, not the LLM, decide violations (D-010).
+> 3. **Legal citations come from lex.uz;** rules, not the LLM, decide violations (D-010).
 > 4. **Live feed:** v0.4 uses SSE (D-012); this file proposes polling.
 > 5. **Canary form probe:** v0.4 allows it only on clients' sites with written consent, plus our demo site (D-009).
 > 6. **New checks in v0.4** (PD-BIO-01, PD-LEAK-01, PD-REC-01, PD-DB-01, PD-MAIL-01) are not covered in §7.

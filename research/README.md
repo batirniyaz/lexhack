@@ -31,7 +31,7 @@ This folder holds the team's research. Code lives in `backend/`, `frontend/` and
 | File | What it is |
 |---|---|
 | `architecture-proposal.md` | An alternative architecture written before passport v0.4. The team's architecture is `ARCHITECTURE.md` in the repo root (Role 1). Read it only as a list of suggestions; conflicts with v0.4 are listed at its top |
-| `scope-extension-proposal.md` | Proposal: a structured product check for software builders on top of lex-rag. Conflicts with v0.4 are listed at its top |
+| `scope-extension-proposal.md` | Proposal: a structured product check for software builders on top of legal search. Conflicts with v0.4 are listed at its top |
 
 ## Header template (English version of passport §11.1)
 

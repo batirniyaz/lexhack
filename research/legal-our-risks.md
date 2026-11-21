@@ -82,7 +82,7 @@
      Center's **written permission**. Other use of information **"except the text of normative legal acts"** is allowed
      with a link.
    - *What follows.* Short quotes of official texts with a link are fine. The LexUZ Russian translation is marked
-     "unofficial" and should be labelled as such. Bulk use of the lex.uz database in a paid service (lex-rag) needs the
+     "unofficial" and should be labelled as such. Bulk use of the lex.uz database in a paid service needs the
      Center's written permission (Q-L19).
 
 ## Data
@@ -98,7 +98,7 @@
 | Sends policy text to the LLM (Anthropic API, US) | PD inside the text, if any | ZRU-547 art. 15, 27¹ part 3; CMR 415 (US = DPF only); Adm. Code 46² part 2 | redact first (F-48) |
 | Public demo, 6 scans/hour per IP, 100/day (D-024) | visitors' IP addresses | ZRU-547 art. 4, 18 (legitimate interest); V-08 | operator duties apply (§5) |
 | Anonymized statistics (`/api/stats`) | none after anonymization | ZRU-547 art. 18 (statistics with anonymization) | lawful |
-| Quotes the law from lex.uz (via lex-rag) | — | ZRU-42 art. 8; lex.uz terms | quotes OK; bulk database use needs permission |
+| Quotes the law from lex.uz  | — | ZRU-42 art. 8; lex.uz terms | quotes OK; bulk database use needs permission |
 | "Fixed documents", consent and policy generators, lawyer review (business model, F-45, M12) | client | ZRU-701 annex 3 item 31; CMR No. 675 | legal consulting → partner or notify |
 
 ### 2. Verbatim norms (live lex.uz, 21.11.2026)

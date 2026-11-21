@@ -31,4 +31,4 @@ fix:
   ru: "Укажите в подвале сайта и в публичной оферте полное наименование продавца, ИНН (STIR), почтовый адрес, телефон и e-mail."
   uz: "Sayt pastki qismida va ommaviy ofertada sotuvchining toʻliq nomi, STIR, pochta manzili, telefon va e-mailini koʻrsating."
 verified: false
-author: "Role 1 draft (norms found via lex-rag 21.11, to be confirmed by Role 2)"
+author: "Role 1 draft (norms from lex.uz 21.11, confirmed by Role 2 in rules/)"

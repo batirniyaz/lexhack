@@ -10,7 +10,7 @@ params:
 legal_basis:
   - act: "ZRU-547"
     article: "5 (principles), 19 (processing requirements) — purpose limitation and proportionality (NOT VERIFIED)"
-    articles: ["10", "19"]   # article numbers for verbatim citations (qalqon.legal.citations)
+    articles: ["10", "19"]   # article numbers the rule relies on
     quote_uz: null
     quote_ru: null
     url: "https://lex.uz/ru/docs/4396428"

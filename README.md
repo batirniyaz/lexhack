@@ -63,7 +63,7 @@ python -m venv .venv
 .venv/Scripts/python -m pip install -r requirements.txt        # Linux/macOS: .venv/bin/python
 .venv/Scripts/python -m playwright install chromium            # Linux server: add --with-deps
 .venv/Scripts/python -m qalqon.enrich.geo --download           # DB-IP Lite country + ASN databases (offline lookups)
-cp ../.env.example ../.env                                      # then fill in ANTHROPIC_API_KEY (and LEXRAG_* if used)
+cp ../.env.example ../.env                                      # then fill in ANTHROPIC_API_KEY
 .venv/Scripts/python -m pytest                                  # 29 tests, no network needed
 ```
 
@@ -174,7 +174,7 @@ Rules live in YAML: drafts by Role 1 in `backend/rules_draft/`, authoritative ve
 Score = 100 − 15 per 🔴 − 5 per 🟡 − 1 per ⚪, counted per triggered rule (not per request).
 
 Every report also has:
-- **verbatim law text** for each finding, from lex.uz via lex-rag (`backend/data/law_quotes.json`; quotes checked by code, not yet by a lawyer);
+- **verbatim law text** for each finding, from lex.uz (quotes in the rules, checked against live lex.uz by Role 2);
 - **possible consequences** (Administrative Code art. 46², BCA 440,000 UZS) where the team's legal research supports it;
 - **how the policy names each service** (product / company / only the kind / not named);
 - **"the law changed → the status changed"**: the same saved facts under the pre-2026 art. 27¹ and under the current law;
@@ -222,9 +222,3 @@ Firebase database from client code. Numbers come only from `GET /api/stats`; sit
 - Law texts: lex.uz (official Uzbek text; Russian is lex.uz's unofficial translation).
 - Tracker ownership: our own catalog `backend/data/entities.yaml`.
 
-## Built before the hackathon (declared per clause 6.5 of the Regulations)
-
-**lex-rag** — a question-answering service over the full lex.uz corpus (55k acts, hybrid search, quotes verified by
-code), built by Role 1 before the hackathon. Qalqon calls it as an **external service** through its API for law
-quotes and explanations; its code is not part of this repository (D-013). Everything in this repository was written
-during the hackathon.

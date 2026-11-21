@@ -15,7 +15,6 @@ import yaml
 
 from .evidence import scope
 from .law_versions import law_change
-from .legal.citations import attach_quotes
 from .config import BACKEND_DIR, RULES_DIR
 from .detectors import DETECTORS
 from .detectors.documents import policy_coverage
@@ -131,7 +130,7 @@ def evaluate(facts: dict, overrides: Optional[dict] = None, with_law_change: boo
             "downgraded": downgraded,
             "title": rule.get("title", {}),
             "evidence": evidence,
-            "legal_basis": attach_quotes(rule.get("legal_basis", [])),  # + verbatim lex.uz text (F-34)
+            "legal_basis": rule.get("legal_basis", []),
             "sanction": rule.get("sanction"),
             "sanction_local": ({"uz": rule.get("sanction_uz"), "ru": rule.get("sanction_ru"),
                                 "source": rule.get("sanction_source")} if rule.get("sanction_uz") else None),

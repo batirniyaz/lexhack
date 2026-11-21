@@ -25,7 +25,7 @@
 | M2 Policy, "says vs does" | II Full | built | + per-service coverage in 4 levels (F-17), 21.11 |
 | M3 DNS and mail map | I Express | not built | F-13, after the final |
 | E-commerce transparency (pilot, new) | II Full | building 21.11 | seller identity, offer and return terms, Uzbek version (D-027) |
-| Law citations from lex.uz via lex-rag (new) | II Full | building 21.11 | W2 of the brief |
+| Law citations from lex.uz (new) | II Full | done 21.11 | quotes in Role 2's rules |
 | Signed evidence pack + scope + verify page (new; F-06, F-19, F-27) | II Full | building 21.11 | SHA-256 + Ed25519 |
 | Fine range per finding (F-20) | II Full | mechanism 21.11, shown only after Role 2 verifies V-05 | never show an unverified fine |
 | M10 Monitoring and alerts | platform (spends tokens) | partly: rescore; scheduler and Telegram not built | F-05 |
@@ -60,7 +60,7 @@
 ## Questions for the team
 
 1. **Role 2:** the e-commerce pilot needs verbatim norms (ZRU-792 "On electronic commerce", consumer protection law,
-   state-language law). Role 1 pulls candidate articles through lex-rag; Role 2 confirms.
+   state-language law). Role 2 confirms the articles on lex.uz.
 2. Open questions 1–8 of v1 stay open; they matter when category III starts.
 
 ## Sources

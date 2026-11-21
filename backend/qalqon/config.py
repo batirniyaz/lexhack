@@ -25,8 +25,6 @@ def _bool(name: str, default: bool) -> bool:
 @dataclass(frozen=True)
 class Settings:
     anthropic_api_key: str = os.environ.get("ANTHROPIC_API_KEY", "")
-    lexrag_url: str = os.environ.get("LEXRAG_URL", "")
-    lexrag_api_key: str = os.environ.get("LEXRAG_API_KEY", "")
     max_pages: int = int(os.environ.get("QALQON_MAX_PAGES", "20"))
     headless: bool = _bool("QALQON_HEADLESS", True)
 

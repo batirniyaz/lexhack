@@ -16,7 +16,7 @@ export interface LegalBasis {
   citations?: Citation[]
   act_ru?: string
 }
-/** Verbatim article text from lex.uz via lex-rag (backend/qalqon/legal/citations.py); not verified by a lawyer. */
+/** Verbatim article text from lex.uz. */
 export interface Citation {
   act: string
   article: string

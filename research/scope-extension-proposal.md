@@ -7,7 +7,7 @@
 - Status: proposal. It widens decision D-002, so it needs team agreement and a new decision-log entry
 
 > **Read first: conflicts with passport v0.4**
-> 1. **The legal engine already exists.** Conclusion 2 and P-F3 are covered by lex-rag: 55,000 lex.uz acts, hybrid search and code-checked quotes, called as an external service (D-013). Rules decide violations; RAG only quotes and explains (D-010). lex.uz changes are tracked through its RSS feed and article hashes (D-011). **What stays new in this file: the product check for builders (P-F4) and the combined report (P-F5).**
+> 1. **The legal engine already exists.** Conclusion 2 and P-F3 are covered by legal search: 55,000 lex.uz acts, hybrid search and code-checked quotes. Rules decide violations; RAG only quotes and explains (D-010). lex.uz changes are tracked through its RSS feed and article hashes (D-011). **What stays new in this file: the product check for builders (P-F4) and the combined report (P-F5).**
 > 2. **Active security checks (P-F7) contradict D-008:** the team doesn't search for vulnerabilities or do pentests. Withdrawn unless the team changes D-008. The passive check for secrets in page JavaScript (part of P-F6) is close to vulnerability scanning, so it is a question for the team under D-008. Personal data in URLs is already covered by PD-LEAK-01.
 > 3. **Canary form tests** run only on clients' sites with written consent (D-009).
 > 4. **Localization changed in 2026** (ZRU-1125, CMR No. 415, passport §2). Any example below that assumes "all data must stay in Uzbekistan" is outdated.
@@ -67,20 +67,20 @@ Matches D-006. Three caveats:
 
 | ID | Feature | What it gives | Complexity | Proposed by | Status |
 |---|---|---|---|---|---|
-| P-F3 | Legal engine on the lex.uz scrape (article index + verified quotes) | Citations in every finding; faster rule writing for Role 2; basis for "law changed" alerts | M | research team | Already covered by lex-rag (D-013) |
-| P-F4 | Product check for builders (questionnaire → regulated activities → norms from lex-rag) | New audience: software builders before launch; strong T3 and S3 story | M | research team | Proposed for the final |
+| P-F3 | Legal engine on the lex.uz scrape (article index + verified quotes) | Citations in every finding; faster rule writing for Role 2; basis for "law changed" alerts | M | research team | Not built (quotes come from the rules) |
+| P-F4 | Product check for builders (questionnaire → regulated activities → norms from legal search) | New audience: software builders before launch; strong T3 and S3 story | M | research team | Proposed for the final |
 | P-F5 | Combined report: law vs claims vs behavior | The clearest pitch message | S (after P-F4) | research team | Proposed for the final |
 | P-F6 | Passive security checks (secrets in JS, PII in API responses, cookie flags, CORS) | Covers data leaks without touching anything a visitor can't see | S–M | research team | Question for the team under D-008; PII in URLs is already PD-LEAK-01 |
 | P-F7 | Active security checks for verified site owners | Deeper audit for paying clients | M | research team | Withdrawn: contradicts D-008 |
 
 ## Questions for the team / contradictions with the passport
 
-1. **Widens D-002.** Suggested entry P-D6 (Role 1 assigns the real ID): "Qalqon = website scanner (core) + structured product check for builders on top of lex-rag. No free chat."
+1. **Widens D-002.** Suggested entry P-D6 (Role 1 assigns the real ID): "Qalqon = website scanner (core) + structured product check for builders on top of legal search. No free chat."
 2. **Checkpoint scope.** Scanner + legal engine only, or the product check too? Not decided yet.
 3. **Gig-platform example.** The claim that payments to workers must go through the government is NOT VERIFIED. Role 2 must find and check the norm on lex.uz before it appears in the demo or pitch. If it doesn't hold up, the demo uses the personal-data scenario.
 4. **Licensing of automated legal advice.** Does giving automated legal guidance require a license? NOT VERIFIED (add to R-08).
 5. **Legality of active security probing** of sites we don't own. NOT VERIFIED (add to R-08).
-6. **The lex.uz corpus.** Partly answered in v0.4: it is lex-rag, called as an external service (D-013). Still open for the product check: can lex-rag's API search by regulated activity (for example "payouts to individuals"), and what do lex.uz's terms allow (V-17)?
+6. **The lex.uz corpus.** Partly answered in v0.4: it is legal search. Still open for the product check: can the search API search by regulated activity (for example "payouts to individuals"), and what do lex.uz's terms allow (V-17)?
 
 ## Sources
 

@@ -3,7 +3,7 @@
 Drafts written by Role 1 so the engine produces findings before Role 2's rules arrive.
 **All are `verified: false`.** Role 2 owns the authoritative versions in `/rules/<ID>.yaml` — a rule with the same `id` there overrides the draft.
 
-Quotes of art. 27¹ were checked on 20.11: Uzbek text via lex-rag (edition 2026-09-12), Russian is lex.uz's unofficial translation. Everything else (choice of article, level, sanction) is NOT VERIFIED.
+Quotes of art. 27¹ were checked on 20.11 against lex.uz (Uzbek official text, edition 2026-09-12; Russian is lex.uz's unofficial translation). Everything else (choice of article, level, sanction) is NOT VERIFIED.
 
 ## Fields added on 21.11 (Role 1) — keep them when you write `/rules/<ID>.yaml`
 
@@ -12,8 +12,8 @@ leave out are taken from the draft. So you can override only `level`, `legal_bas
 
 | Field | Where | What it does |
 |---|---|---|
-| `legal_basis[].articles` | e.g. `["18", "21"]`, `["5:5"]` (article 5, part 5) | Article numbers for verbatim citations from lex.uz via lex-rag (`python -m qalqon.legal.citations` → `backend/data/law_quotes.json`). Shown in every finding, marked "not verified by a lawyer" |
-| `legal_basis[].act_id` | `ZRU-547` (default), `ECOM`, `CONSUMER` | Which act the article numbers belong to (`qalqon/legal/citations.py` `ACTS`) |
+| `legal_basis[].articles` | e.g. `["18", "21"]`, `["5:5"]` (article 5, part 5) | Article numbers the rule relies on (kept for reference) |
+| `legal_basis[].act_id` | `ZRU-547` (default), `ECOM`, `CONSUMER` | Which act the article numbers belong to |
 | `legal_basis[].act_ru` | text | Russian name of the act for the Russian UI |
 | `sanction_uz`, `sanction_ru`, `sanction_source` | text | "Possible consequences" line in the report (R-02 templates T1–T3, `research/legal-liability.md`). Leave out to show nothing |
 
