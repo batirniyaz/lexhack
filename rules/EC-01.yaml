@@ -1,0 +1,33 @@
+# Role 2 rule (e-commerce pilot, D-027). Overrides backend/rules_draft/EC-01.yaml.
+# Verified 21.11.2026 against live lex.uz: ZRU-792 «On electronic commerce» (Uzbek edition of 25.07.2026), Law 221-I
+# «On the protection of consumer rights» (edition of 19.01.2026). uz quotes are lex.uz's Latin version of the official
+# Uzbek text; ru quotes are the LexUZ translation. Reasoning: research/legal-ecommerce.md.
+# Level: risk — the e-commerce offer must name the seller with postal and e-mail address and phone (ZRU-792 art. 16
+# part 3), and a seller must tell consumers its firm name, legal address and working hours (Law 221-I art. 5 part 2).
+# The scanner sees only the pages it opened; the details may sit in a PDF offer or an app → risk, not violation.
+id: EC-01
+level: risk
+legal_basis:
+  - act: "«Elektron tijorat toʻgʻrisida»gi Qonun (OʻRQ-792)"
+    act_ru: "Закон «Об электронной коммерции» (ЗРУ-792)"
+    act_id: ECOM
+    article: "16, part 3, paragraphs 2–3 (the offer names the seller, postal and e-mail address, phone)"
+    articles: ["16:3"]
+    quote_uz: "Elektron tijoratda oferta: ofertani yuborgan shaxsning nomini (oʻzini oʻzi band qilgan shaxslarning familiyasini, ismini, otasining ismini); ofertani yuborgan shaxsning pochta va elektron manzilini, telefon raqamini;"
+    quote_ru: "Оферта в электронной коммерции должна содержать: наименование (фамилию, имя, отчество самозанятого лица) лица, направившего оферту; почтовый и электронный адрес, номер телефона лица, направившего оферту;"
+    url: "https://lex.uz/docs/-6213382"
+    url_ru: "https://lex.uz/ru/docs/6213428"
+    edition_date: "25.07.2026"
+  - act: "«Isteʼmolchilarning huquqlarini himoya qilish toʻgʻrisida»gi Qonun (221-I)"
+    act_ru: "Закон «О защите прав потребителей» (221-I)"
+    act_id: CONSUMER
+    article: "5, part 2 (the seller's firm name, legal address and working hours)"
+    articles: ["5"]
+    quote_uz: "Sotuvchi (ijrochi) oʻz tashkilotining firma nomi, uning joylashgan (yuridik) manzili va ish tartibini isteʼmolchilarga maʼlum qilishi shart."
+    quote_ru: "Продавец (исполнитель) обязан довести до сведения потребителя фирменное наименование своей организации, место ее нахождения (юридический адрес) и режим работы."
+    url: "https://lex.uz/docs/-4704"
+    url_ru: "https://lex.uz/ru/docs/14643"
+    edition_date: "19.01.2026"
+sanction: "Possible: Administrative Code art. 178 part 6 (not giving consumers information about goods, which includes the seller's full name and legal address — Law 221-I art. 6) — 3–7 BCA for citizens, 7–10 BCA for officials, with confiscation; BCA 440,000 UZS from 01.09.2026 (PF-115). Interpretation, not verified by a lawyer."
+verified: true
+author: "Role 2 (e-commerce pilot, 21.11.2026)"

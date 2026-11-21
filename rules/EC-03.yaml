@@ -1,0 +1,45 @@
+# Role 2 rule (e-commerce pilot, D-027). Overrides backend/rules_draft/EC-03.yaml.
+# Verified 21.11.2026 against live lex.uz: ZRU-792 (Uzbek edition of 25.07.2026), Law 221-I (edition of 19.01.2026),
+# Law «On the state language» (edition of 25.07.2026). Reasoning: research/legal-ecommerce.md.
+# Level: risk — three norms require the state language: e-commerce contract terms (ZRU-792 art. 21 part 1),
+# information about the seller and the trading rules (Law 221-I art. 5 part 5), information about goods (art. 6).
+# Other languages are allowed only in addition. No norm says "a website must have an Uzbek version" in those words,
+# and the scanner sees only the pages it opened → risk with the wording "no Uzbek version found".
+# Citation keys "5:5" and "6:5" are kept as in the draft; lex-rag resolves both to the state-language sentences quoted
+# below. The language law has no act_id in backend/qalqon/legal/citations.py yet, so it is shown from quote_uz/quote_ru.
+id: EC-03
+level: risk
+legal_basis:
+  - act: "«Elektron tijorat toʻgʻrisida»gi Qonun (OʻRQ-792)"
+    act_ru: "Закон «Об электронной коммерции» (ЗРУ-792)"
+    act_id: ECOM
+    article: "21, part 1 (contract terms in the state language; other languages only in addition)"
+    articles: ["21"]
+    quote_uz: "Shartnoma shartlari aniq, tushunarli shaklda davlat tilida shakllantirilishi kerak. Zarur boʻlganda ular davlat tili bilan bir vaqtda taraflar uchun qulay boʻlgan boshqa tillarda ham tuzilishi mumkin."
+    quote_ru: "Условия договора должны быть сформулированы в конкретной, понятной форме на государственном языке. При необходимости они могут быть составлены на иных удобных для сторон языках одновременно с государственным языком."
+    url: "https://lex.uz/docs/-6213382"
+    url_ru: "https://lex.uz/ru/docs/6213428"
+    edition_date: "25.07.2026"
+  - act: "«Isteʼmolchilarning huquqlarini himoya qilish toʻgʻrisida»gi Qonun (221-I)"
+    act_ru: "Закон «О защите прав потребителей» (221-I)"
+    act_id: CONSUMER
+    article: "5, part 5 (information about the seller and trading rules in the state language); 6 (information about goods in the state language)"
+    articles: ["5:5", "6:5"]
+    quote_uz: "Ishlab chiqaruvchi (ijrochi, sotuvchi) haqidagi, savdo va xizmat koʻrsatish qoidalari toʻgʻrisidagi maʼlumot isteʼmolchiga davlat tilida taqdim etiladi. Mazkur maʼlumot qoʻshimcha ravishda boshqa tillarda ham taqdim etilishi mumkin. … Tovar (ish, xizmat) toʻgʻrisidagi maʼlumot isteʼmolchiga davlat tilida taqdim etiladi."
+    quote_ru: "Информация об изготовителе (исполнителе, продавце), правилах торговли и обслуживания предоставляется потребителю на государственном языке. Данная информация может быть также дополнительно предоставлена и на других языках. … Информация о товаре (работе, услуге) предоставляется потребителю на государственном языке."
+    url: "https://lex.uz/docs/-4704"
+    url_ru: "https://lex.uz/ru/docs/14643"
+    edition_date: "19.01.2026"
+  - act: "«Davlat tili toʻgʻrisida»gi Qonun"
+    act_ru: "Закон «О государственном языке»"
+    act_id: STATELANG
+    article: "20 (signs, notices, price lists and other visual information in the state language)"
+    articles: ["20"]
+    quote_uz: "Lavhalar, eʼlonlar, narxnomalar va boshqa koʻrgazmali hamda ogʻzaki axborot matnlari davlat tilida rasmiylashtiriladi va eʼlon qilinadi hamda boshqa tillarda tarjimasi berilishi mumkin."
+    quote_ru: "Тексты вывесок, объявлений, ценников и другой наглядной, а также устной информации оформляются и объявляются на государственном языке и могут быть продублированы на других языках."
+    url: "https://lex.uz/docs/-121051"
+    url_ru: "https://lex.uz/ru/docs/121433"
+    edition_date: "25.07.2026"
+sanction: "Possible: Administrative Code art. 178 part 6 (not giving consumers information) — 3–7 BCA for citizens, 7–10 BCA for officials; art. 42 («neglect of the state language») — 1–2 BCA. BCA 440,000 UZS from 01.09.2026 (PF-115). Interpretation, not verified by a lawyer."
+verified: true
+author: "Role 2 (e-commerce pilot, 21.11.2026)"

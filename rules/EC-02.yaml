@@ -1,0 +1,55 @@
+# Role 2 rule (e-commerce pilot, D-027). Overrides backend/rules_draft/EC-02.yaml.
+# Verified 21.11.2026 against live lex.uz: ZRU-792 (Uzbek edition of 25.07.2026 and the edition in force from
+# 12.12.2026), Law 221-I (edition of 19.01.2026). Reasoning: research/legal-ecommerce.md.
+# Level: risk. Today the offer must contain the order of concluding the contract, delivery and payment terms and prices
+# (ZRU-792 art. 16 part 3); the seller must give full information on the trading rules (Law 221-I art. 5 part 4) and,
+# when a contract is cancelled, tell the buyer where to return the goods (ZRU-792 art. 26 part 1).
+# LAW CHANGE (F-16): ZRU-1173 of 10.09.2026 adds to art. 16 part 3 "the order and conditions of returning goods and/or
+# the paid money" — in force from 12.12.2026. Until then "offer without return terms" (the draft's downgraded case) is
+# weaker; from 12.12.2026 it is a direct requirement of the offer.
+id: EC-02
+level: risk
+legal_basis:
+  - act: "«Elektron tijorat toʻgʻrisida»gi Qonun (OʻRQ-792)"
+    act_ru: "Закон «Об электронной коммерции» (ЗРУ-792)"
+    act_id: ECOM
+    article: "16, part 3 (offer: order of concluding the contract; delivery and payment terms, prices)"
+    articles: ["16:3"]
+    quote_uz: "shartnomani tuzish tartibini, shuningdek akseptni yuborish va chaqirib olish tartibini; … tovarlarni (ishlarni, xizmatlarni) yetkazib berish va ularga haq toʻlash shartlarini, shuningdek ular uchun taklif etilayotgan narxlarni (tariflarni);"
+    quote_ru: "порядок заключения договора, а также порядок отправки и отзыва акцепта; … условия поставки и оплаты товаров (работ, услуг), а также предлагаемые цены (тарифы) на них;"
+    url: "https://lex.uz/docs/-6213382"
+    url_ru: "https://lex.uz/ru/docs/6213428"
+    edition_date: "25.07.2026"
+  - act: "«Elektron tijorat toʻgʻrisida»gi Qonun (OʻRQ-792)"
+    act_ru: "Закон «Об электронной коммерции» (ЗРУ-792)"
+    act_id: ECOM
+    article: "26, part 1 (place of return); 27 (refund in the same form, costs on the seller)"
+    articles: ["26", "27"]
+    quote_uz: "Shartnoma bekor qilinganda sotuvchi xaridorga tovarni qaytarib berish amalga oshiriladigan joy toʻgʻrisida xabar berishi kerak."
+    quote_ru: "При расторжении договора продавец должен сообщить покупателю о месте, где будет осуществлен возврат товара."
+    url: "https://lex.uz/docs/-6213382"
+    url_ru: "https://lex.uz/ru/docs/6213428"
+    edition_date: "25.07.2026"
+  - act: "«Elektron tijorat toʻgʻrisida»gi Qonun (OʻRQ-792), edition in force from 12.12.2026 (OʻRQ-1173 of 10.09.2026)"
+    act_ru: "Закон «Об электронной коммерции» (ЗРУ-792), редакция с 12.12.2026 (ЗРУ-1173 от 10.09.2026)"
+    act_id: ECOM
+    article: "16, part 3, new paragraph 8 (return terms in the offer) — in force from 12.12.2026"
+    articles: ["16:3"]
+    quote_uz: "tovarlarni (ishlarni, xizmatlarni) qaytarish va (yoki) toʻlangan mablagʻlarni xaridorga qaytarib berish tartibi va shartlarini;"
+    quote_ru: "порядок и условия возврата товаров (работ, услуг) и (или) возврата уплаченных денежных средств покупателю;"
+    url: "https://lex.uz/docs/-6213382?ONDATE=12.12.2026%2001"
+    url_ru: "https://lex.uz/ru/docs/6213428?ONDATE=12.12.2026%2001"
+    edition_date: "12.12.2026"
+  - act: "«Isteʼmolchilarning huquqlarini himoya qilish toʻgʻrisida»gi Qonun (221-I)"
+    act_ru: "Закон «О защите прав потребителей» (221-I)"
+    act_id: CONSUMER
+    article: "5, part 4 (full information on the trading rules)"
+    articles: ["5"]
+    quote_uz: "Sotuvchi (ijrochi) isteʼmolchiga tovarlar savdosi, maishiy va boshqa turdagi xizmat koʻrsatishning qoidalari toʻgʻrisida toʻliq maʼlumot berishi shart."
+    quote_ru: "Продавец (исполнитель) обязан предоставить потребителю полную информацию о правилах торговли товарами, бытового и иных видах обслуживания."
+    url: "https://lex.uz/docs/-4704"
+    url_ru: "https://lex.uz/ru/docs/14643"
+    edition_date: "19.01.2026"
+sanction: "Possible: Administrative Code art. 178 part 6 (not giving consumers information) — 3–7 BCA for citizens, 7–10 BCA for officials, with confiscation; or art. 164 part 1 (breach of the rules of trade) — 10 BCA for citizens, 20 BCA for officials. BCA 440,000 UZS from 01.09.2026 (PF-115). Interpretation, not verified by a lawyer."
+verified: true
+author: "Role 2 (e-commerce pilot, 21.11.2026)"

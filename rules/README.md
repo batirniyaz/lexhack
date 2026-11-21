@@ -28,5 +28,12 @@
 | SEC-02 | ⚪ recommendation | — | art. 27 (general) | good practice only |
 
 Not created (no detector in the code yet): **PD-HOST-01** (site hosted abroad) and **PD-MAIL-01** (MX abroad) from
-passport §5 — both would be 🟡 at most under art. 27¹ part 3 for ordinary data. E-commerce pilot rules `EC-01…03`
-stay in `backend/rules_draft/` (`verified: false`) until Role 2 checks their norms (README-v2 task 5).
+passport §5 — both would be 🟡 at most under art. 27¹ part 3 for ordinary data. 
+
+E-commerce pilot rules (D-027), added on 21.11.2026; reasoning in `research/legal-ecommerce.md`:
+
+| ID | Level | Changed vs draft | Main basis | Why this level |
+|---|---|---|---|---|
+| EC-01 | 🟡 risk | quotes, sanction, `verified` | ZRU-792 art. 16 part 3; Law 221-I art. 5 part 2 | details may be in a PDF offer or app we did not open |
+| EC-02 | 🟡 risk | quotes, sanction, `verified` | ZRU-792 arts. 16, 26, 27; Law 221-I art. 5 part 4; **from 12.12.2026** return terms are required in the offer (ZRU-1173) | today return terms are not a direct offer requirement |
+| EC-03 | 🟡 risk | quotes, sanction, `verified` | ZRU-792 art. 21 part 1; Law 221-I arts. 5–6; Law «On the state language» art. 20 | no norm names a "website version" |
